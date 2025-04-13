@@ -10,7 +10,7 @@ Tools for packing files, converting images, manipulating text, checking code and
 * Indent blocks of text (or remove indents) by 1-5 spaces for code styling
 * Clone a Gossamer project to a Lazarus project and use one common source code for both projects - supports Borland Delphi 3.0 (Build 5.83) as source and Lazarus 2.2.6 as target
 * Convert an image file between these formats: PNG, GIF, JPG, JIF, JPEG, TJ32, BMP, ICO, CUR, ANI, TEA, TGA, PPM, PGM, PBM, XBM and IMG32
-* Convert image into mime/type base64 text
+* Convert an image into mime/type base64 text
 * A wide variety of tools to manipulate an image or text held in Clipboard
 * List lines of text in ascending (A-Z) or descending (Z-A) order
 * Remove leading and trailing whitespace from each line of text

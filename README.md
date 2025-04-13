@@ -1,9 +1,10 @@
-# Blaiz-Tools
+# Blaiz Tools
 Tools for packing files, converting images, manipulating text, checking code and working with the Gossamer codebase and app source code.
 
 <img src="blaiztools-screenshot.gif">
 
 # Features
+* Version 1.00.2382
 * Fast, one-click tools for common tasks
 * Pack a file, image or text into a binary Pascal array for direct inclusion in source code
 * Indent blocks of text (or remove indents) by 1-5 spaces for code styling

@@ -1,0 +1,4 @@
+Blaiz Tools is from Blaiz Enterprises (www.blaizenterprises.com), and we maintain the package.
+
+Checksum via VirusTotal.com for blaiztools.exe:
+6de517d16acd9ee00e6bd9bc1a9d291af1992f146d17546fd5be91e1a6c8ab78

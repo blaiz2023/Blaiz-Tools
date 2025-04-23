@@ -1,7 +1,7 @@
 # Blaiz Tools
 Tools for packing files, converting images, manipulating text, checking code and working with the Gossamer codebase and app source code.
 
-<img src="blaiztools-screenshot.gif">
+<img src="images/blaiztools-screenshot.gif">
 
 # Features
 * Fast, one-click tools for common tasks
@@ -21,12 +21,12 @@ Tools for packing files, converting images, manipulating text, checking code and
 * Options Window - Easily change app color, font and settings
 * Portable
 
-<img src="blaiztools-screenshot2.jpg">
+<img src="images/blaiztools-screenshot2.jpg">
 
-<img src="blaiztools-screenshot3.jpg">
+<img src="images/blaiztools-screenshot3.jpg">
 
-<img src="blaiztools-screenshot4.jpg">
+<img src="images/blaiztools-screenshot4.jpg">
 
-<img src="blaiztools-screenshot5.jpg">
+<img src="images/blaiztools-screenshot5.jpg">
 
-<img src="blaiztools-screenshot6.jpg">
+<img src="images/blaiztools-screenshot6.jpg">

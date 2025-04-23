@@ -21,6 +21,10 @@ Tools for packing files, converting images, manipulating text, checking code and
 * Options Window - Easily change app color, font and settings
 * Portable
 
+# Download
+<a href="src/blaiztools.exe">blaiztools.exe</a> - windows all
+
+# Images
 <img src="images/blaiztools-screenshot2.jpg">
 
 <img src="images/blaiztools-screenshot3.jpg">

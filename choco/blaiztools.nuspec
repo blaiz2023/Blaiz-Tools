@@ -31,12 +31,12 @@ Features
 * Mark Pascal procedures and functions duplicated in other units with a comment, scanning the same folder and/or sub-folders
 * Options Window - Easily change app color, font and settings
 * Portable</description>
-    <summary>Tools for packing files, converting images, manipulating text, checking code and working with the Gossamer codebase and app source code.</summary>
+    <summary>Tools for packing files, converting images, manipulating text, checking code and working with the Gossamer codebase and app source code</summary>
     <copyright>2025 Blaiz Enterprises</copyright>
-    <tags>pack files convert images manipulate text check pascal code Gossamer codebase app source blaiz enterprises</tags>
+    <tags>tools for packing files converting images manipulating text checking code and working with the gossamer codebase app source</tags>
     <projectSourceUrl>https://github.com/blaiz2023/Blaiz-Tools</projectSourceUrl>
     <packageSourceUrl>https://github.com/blaiz2023/Blaiz-Tools/tree/main/choco</packageSourceUrl>
     <docsUrl>https://www.blaizenterprises.com/blaiztools.html#help</docsUrl>
-    <bugTrackerUrl>https://blaizenterprises.com/contact.html</bugTrackerUrl>
+    <bugTrackerUrl>https://www.blaizenterprises.com/contact.html</bugTrackerUrl>
   </metadata>
 </package>

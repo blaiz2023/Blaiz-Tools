@@ -1,7 +1,7 @@
 # Blaiz Tools
 Tools for packing files, converting images, manipulating text, checking code and working with the Gossamer codebase and app source code.
 
-<img src="images/blaiztools-screenshot.gif">
+<img src="images/blaiztools-screenshot.jpg">
 
 # Features
 * Fast, one-click tools for common tasks
@@ -20,9 +20,10 @@ Tools for packing files, converting images, manipulating text, checking code and
 * Mark Pascal procedures and functions duplicated in other units with a comment, scanning the same folder and/or sub-folders
 * Options Window - Easily change app color, font and settings
 * Portable
+* Smart Source Code (Borland Delphi 3 and Lazarus 2)
 
 # Download
-<a href="src/blaiztools.exe">blaiztools.exe</a> - windows all
+Download <a href="src/blaiztools.exe">blaiztools.exe</a> or from the "<a href="bin/">bin</a>" or "<a href="src/">src</a>" folders above.
 
 # Images
 <img src="images/blaiztools-screenshot2.jpg">

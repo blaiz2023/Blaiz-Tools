@@ -2,17 +2,17 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>blaiztools</id>
-    <version>1.0.2680</version>
+    <version>1.0.2700</version>
     <title>Blaiz Tools</title>
     <authors>Blaiz Enterprises</authors>
     <owners>Blaiz Enterprises</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>https://opensource.org/license/mit</licenseUrl>
+    <licenseUrl>https://www.blaizenterprises.com/blaiztools.html#help--mit-license</licenseUrl>
     <projectUrl>https://www.blaizenterprises.com/blaiztools.html</projectUrl>
     <iconUrl>https://rawcdn.githack.com/blaiz2023/Blaiz-Tools/d868df1f795c96775a6e56201121e013b0cf0c43/images/blaiztools-256.png</iconUrl>
     <description>Tools for packing files, converting images, manipulating text, checking code and working with the Gossamer codebase and app source code.
 
-![Blaiz Tools v1.0.2680 Screenshot](https://rawcdn.githack.com/blaiz2023/Blaiz-Tools/d868df1f795c96775a6e56201121e013b0cf0c43/images/blaiztools-screenshot.gif)
+![Blaiz Tools v1.0.2700 Screenshot](https://rawcdn.githack.com/blaiz2023/Blaiz-Tools/038dee75a36c16268d9db3a18c882c030087cf2a/images/blaiztools-screenshot.jpg)
 
 Features
 * Fast, one-click tools for common tasks
@@ -33,7 +33,7 @@ Features
 * Portable</description>
     <summary>Tools for packing files, converting images, manipulating text, checking code and working with the Gossamer codebase and app source code</summary>
     <copyright>2025 Blaiz Enterprises</copyright>
-    <tags>tools for packing files converting images manipulating text checking code and working with the gossamer codebase app source</tags>
+    <tags>pack files convert images adjust text check sourcecode misc general</tags>
     <projectSourceUrl>https://github.com/blaiz2023/Blaiz-Tools</projectSourceUrl>
     <packageSourceUrl>https://github.com/blaiz2023/Blaiz-Tools/tree/main/choco</packageSourceUrl>
     <docsUrl>https://www.blaizenterprises.com/blaiztools.html#help</docsUrl>

@@ -1,4 +1,4 @@
-# Blaiz Tools
+# Blaiz Tools v1.0.2708 / 04may2026 / MIT License
 Tools for packing files, converting images, manipulating text, checking code and working with the Gossamer codebase and app source code.
 
 <img src="images/blaiztools-screenshot.jpg">

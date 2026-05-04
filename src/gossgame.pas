@@ -7,14 +7,15 @@ interface
 {$ifdef gui} {$define snd} {$endif}
 {$ifdef con3} {$define con2} {$define net} {$define ipsec} {$endif}
 {$ifdef con2} {$define jpeg} {$endif}
+{$ifdef WIN64}{$define 64bit}{$endif}
 {$ifdef fpc} {$mode delphi}{$define laz} {$define d3laz} {$undef d3} {$else} {$define d3} {$define d3laz} {$undef laz} {$endif}
-uses gosswin2, gossroot, gossio, gosswin, gossimg, gossgui {$ifdef snd},gosssnd{$endif} {$ifdef gamecore},gamefiles{$endif};
+uses gosswin2, gossroot, gossio, gosswin, gossimg, gossgui {$ifdef snd},gosssnd{$endif} {$ifdef gamecore},gamefiles{$endif}, gossfast, gossteps;
 {$align on}{$iochecks on}{$O+}{$W-}{$U+}{$V+}{$B-}{$X+}{$T-}{$P+}{$H+}{$J-} { set critical compiler conditionals for proper compilation - 10aug2025 }
 //## ==========================================================================================================================================================================================================================
 //##
 //## MIT License
 //##
-//## Copyright 2025 Blaiz Enterprises ( http://www.blaizenterprises.com )
+//## Copyright 2026 Blaiz Enterprises ( http://www.blaizenterprises.com )
 //##
 //## Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
 //## files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
@@ -30,36 +31,40 @@ uses gosswin2, gossroot, gossio, gosswin, gossimg, gossgui {$ifdef snd},gosssnd{
 //##
 //## ==========================================================================================================================================================================================================================
 //## Library.................. GameCore game support (gossgame.pas)
-//## Version.................. 4.00.11024 (+66)
+//## Version.................. 4.00.11065 (+78)
 //## Items.................... 9
-//## Last Updated ............ 02oct2025, 16sep2025, 08aug2025, 29jul2025, 14jul2025, 06jul2025, 11feb2025, 04feb2025, 01feb2025
+//## Last Updated ............ 04may2026, 03apr2026, 26mar2026, 03mar2026, 02oct2025, 16sep2025, 08aug2025, 29jul2025, 14jul2025, 06jul2025, 11feb2025, 04feb2025, 01feb2025
 //## Lines of Code............ 15,100+
+//## Origin .................. Human generated and maintained
 //##
-//## main.pas ................ app code
-//## gossroot.pas ............ console/gui app startup and control
-//## gossio.pas .............. file io
-//## gossimg.pas ............. image/graphics
-//## gossnet.pas ............. network
-//## gosswin.pas ............. static Win32 api calls
-//## gosswin2.pas ............ dynamic Win32 api calls
-//## gosssnd.pas ............. sound/audio/midi/chimes
-//## gossgui.pas ............. gui management/controls
-//## gossdat.pas ............. app icons (24px and 20px) and help documents (gui only) in txt, bwd or bwp format
-//## gosszip.pas ............. zip support
-//## gossjpg.pas ............. jpeg support
-//## gossgame.pas ............ game support (optional)
-//## gamefiles.pas ........... internal files for game (optional)
+//## main.pas ................ App specific code
+//## gossdat.pas ............. App specific icons and help documents
+//## gossfast.pas ............ FastDraw - rapid render graphic procs
+//## gossgame.pas ............ GameCore - 2D game engine with integrated menu handler, xbox controller + mouse + keyboard support and window integration
+//## gamefiles.pas ........... Built-in file(s) for GameCore (optional)
+//## gossgui.pas ............. GUI management and controls
+//## gossimg.pas ............. Multi-format graphic procs for 8, 24 and 32 bit images with IO support
+//## gossio.pas .............. File IO and low level file/folder/disk/data format procs
+//## gossjpg.pas ............. JPEG IO (read/write jpeg image data via third party libraries)
+//## gossnet.pas ............. Networking - ip filtering, socket management etc
+//## gossroot.pas ............ App startup and control (GUI, console and service)
+//## gosssnd.pas ............. Sound, audio, midi and midi based chimes
+//## gossteps.pas ............ System, Folder and App images
+//## gosstext.pas ............ TextCore - non-GUI and GUI text engine for text boxes
+//## gosswin.pas ............. Win32 api calls for 32 and 64 bit (static / api references disabled by default)
+//## gosswin2.pas ............ Win32 api calls for 32 and 64 bit (dynamic - load as required with fallback failure handling and default value(s) support)
+//## gosszip.pas ............. ZIP IO (read/write zip data via third party libraries)
 //##
 //## ==========================================================================================================================================================================================================================
 //## | Name                   | Hierarchy         | Version   | Date        | Update history / brief description of function
 //## |------------------------|-------------------|-----------|-------------|--------------------------------------------------------
-//## | game__*                | family of procs   | 1.00.3150 | 08aug2025   | Game control procs - 29jul2025, 16jul2025, 06jul2025
+//## | game__*                | family of procs   | 1.00.3172 | 26mar2026   | Game control procs - 03mar2026, 08aug2025, 29jul2025, 16jul2025, 06jul2025
 //## | pic8__*                | family of procs   | 1.00.1680 | 24jul2025   | Pic8 rapid-render game sprite - supports images from 1x1 to 128x128. Dual 32bit color palettes, indivdual color flash/flicker modes. Animate pixels and create movement perception without animation or the need for multiple cells. Simple, compact and fast. Render speed: ~60fps++ at 1920x1080 using 20x20 tiles on an Intel Core i5 2.5 GHz. - 11feb2025
 //## | tpic8                  | tobjectex         | 1.00.002  | 04jul2025   | Dynamically created version of tpiccore8
 //## | tsnd                   | tstr8             | 1.00.002  | 04jul2025   | Data stream for sound (wave)
-//## | tpal8                  | tbasiccontrol     | 1.00.2040 | 14jul2025   | Dual 32bit color palette and combined color toolbar for Tex editor - 04jul2025, 11feb2025
-//## | tpre8                  | tbasiccontrol     | 1.00.032  | 04jul2025   | Preview panel for displaying realtime view of pic8 sprites - 04feb2025
-//## | ttex                   | tbasiccontrol     | 1.00.1250 | 20jul2025   | Realtime sprite editor panel - 14jul2025, 04jul2025, 11feb2025
+//## | tpal8                  | tbasiccontrol     | 1.00.2042 | 03mar2026   | Dual 32bit color palette and combined color toolbar for Tex editor - 14jul2025, 04jul2025, 11feb2025
+//## | tpre8                  | tbasiccontrol     | 1.00.035  | 04may2026   | Preview panel for displaying realtime view of pic8 sprites - 04jul2025, 04feb2025
+//## | ttex                   | tbasiccontrol     | 1.00.1252 | 03mar2026   | Realtime sprite editor panel - 20jul2025, 14jul2025, 04jul2025, 11feb2025
 //## | ttexedit               | tbasiccontrol     | 1.00.462  | 20jul2025   | Realtime sprite editor - 14jul2025, 04jul2025, 11feb2025
 //## | tsndgen                | tobjectex         | 1.00.2040 | 24jul2025   | Sound generator - multi-channel, tri-tone, stereo sound generator - 10jul2025
 //## ==========================================================================================================================================================================================================================
@@ -212,7 +217,7 @@ type
       name:string;
       size:longint;
       bold:boolean;
-      lgf:tstr8;
+      font:tresslot;
       height:longint;
       end;
 
@@ -967,7 +972,7 @@ type
     constructor create(xstereo:boolean);
     destructor destroy; override;
     procedure xtimer(sender:tobject);
-    function onmessage(m,w,l:longint):longint;
+    function onmessage(m:msg_message;w:msg_wparam;l:msg_lparam):msg_result;
 
     //information
     property online:boolean read getonline;
@@ -1019,7 +1024,7 @@ const
    fps__5fps                        =5*fps__slotsperfps;
 var
    //started
-   system_started                  :boolean=false;//04jul2025
+   system_started_game             :boolean=false;//04jul2025
    game_subframes                  :boolean=false;
    game_filecount                  :longint=0;//number of game files detected from "gamefiles.pas"
    game_errorcount                 :longint=0;//tracks "file not found" errors etc
@@ -1053,7 +1058,6 @@ var
    game_showtechnical                :longint=0;//24jul2025
    game_bufferrows                   :pcolorrows24=nil;
    game_bufferrows2                  :pcolorrows24=nil;
-   game_buftext                      :tstr8=nil;//for font drawing - 20jul2025
    game_fontlist                     :tgamefonts;
    game_drawing                      :boolean=false;
    game_drawinfo                     :tdrawfastinfo;
@@ -1313,14 +1317,12 @@ procedure game__drawshade(da:twinrect;r,g,b,r2,g2,b2,a:byte);
 procedure game__drawshade2(da:twinrect;rgb1,rgb2,a:longint);
 
 //fonts -> set once, use always
-function game__addfont(xname:string;xsize:longint;xbold:boolean):longint;//08aug2025
+function game__addfont(xname:string;xsize:longint;xbold,xitalic:boolean):longint;//08aug2025
 function game__fontheight(findex:longint):longint;
-function game__textwidth(findex:longint;const xline:string):longint;
-function game__textwidth2(findex:longint;const xline,xtab:string):longint;
+function game__textwidth(findex:longint;const xtab,xline:string):longint;
 
 //draw text
-procedure game__drawtext(findex:longint;const xline:string;dx,dy,dcol:longint);
-procedure game__drawtext2(findex:longint;const xline,xtab:string;dx,dy,dcol:longint);
+procedure game__drawtext(const findex:longint;const xtab,xline:string;const dx,dy,dcol:longint);
 
 //internal support procs -> do not use, these are used for optimisation
 function xgame__menudraw:boolean;
@@ -1459,16 +1461,20 @@ var
    xslot,p:longint;
    xtrigger:double;
    xcompressed:boolean;
+
    {$ifdef gamecore}
+
    xname:string;
    x:pointer;
-   xlen:longint;
+   xlen,xorgSize:longint;
+
    {$endif}
+
 begin
 try
 
 //check
-if system_started then exit else system_started:=true;
+if system_started_game then exit else system_started_game:=true;
 
 
 //init flash
@@ -1512,17 +1518,14 @@ pic8_progress_colorindexTOtrigger[p] :=xtrigger;
 
 end;//p
 
-
 //flashlevel
 game_flashlevel.level255   :=255;
 game_flashlevel.modeup     :=false;
 game_flashlevel.timeref    :=0;
 
-
 //other game vars
 game_activetimer           :=0;
 game_playing               :=false;
-
 
 //game_slotlist - set to nil
 for p:=0 to high(game_slotlist) do game_slotlist[p]:=nil;
@@ -1530,9 +1533,11 @@ for p:=0 to high(game_slotlist) do game_slotlist[p]:=nil;
 
 //game files -> count number of files in "gamefiles.pas" -> if none, report error
 {$ifdef gamecore}
-for p:=0 to max32 do if storage__findfile(p,x,xlen,xcompressed,xname) then inc(game_filecount) else break;
+
+for p:=0 to max32 do if storage__findfile(p,x,xlen,xorgSize,xcompressed,xname) then inc(game_filecount) else break;
 
 if (game_filecount<=0) then showerror('Game requires files in "gamefiles.pas" - none detected');
+
 {$endif}
 
 
@@ -1543,7 +1548,6 @@ game_bufferarea     :=misarea(game_buffer);
 game_bufferrows     :=game_buffer.prows24;
 game_bufferrows2    :=game_buffer2.prows24;
 game_screenarea     :=area__make(0,0,1,1);
-game_buftext        :=str__new8;
 game_drawing        :=false;
 game_subframes      :=true;//sub-frame processing
 
@@ -1555,9 +1559,9 @@ game_drawinfo.rs24  :=game_bufferrows;
 
 //.fonts
 game_fontlist.count :=0;
-game_fontdefault    :=game__addfont('',12,false);
+game_fontdefault    :=game__addfont('',12,false,false);
 game_fontsize12     :=game_fontdefault;
-game_fontsize32     :=game__addfont('',32,false);
+game_fontsize32     :=game__addfont('',32,false,false);
 
 //.menu
 game_menu.menu.selector   :=-1;
@@ -1567,18 +1571,17 @@ game_menu.activename      :='';
 game_menu.cmd             :='';
 game_menu.action          :=gmaNone;
 
-game_menu.ftitle          :=game__addfont('',-72,true);
+game_menu.ftitle          :=game__addfont('',-72,true,false);
 game_menu.ftitleH         :=game__fontheight(game_menu.ftitle);
-game_menu.fitem           :=game__addfont('',-42,false);
+game_menu.fitem           :=game__addfont('',-42,false,false);
 game_menu.fitemH          :=game__fontheight(game_menu.fitem);
 game_menu.fspace          :=round( 0.25 * game_menu.fitemH );
 
-game_menu.fstitle         :=game__addfont('',-48,true);
+game_menu.fstitle         :=game__addfont('',-48,true,false);
 game_menu.fstitleH        :=game__fontheight(game_menu.fstitle);
-game_menu.fsitem          :=game__addfont('',-22,false);
+game_menu.fsitem          :=game__addfont('',-22,false,false);
 game_menu.fsitemH         :=game__fontheight(game_menu.fsitem);
 game_menu.fsspace         :=round( 0.25 * game_menu.fsitemH );
-
 
 for p:=0 to high(game_menu.hmenuname) do
 begin
@@ -1611,7 +1614,7 @@ var
 begin
 try
 //check
-if not system_started then exit else system_started:=false;
+if not system_started_game then exit else system_started_game:=false;
 
 
 //disconnect
@@ -1631,10 +1634,9 @@ game_slotlast:=-1;
 game_menu.event:=nil;
 freeobj(@game_buffer);
 freeobj(@game_buffer2);
-str__free(@game_buftext);
 
 //.free font data
-for p:=0 to (game_fontlist.count-1) do str__free(@game_fontlist.fonts[p].lgf);
+for p:=0 to (game_fontlist.count-1) do game_fontlist.fonts[p].font:=res__del(game_fontlist.fonts[p].font);
 
 //.sound generator
 freeobj(@game_sndgen);
@@ -1673,8 +1675,8 @@ xname:=strlow(xname);
 if (strcopy1(xname,1,9)='gossgame.') then strdel1(xname,1,9) else exit;
 
 //get
-if      (xname='ver')        then result:='4.00.11024'
-else if (xname='date')       then result:='02oct2025'
+if      (xname='ver')        then result:='4.00.11065'
+else if (xname='date')       then result:='04may2026'
 else if (xname='name')       then result:='GameCore'
 else
    begin
@@ -1936,24 +1938,24 @@ var
    result:=low__setstr(game_endpaintref, intstr32( (xdrawtoclient as tbasiccontrol).gui.oeraseingbackground ) + '|'+bolstr(xgamemode)+'|'+intstr32(game_bufferwidth)+'|'+intstr32(game_bufferheight)+'|'+intstr32(cw)+'|'+intstr32(ch)+'|'+intstr32(xunusedcolor));
    end;
 
-   procedure ldsOUTSIDE(dx,dy,dw,dh,dcol:longint);//21jul2025
+   procedure ffillOUTSIDE(dx,dy,dw,dh,dcol:longint);//21jul2025
    var
       a:twinbmp;
       cw,ch:longint;
    begin
-   //defaults
-   a:=nil;
 
-   try
+   //defaults
+   a        :=nil;
+
    //check
    if (xdrawtoclient=nil) or (not (xdrawtoclient is tbasiccontrol)) then exit;
 
    //init
-   dw:=frcmin32(dw,0);
-   dh:=frcmin32(dh,0);
-   cw:=(xdrawtoclient as tbasiccontrol).gui.width;
-   ch:=(xdrawtoclient as tbasiccontrol).gui.height;
-   a :=miswin24(100,100);
+   dw       :=frcmin32(dw,0);
+   dh       :=frcmin32(dh,0);
+   cw       :=(xdrawtoclient as tbasiccontrol).gui.width;
+   ch       :=(xdrawtoclient as tbasiccontrol).gui.height;
+   a        :=miswin24(100,100);
 
    //set color
    miscls(a,dcol);
@@ -1970,9 +1972,9 @@ var
    //bottom
    if ((dy+dh)<ch) then (xdrawtoclient as tbasiccontrol).gui.xcopyfrom(a.dc,misarea(a),area__make(dx,dy+dh,dx+dw-1,ch-1));
 
-   except;end;
    //free
    freeobj(@a);
+
    end;
 
    procedure xerror_screensize;
@@ -1994,7 +1996,7 @@ var
    tc:=rgba0__int(180,180,180);
    t :='Best viewed at:';
    t2:=k64(game_bufferwidth_limit)+'w x '+k64(game_bufferheight_limit)+'h';
-   tw:=largest32(game__textwidth(game_fontsize32,t),game__textwidth(game_fontsize32,t2));
+   tw:=largest32(game__textwidth(game_fontsize32,'',t),game__textwidth(game_fontsize32,'',t2));
    lh:=game__fontheight(game_fontsize32);
    dx:=20 + 120;//(game_bufferwidth-tw) div 2;
    dy:=20 + 64;//(game_bufferheight-(2*lh)) div 2;
@@ -2003,9 +2005,9 @@ var
    game__drawarea( area__grow2( area__make(dx,dy,dx+tw-1,dy+(2*lh)), 120, 64) ,70,70,70,235);
 
    //text
-   game__drawtext(game_fontsize32,t,dx,dy,tc);
+   game__drawtext(game_fontsize32,'',t,dx,dy,tc);
    inc(dy, game__fontheight(game_fontsize32) );
-   game__drawtext(game_fontsize32,t2,dx,dy,tc);
+   game__drawtext(game_fontsize32,'',t2,dx,dy,tc);
 
    end;
 
@@ -2045,7 +2047,7 @@ var
 
       procedure tadd(const x:string);
       begin
-      game__drawtext(game_menu.fsitem,x,ax,ay,rgba0__int(100,0,0));
+      game__drawtext(game_menu.fsitem,'',x,ax,ay,rgba0__int(100,0,0));
       dec(ay,game_menu.fsitemH + game_menu.fsspace);
       end;
       
@@ -2055,7 +2057,7 @@ var
    case game_showtechnical of
    1:begin
 
-      game__drawtext(game_menu.fsitem, floattostrex(game__fps,0)+' fps | render: '+curdec(game__rendertime,1,false)+' ms' ,5,game_bufferheight-game_menu.fsitemH-5,rgba0__int(100,0,0));
+      game__drawtext(game_menu.fsitem, '' ,floattostrex(game__fps,0)+' fps | render: '+curdec(game__rendertime,1,false)+' ms' ,5,game_bufferheight-game_menu.fsitemH-5,rgba0__int(100,0,0));
 
       end;
    2:begin
@@ -2159,7 +2161,7 @@ if (xdrawtoclient<>nil) and (xdrawtoclient is tbasiccontrol) then
          end;
 
       //cls unused area on screen
-      if xrefchanged(true,cw,ch) then ldsOUTSIDE(dx,dy,dw,dh,xunusedcolor);
+      if xrefchanged(true,cw,ch) then ffillOUTSIDE(dx,dy,dw,dh,xunusedcolor);
 
       //ok
       result:=true;
@@ -2187,7 +2189,9 @@ if (xdrawtoclient<>nil) and (xdrawtoclient is tbasiccontrol) then
 
       //paint window clientarea
       //.normal
-      if (dmultiplier=1) then (xdrawtoclient as tbasiccontrol).ldc(maxarea,dx,dy,dw,dh,game_bufferarea,game_buffer,255,0,clnone,0)
+      //was: if (dmultiplier=1) then (xdrawtoclient as tbasiccontrol).ldc(maxarea,dx,dy,dw,dh,game_bufferarea,game_buffer,255,0,clnone,0)
+      if (dmultiplier=1) then (xdrawtoclient as tbasiccontrol).fdraw3(game_buffer,game_bufferarea,dx,dy,dw,dh,clnone,power_enabled ,viFeather ,false,false,true)
+
 
       //.scale down -> scale down main "game_buffer" to secondary "game_buffer2"
       else
@@ -2196,14 +2200,16 @@ if (xdrawtoclient<>nil) and (xdrawtoclient is tbasiccontrol) then
          xgame__scaletobuffer2(dmultiplier);
          xsetsize( game_buffer2.width, game_buffer2.height );
 
-         (xdrawtoclient as tbasiccontrol).ldc(maxarea,dx,dy,dw,dh,area__make(0,0,dw-1,dh-1),game_buffer2,255,0,clnone,0);
+         //was: (xdrawtoclient as tbasiccontrol).ldc(maxarea,dx,dy,dw,dh,area__make(0,0,dw-1,dh-1),game_buffer2,255,0,clnone,0);
+         (xdrawtoclient as tbasiccontrol).fdraw3(game_buffer2,area__make(0,0,dw-1,dh-1),dx,dy,dw,dh,clnone,power_enabled ,viFeather ,false,false,true);
 
          end;
 
       //cls unused area within window clientarea
       game_endpaintref:='';
+      
       //.requires constant repaint since buffer is inside a gui control in window mode
-      (xdrawtoclient as tbasiccontrol).ldsOUTSIDE(dx,dy,dw,dh,xunusedcolor);
+      (xdrawtoclient as tbasiccontrol).ffillOUTSIDE(dx,dy,dw,dh,xunusedcolor);
 
       //ok
       result:=true;
@@ -2415,17 +2421,17 @@ game_menu.hindex[mindex]:=hindex;
 
 //calc
 vh   :=ftitleH + fitemH + ( frcmax32(game_menu.menu.count,xlimit) * ( (2*vspace) + fitemH ) );
-ttw  :=game__textwidth(ftitle,game_menu.menu.title);
+ttw  :=game__textwidth(ftitle,'',game_menu.menu.title);
 vw   :=ttw;
 lw   :=0;
-mw   :=game__textwidth(fitem,'##');//middle space
+mw   :=game__textwidth(fitem,'','##');//middle space
 rw   :=0;
 
 for p:=0 to (game_menu.menu.count-1) do
 begin
 
-lw   :=largest32( lw, game__textwidth(fitem,game_menu.menu.items[p].caption) );
-rw   :=largest32( rw, game__textwidth(fitem,game_menu.menu.items[p].value)   );
+lw   :=largest32( lw, game__textwidth(fitem,'',game_menu.menu.items[p].caption) );
+rw   :=largest32( rw, game__textwidth(fitem,'',game_menu.menu.items[p].value)   );
 
 game_menu.menu.items[p].area:=nilarea;
 
@@ -2433,7 +2439,7 @@ end;//p
 
 //.rw filter
 rw         :=((rw div (3*mw))*(3*mw)) + (3*mw);
-vw         :=largest32(vw + (2*game__textwidth(fitem,'<<')) , lw + mw + rw );
+vw         :=largest32(vw + (2*game__textwidth(fitem,'','<<')) , lw + mw + rw );
 
 //.da
 da.left    :=frcmin32( (game_bufferwidth-vw) div 2, 0);
@@ -2450,7 +2456,7 @@ game__drawarea2( area__grow2(da,bkGapX,bkGapY), game_menu.colors.back, 220);
 dy         :=da.top;
 ttx        :=da.left + (vw - ttw) div 2;
 tty        :=da.top;
-game__drawtext(ftitle,game_menu.menu.title, ttx, tty, game_menu.colors.title);
+game__drawtext(ftitle,'',game_menu.menu.title, ttx, tty, game_menu.colors.title);
 inc(dy,ftitleH);
 inc(dy,fitemH);//space
 
@@ -2471,12 +2477,12 @@ if game__cursoractive then
    if (not strmatch(game_menu.activename,'main')) or (game_menu.menu.count>xlimit) then
       begin
       str1               :='<<';
-      ta                 :=area__makewh( ttx-game__textwidth(fitem,str1)-(4*vspace), tty + ((ftitleH-fitemH) div 2), game__textwidth(fitem,str1),fitemH);
+      ta                 :=area__makewh( ttx-game__textwidth(fitem,'',str1)-(4*vspace), tty + ((ftitleH-fitemH) div 2), game__textwidth(fitem,'',str1),fitemH);
       game_menu.prevarea :=area__grow2(ta,2*vspace, vspace);
 
       if (game_cursorhoverindex=-100) then game__drawarea2(game_menu.prevarea,game_menu.colors.highlight,130);
 
-      game__drawtext(fitem,str1,ta.left,ta.top,game_menu.colors.text);
+      game__drawtext(fitem,'',str1,ta.left,ta.top,game_menu.colors.text);
       end
    else game_menu.prevarea:=nilarea;
 
@@ -2485,12 +2491,12 @@ if game__cursoractive then
    if (game_menu.menu.count>xlimit) then
       begin
       str1               :='>>';
-      ta                 :=area__makewh( ttx+ttw+(4*vspace), tty+((ftitleH-fitemH) div 2), game__textwidth(fitem,str1),fitemH);
+      ta                 :=area__makewh( ttx+ttw+(4*vspace), tty+((ftitleH-fitemH) div 2), game__textwidth(fitem,'',str1),fitemH);
       game_menu.nextarea :=area__grow2(ta,2*vspace, vspace);
 
       if (game_cursorhoverindex=-101) then game__drawarea2(game_menu.nextarea,game_menu.colors.highlight,130);
 
-      game__drawtext(fitem,str1,ta.left,ta.top,game_menu.colors.text);
+      game__drawtext(fitem,'',str1,ta.left,ta.top,game_menu.colors.text);
       end
    else game_menu.nextarea:=nilarea;
 
@@ -2526,12 +2532,12 @@ game_menu.menu.items[p].area:=area__grow2( area__make(da.left,dy,da.right,dy + f
 //.caption
 case game_menu.menu.items[p].calign of
 0:dx:=da.left;
-1:dx:=da.left + ((lw - game__textwidth(fitem,game_menu.menu.items[p].caption) ) div 2);
-2:dx:=da.left + lw - game__textwidth(fitem,game_menu.menu.items[p].caption);
+1:dx:=da.left + ((lw - game__textwidth(fitem,'',game_menu.menu.items[p].caption) ) div 2);
+2:dx:=da.left + lw - game__textwidth(fitem,'',game_menu.menu.items[p].caption);
 else dx:=da.left;
 end;//case
 
-game__drawtext(fitem,game_menu.menu.items[p].caption, dx, dy, game_menu.colors.text);
+game__drawtext(fitem,'',game_menu.menu.items[p].caption, dx, dy, game_menu.colors.text);
 
 //.optional value
 if (game_menu.menu.items[p].value<>'') then
@@ -2539,11 +2545,11 @@ if (game_menu.menu.items[p].value<>'') then
 
    case game_menu.menu.items[p].valign of
    0:dx:=da.right - rw;
-   1:dx:=da.right - ((rw - game__textwidth(fitem,game_menu.menu.items[p].value) ) div 2);
-   2:dx:=da.right - game__textwidth(fitem,game_menu.menu.items[p].value);
+   1:dx:=da.right - ((rw - game__textwidth(fitem,'',game_menu.menu.items[p].value) ) div 2);
+   2:dx:=da.right - game__textwidth(fitem,'',game_menu.menu.items[p].value);
    end;//case
 
-   game__drawtext(fitem,game_menu.menu.items[p].value, dx, dy, game_menu.colors.text);
+   game__drawtext(fitem,'',game_menu.menu.items[p].value, dx, dy, game_menu.colors.text);
    end;
 
 //.inc
@@ -3029,8 +3035,8 @@ var
 
    function pm(const xname:string):boolean;//partial match
    begin
-   result:=strmatch(strcopy1(n,1,low__len(xname)),xname);
-   if result then v:=strcopy1(n,low__len(xname)+1,low__len(n));
+   result:=strmatch(strcopy1(n,1,low__len32(xname)),xname);
+   if result then v:=strcopy1(n,low__len32(xname)+1,low__len32(n));
    end;
 
    function ival(xvalue,xby,xmin,xmax:longint):longint;
@@ -3124,7 +3130,7 @@ else if (xaction=gmaSelect) or (xaction=gmaLess) or (xaction=gmaMore) then
    else if pm('remap.xbox.input.') then
       begin
 
-      if game__inputlabel__sortindex(strint(v),int1) then
+      if game__inputlabel__sortindex(strint32(v),int1) then
          begin
 
          game__fetchinput__mapsto(xssNative0, int1,int2);
@@ -3136,7 +3142,7 @@ else if (xaction=gmaSelect) or (xaction=gmaLess) or (xaction=gmaMore) then
    else if pm('remap.mouse.input.') then
       begin
 
-      if game__inputlabel__sortindex(strint(v),int1) then
+      if game__inputlabel__sortindex(strint32(v),int1) then
          begin
 
          game__fetchinput__mapsto(xssMouse, int1,int2);
@@ -3233,7 +3239,7 @@ else if (xaction=gmaSelect) or (xaction=gmaLess) or (xaction=gmaMore) then
    else if pm('capturekey.') and bselect then
       begin
 
-      game_capturekeyindex:=strint(v);
+      game_capturekeyindex:=strint32(v);
       xbox__lastrawkeycount(true);
 
       if xbox__keymap2( xbox__keyfilter(game_capturekeyindex) ,str1,int1) then
@@ -3534,7 +3540,7 @@ dcount :=0;
 lp     :=1;
 
 //get
-for p:=1 to low__len(x) do if (x[p-1+stroffset]=',') then
+for p:=1 to low__len32(x) do if (x[p-1+stroffset]=',') then
    begin
 
    v   :=strcopy1(x,lp,p-lp);
@@ -3561,7 +3567,7 @@ dcount :=0;
 lp     :=1;
 
 //get
-for p:=1 to low__len(x) do if (x[p-1+stroffset]=',') then
+for p:=1 to low__len32(x) do if (x[p-1+stroffset]=',') then
    begin
 
    v   :=strcopy1(x,lp,p-lp);
@@ -4455,7 +4461,8 @@ if game_drawing and (xslot>=0) and (xslot<=high(game_slotlist)) and (game_slotli
       if x.flip   then sh:=-sh;
 
       //get
-      result:=miscopyareaxx1B(x.x,x.y,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],x.power255,true);
+      //was: result:=miscopyareaxx1B(x.x,x.y,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],x.power255,true);
+      result:=mis__copyfast2( maxarea, area__make(0,0,sw-1,sh-1), x.x,x.y,sw,sh, game_slotlist[xslot] ,game_buffer ,x.power255 );
 
       end
 
@@ -4501,7 +4508,8 @@ if game_drawing and (xslot>=0) and (xslot<=high(game_slotlist)) and (game_slotli
 
       game_pixelcount:=game_pixelcount + ((sw*sh)/1000000);//millions of pixels
 
-      result:=miscopyareaxx1B(dx,dy,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],255,true);
+      //was: result:=miscopyareaxx1B(dx,dy,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],255,true);
+      result:=mis__copyfast2( maxarea, area__make(0,0,sw-1,sh-1), dx,dy,sw,sh, game_slotlist[xslot] ,game_buffer ,255 );
 
       end
 
@@ -4553,7 +4561,8 @@ if game_drawing and (xslot>=0) and (xslot<=high(game_slotlist)) and (game_slotli
       if xflip   then sh:=-sh;
 
       //get
-      result:=miscopyareaxx1B(dx,dy,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],xpower255,true);
+      //was: result:=miscopyareaxx1B(dx,dy,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],xpower255,true);
+      result:=mis__copyfast2( maxarea, area__make(0,0,sw-1,sh-1), dx,dy,sw,sh, game_slotlist[xslot] ,game_buffer ,xpower255 );
 
       end
 
@@ -4610,7 +4619,8 @@ if game_drawing and (xslot>=0) and (xslot<=high(game_slotlist)) and (game_slotli
       if xflip   then sh:=-sh;
 
       //get
-      result:=miscopyareaxx1B(dx,dy,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],xpower255,true);
+      //was: result:=miscopyareaxx1B(dx,dy,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],xpower255,true);
+      result:=mis__copyfast2( maxarea, area__make(0,0,sw-1,sh-1), dx,dy,sw,sh, game_slotlist[xslot] ,game_buffer ,xpower255 );
 
       end
 
@@ -4668,7 +4678,8 @@ if game_drawing and (xslot>=0) and (xslot<=high(game_slotlist)) and (game_slotli
       if xflip   then sh:=-sh;
 
       //get
-      result:=miscopyareaxx1B(dx,dy,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],xpower255,true);
+      //was: result:=miscopyareaxx1B(dx,dy,sw,sh, area__make(0,0,sw-1,sh-1), game_buffer,game_slotlist[xslot],xpower255,true);
+      result:=mis__copyfast2( maxarea, area__make(0,0,sw-1,sh-1), dx,dy,sw,sh, game_slotlist[xslot] ,game_buffer ,xpower255 );
 
       end
 
@@ -5008,10 +5019,9 @@ if (ay<>da.bottom) then
 
 end;
 
-function game__addfont(xname:string;xsize:longint;xbold:boolean):longint;//08aug2025
-var//Note: feathering of text is disabled - feature absorbs too much render time or about 4ms+ for a small amount of text - 24jul2025
+function game__addfont(xname:string;xsize:longint;xbold,xitalic:boolean):longint;//08aug2025
+var
    p:longint;
-   e:string;
 begin
 //defaults
 result :=0;
@@ -5042,21 +5052,18 @@ if (game_fontlist.count<=high(game_fontlist.fonts)) then
    game_fontlist.fonts[ game_fontlist.count ].name:=xname;
    game_fontlist.fonts[ game_fontlist.count ].size:=xsize;
    game_fontlist.fonts[ game_fontlist.count ].bold:=xbold;
-   game_fontlist.fonts[ game_fontlist.count ].lgf:=str__new8;
+   game_fontlist.fonts[ game_fontlist.count ].font:=res__newfont;
 
    //.create font data
-   game_fontlist.fonts[ game_fontlist.count ].ok:=low__toLGF(xname,xsize,false,xbold,game_fontlist.fonts[ game_fontlist.count ].lgf,e);
+   game_fontlist.fonts[ game_fontlist.count ].ok:=(game_fontlist.fonts[ game_fontlist.count ].font<>res_nil);
+
+   res__font( game_fontlist.fonts[ game_fontlist.count ].font ).setparams(xname,xsize,false,xbold,xitalic);
 
    //ok
-   if game_fontlist.fonts[ game_fontlist.count ].ok then
-      begin
-      game_fontlist.fonts[ game_fontlist.count ].height:=low__fromLGF_height( game_fontlist.fonts[ game_fontlist.count ].lgf );
-      end
-   else
-      begin
-      game_fontlist.fonts[ game_fontlist.count ].height:=0;
-      str__clear( @game_fontlist.fonts[ game_fontlist.count ].lgf );
-      end;
+   case game_fontlist.fonts[ game_fontlist.count ].ok of
+   true:game_fontlist.fonts[ game_fontlist.count ].height:=resfont__height( game_fontlist.fonts[ game_fontlist.count ].font );
+   else game_fontlist.fonts[ game_fontlist.count ].height:=0;
+   end;//case
 
    //set
    result:=game_fontlist.count;
@@ -5076,49 +5083,21 @@ else                                                                            
 
 end;
 
-function game__textwidth(findex:longint;const xline:string):longint;
+function game__textwidth(findex:longint;const xtab,xline:string):longint;
 begin
 
-if (findex>=0) and (findex<game_fontlist.count) and game_fontlist.fonts[ findex ].ok then result:=low__fromLGF_textwidthTAB2('', game_fontlist.fonts[ findex ].lgf ,xline)
+if (findex>=0) and (findex<game_fontlist.count) and game_fontlist.fonts[ findex ].ok then result:=fast__textwidth(xtab,xline,game_fontlist.fonts[ findex ].font)
 else                                                                                      result:=0;
 
 end;
 
-function game__textwidth2(findex:longint;const xline,xtab:string):longint;
-begin
-
-if (findex>=0) and (findex<game_fontlist.count) and game_fontlist.fonts[ findex ].ok then result:=low__fromLGF_textwidthTAB2(xtab, game_fontlist.fonts[ findex ].lgf ,xline)
-else                                                                                      result:=0;
-
-end;
-
-procedure game__drawtext(findex:longint;const xline:string;dx,dy,dcol:longint);
+procedure game__drawtext(const findex:longint;const xtab,xline:string;const dx,dy,dcol:longint);
 begin
 
 if game_drawing and (xline<>'') and (findex>=0) and (findex<game_fontlist.count) and game_fontlist.fonts[ findex ].ok then
    begin
 
-   //init
-   game_buftext.text:=xline;//reusable buffer
-
-   //rednder text to image buffer
-   low__fromLGF_drawtext2432TAB(0,'', game_fontlist.fonts[ findex ].lgf, game_buftext, dx,dy, game_bufferwidth, game_bufferheight, dcol, game_bufferarea, game_bufferarea, game_bufferrows, nil, nil, nil, 0, nil, 0, game_fontlist.fonts[ findex ].bold, false, false, false, false, false, false, 0);
-
-   end;
-
-end;
-
-procedure game__drawtext2(findex:longint;const xline,xtab:string;dx,dy,dcol:longint);
-begin
-
-if game_drawing and (xline<>'') and (findex>=0) and (findex<game_fontlist.count) and game_fontlist.fonts[ findex ].ok then
-   begin
-
-   //init
-   game_buftext.text:=xline;//reusable buffer
-
-   //rednder text to image buffer
-   low__fromLGF_drawtext2432TAB(0,xtab, game_fontlist.fonts[ findex ].lgf, game_buftext, dx,dy, game_bufferwidth, game_bufferheight, dcol, game_bufferarea, game_bufferarea, game_bufferrows, nil, nil, nil, 0, nil, 0, game_fontlist.fonts[ findex ].bold, false, false, false, false, false, false, 0);
+   fast__drawText( clnone ,game_bufferarea ,game_bufferarea ,dx ,dy ,dcol, xtab, xline ,findex ,cdNone ,viFeather );//03mar2026
 
    end;
 
@@ -5132,11 +5111,13 @@ end;
 function game__fromfile(const xfilename:string;xdata:pobject):boolean;
 label
    skipend;
+
 var
    x:pointer;
-   p,xlen:longint;
+   p,xlen,xorgSize:longint;
    xcompressed:boolean;
    xname:string;
+
 begin
 //defaults
 result:=false;
@@ -5150,9 +5131,13 @@ for p:=0 to max32 do
 begin
 
 {$ifdef gamecore}
-if not storage__findfile(p,x,xlen,xcompressed,xname) then break;
+
+if not storage__findfile(p,x,xlen,xorgSize,xcompressed,xname) then break;
+
 {$else}
+
 break;
+
 {$endif}
 
 
@@ -5602,7 +5587,7 @@ begin
 x64:=ms64;
 
 //check
-if not system_started then exit;
+if not system_started_game then exit;
 
 //get
 if xforce or (x64>=game_flash64) then
@@ -6594,7 +6579,7 @@ else
    missize(a,dw,dh);
    mis__cls(a,0,0,0,0);
 
-   result:=mis__copyfast82432(misarea(a),0,0,dw,dh,misarea(s),a,s) and mis__reducecolors256(a,127) and pic8__fromimage(x,a);
+   result:=mis__copyfast(misarea(a),misarea(s),0,0,dw,dh,s,a) and mis__reducecolors256(a,127) and pic8__fromimage(x,a);
 
    end;
 
@@ -8028,11 +8013,6 @@ end;
 
 constructor tpal8.create2(xparent:tobject;xhost:tobject;xcore:ppiccore8;xstart:boolean);
 
-   function t(x:array of byte):longint;
-   begin
-   result:=tep__addone20c(1,x)
-   end;
-
    procedure mevents(m:tsimpleint);
    begin
 
@@ -8046,6 +8026,7 @@ constructor tpal8.create2(xparent:tobject;xhost:tobject;xcore:ppiccore8;xstart:b
 
    end;
 begin
+
 //self
 track__inc(satOther,1);
 inherited create2(xparent,false,false);
@@ -8131,11 +8112,11 @@ with itoolbar do
 begin
 normal:=true;
 halign:=0;
-add('Static',tepColorPal20n,0,'edit.color1','Foreground Color|Select to show Static + Flash colors|Select again to edit Static color|1st color "T" is transparent and can''t be edited');
-add('Flash',tepColorPal20n,0,'edit.color2','Foreground Color|Select to show Static + Flash colors|Select again to edit Flash color|1st color "T" is transparent and can''t be edited');
+add('Static',tepcolorpalSMALL20,0,'edit.color1','Foreground Color|Select to show Static + Flash colors|Select again to edit Static color|1st color "T" is transparent and can''t be edited');
+add('Flash',tepcolorpalSMALL20,0,'edit.color2','Foreground Color|Select to show Static + Flash colors|Select again to edit Flash color|1st color "T" is transparent and can''t be edited');
 
-add('Alt 1',tepColorPal20n,0,'edit.color3','Foreground Color|Select to show Alt 1 + Alt 2 colors|Select again to edit Alt 1 color|1st color "T" is transparent and can''t be edited');
-add('Alt 2',tepColorPal20n,0,'edit.color4','Foreground Color|Select to show Alt 1 + Alt 2 colors|Select again to edit Alt 2 color|1st color "T" is transparent and can''t be edited');
+add('Alt 1',tepcolorpalSMALL20,0,'edit.color3','Foreground Color|Select to show Alt 1 + Alt 2 colors|Select again to edit Alt 1 color|1st color "T" is transparent and can''t be edited');
+add('Alt 2',tepcolorpalSMALL20,0,'edit.color4','Foreground Color|Select to show Alt 1 + Alt 2 colors|Select again to edit Alt 2 color|1st color "T" is transparent and can''t be edited');
 
 add('Menu',tepMenu20,0,'color.menu','Color|Show color menu');
 add('Swap',tepSwap20,0,'color.swapfb','Color|Swap Foreground and Background colors');
@@ -8947,7 +8928,7 @@ for i:=0 to high(icore.progress) do if (icore.progress[i]>dprogressval) then dpr
 
 
 //cls
-ss.lds( s.cs , s.back, false);
+ss.ffillArea( s.cs , s.back, false);
 
 
 //pallete cells
@@ -9002,29 +8983,29 @@ if (da.right>=s.cs.left) and (da.left<=s.cs.right) then
       end;//case
 
       //.static color (main)
-      ss.lds( da ,c32__int(r32) ,false);
+      ss.ffillArea( da ,c32__int(r32) ,false);
 
       //.show both static colors
       int1:=2*s.zoom;
 
-      ss.lds( area__make(da.left+int1,da.bottom-(10*s.zoom), da.left + ((da.right-da.left+1) div 2) ,da.bottom) , c32__int(e32) ,false);
-      ss.lds( area__make( da.left + ((da.right-da.left+1) div 2) ,da.bottom-(10*s.zoom),da.right-int1,da.bottom) , c32__int(o32) ,false);
+      ss.ffillArea( area__make(da.left+int1,da.bottom-(10*s.zoom), da.left + ((da.right-da.left+1) div 2) ,da.bottom) , c32__int(e32) ,false);
+      ss.ffillArea( area__make( da.left + ((da.right-da.left+1) div 2) ,da.bottom-(10*s.zoom),da.right-int1,da.bottom) , c32__int(o32) ,false);
 
       //.label
       if dprogresson then t:=ilist.cells[i].cap2 else t:=ilist.cells[i].cap;
 
-      tw:=low__fonttextwidth2(s.fs,t);
-      ss.ldt2(clnone,da, da.left + ((da.right-da.left+1-tw) div 2), da.top + round( 1.20 * (((da.bottom-da.top+1-s.fsH)) div 2) ),tc, t, s.fs,s.f,false,false,false,false,false);
+      tw:=fast__textwidth('',t,s.Rfs);
+      ss.ftext(clnone,da, da.left + ((da.right-da.left+1-tw) div 2), da.top + round( 1.20 * (((da.bottom-da.top+1-s.fsH)) div 2) ),tc, '', t, s.Rfs,true);
 
       //.background spacing gap color
-      ss.ldo(da,s.back,false);
-      ss.ldo( area__grow(da,-1) ,s.back,false);
+      ss.foutlinearea(da,s.back,false);
+      ss.foutlinearea( area__grow(da,-1) ,s.back,false);
 
       //.progress indicator
       if dprogresson then
          begin
-         ss.lds( area__make(da.left, da.bottom - (5*s.zoom) ,da.right,da.bottom - (4*s.zoom)-1) ,s.back ,false);
-         ss.lds( area__make(da.left, da.bottom - (4*s.zoom) ,da.right,da.bottom) ,s.colhover ,false);
+         ss.ffillArea( area__make(da.left, da.bottom - (5*s.zoom) ,da.right,da.bottom - (4*s.zoom)-1) ,s.back ,false);
+         ss.ffillArea( area__make(da.left, da.bottom - (4*s.zoom) ,da.right,da.bottom) ,s.colhover ,false);
          end;
 
       //.foreground and background indicators
@@ -9034,7 +9015,7 @@ if (da.right>=s.cs.left) and (da.left<=s.cs.right) then
          //.border
          for int1:=0 downto -1 do
          begin
-         ss.ldo( area__grow(da, int1) , low__aorb(clblack,clwhite,low__iseven(int1)) , false);
+         ss.foutlinearea( area__grow(da, int1) , low__aorb(clblack,clwhite,low__iseven(int1)) ,false);
          end;//p
 
 
@@ -9046,7 +9027,7 @@ if (da.right>=s.cs.left) and (da.left<=s.cs.right) then
          else if bok         then t:='B'
          else                     t:='';
 
-         if (t<>'') then ss.ldt1(clnone,da, da.left + ((da.right-da.left+1)-low__fonttextwidth2(s.fn,t)) div 2 ,da.top+int1-3+s.zoom  ,tc,t,s.fn,s.f,false);//white
+         if (t<>'') then ss.ftext(clnone,da, da.left + ((da.right-da.left+1)-fast__textwidth('',t,s.Rfn)) div 2 ,da.top+int1-3+s.zoom  ,tc,'',t,s.Rfn,true);//white
 
          end;
 
@@ -9059,21 +9040,17 @@ if (da.right>=s.cs.left) and (da.left<=s.cs.right) then
       //draw cell gap ----------------------------------------------------------
 
       //.background
-      ss.lds(da, low__aorb(s.hover,s.colhover,dprogressval>0),false);
+      ss.ffillArea(da, low__aorb(s.hover,s.colhover,dprogressval>0),false);
 
       //.label
-      tw :=low__fonttextwidth2(s.fn, ilist.cells[i].cap );
-      ss.ldt2(clnone,da, da.left + ((da.right-da.left+1-tw) div 2), da.top + round( 1.25 * (((da.bottom-da.top+1-s.fnH)) div 2) ), low__aorb(s.font,s.colfont,dprogressval>0) , ilist.cells[i].cap ,s.fn,s.f,false,false,false,false,false);
+      tw :=fast__textwidth('',ilist.cells[i].cap,s.Rfn);
+      ss.ftext(clnone,da, da.left + ((da.right-da.left+1-tw) div 2), da.top + round( 1.25 * (((da.bottom-da.top+1-s.fnH)) div 2) ), low__aorb(s.font,s.colfont,dprogressval>0) ,'' ,ilist.cells[i].cap ,s.Rfn,true);
 
       end;
 
    end;//if
 
 end;//i
-
-
-//restore corner colors
-xparentcorners;
 
 except;end;
 end;
@@ -9606,13 +9583,13 @@ if clip__canpastetext then
    begin
    n:=clip__pastetextb;
 
-   if strmatch(icolorsetsheader,strcopy1(n,1,low__len(icolorsetsheader))) then
+   if strmatch(icolorsetsheader,strcopy1(n,1,low__len32(icolorsetsheader))) then
       begin
 
       //init
       xprimeundo;
 
-      n         :=strcopy1(n,low__len(icolorsetsheader)+1,low__len(n))+',';
+      n         :=strcopy1(n,low__len32(icolorsetsheader)+1,low__len32(n))+',';
       xcount    :=-1;
       lp        :=1;
       ci        :=xnextindex;//next color index
@@ -9622,7 +9599,7 @@ if clip__canpastetext then
       if (ci>=0) then
          begin
 
-         for p:=1 to low__len(n) do if (n[p-1+stroffset]=',') then
+         for p:=1 to low__len32(n) do if (n[p-1+stroffset]=',') then
          begin
          str1:=strcopy1(n,lp,p-lp);
 
@@ -9775,13 +9752,13 @@ if clip__canpastetext then
    begin
    n:=clip__pastetextb;
 
-   if strmatch(icolorsetsheader,strcopy1(n,1,low__len(icolorsetsheader))) then
+   if strmatch(icolorsetsheader,strcopy1(n,1,low__len32(icolorsetsheader))) then
       begin
 
       //init
       xprimeundo;
 
-      n          :=strcopy1(n,low__len(icolorsetsheader)+1,low__len(n))+',';
+      n          :=strcopy1(n,low__len32(icolorsetsheader)+1,low__len32(n))+',';
       xcount     :=-1;
       lp         :=1;
       ci         :=xnextindex;//next color index
@@ -9790,7 +9767,7 @@ if clip__canpastetext then
       if (ci>=0) then
          begin
 
-         for p:=1 to low__len(n) do if (n[p-1+stroffset]=',') then
+         for p:=1 to low__len32(n) do if (n[p-1+stroffset]=',') then
          begin
          str1:=strcopy1(n,lp,p-lp);
 
@@ -9884,15 +9861,15 @@ if clip__canpastetext then
    fi:=icore.findex;
 
    n:=clip__pastetextb;
-   if strmatch(icolorsetsheader,strcopy1(n,1,low__len(icolorsetsheader))) then
+   if strmatch(icolorsetsheader,strcopy1(n,1,low__len32(icolorsetsheader))) then
       begin
 
       xprimeundo;
-      n:=strcopy1(n,low__len(icolorsetsheader)+1,low__len(n))+',';
+      n:=strcopy1(n,low__len32(icolorsetsheader)+1,low__len32(n))+',';
       int1:=0;
       lp:=1;
 
-      for p:=1 to low__len(n) do if (n[p-1+stroffset]=',') then
+      for p:=1 to low__len32(n) do if (n[p-1+stroffset]=',') then
          begin
          str1:=strcopy1(n,lp,p-lp);
 
@@ -10023,6 +10000,7 @@ end;
 
 constructor tpre8.create2(xparent:tobject;xhost:tobject;xcore:ppiccore8;xstart:boolean);
 begin
+
 //self
 track__inc(satOther,1);
 inherited create2(xparent,false);
@@ -10039,24 +10017,29 @@ ibuffer        :=misraw24(1,1);
 
 //start
 if xstart then start;
+
 end;
 
 destructor tpre8.destroy;
 begin
 try
+
 //controls
 freeobj(@ibuffer);
 
 //self
 inherited destroy;
 track__inc(satOther,-1);
+
 except;end;
 end;
 
 procedure tpre8.disconnect;
 begin
-ihost:=nil;
-icore:=nil;
+
+ihost       :=nil;
+icore       :=nil;
+
 end;
 
 procedure tpre8._ontimer(sender:tobject);
@@ -10065,14 +10048,19 @@ begin
 //ifasttimer
 if (ms64>=ifasttimer) then
    begin
+
    if ((ihost<>nil) and (ihost as ttex).omustpaint1) then
       begin
+
       (ihost as ttex).omustpaint1:=false;
+
       paintnow;
+
       end;
 
    //reset
-   ifasttimer:=ms64+low__aorb(100,30,game_subframes);
+   ifasttimer         :=add64( ms64 ,low__aorb(100,30,game_subframes) );
+
    end;
 
 end;
@@ -10092,13 +10080,17 @@ var
 
    procedure dpreview(dzoom:longint);
    begin
+
    //preview 1:dzoom
-   ldt1(s.back,s.cs,dx,dy,s.font,'Preview 1:'+intstr32(dzoom),s.fn,s.f,false);
+   ftext(s.back,s.cs,dx,dy,s.font,'','Preview 1:'+intstr32(dzoom),s.Rfn,true);
    inc(dy,s.fnH+ypad);
 
-   ldc(s.cs,dx,dy,misw(ibuffer)*dzoom,mish(ibuffer)*dzoom,misarea(ibuffer),ibuffer,255,0,clnone,0);
+   //was: ldc(s.cs,dx,dy,misw(ibuffer)*dzoom,mish(ibuffer)*dzoom,misarea(ibuffer),ibuffer,255,0,clnone,0);
+   fdraw3(ibuffer,misarea(ibuffer),dx,dy,misw(ibuffer)*dzoom,mish(ibuffer)*dzoom,clnone,power_enabled ,viFeather ,false,false,true);
+
    inc(dy,mish(ibuffer)*dzoom);
    vsep;
+
    end;
 
    procedure hstrip(xcap:string;dzoom:longint);
@@ -10107,20 +10099,26 @@ var
    begin
    if (xcap<>'') then
       begin
-      ldt1(s.back,s.cs,dx,dy,s.font,xcap,s.fn,s.f,false);
+      ftext(s.back,s.cs,dx,dy,s.font,'',xcap,s.Rfn,true);
       inc(dy,s.fnH+ypad);
       end;
 
    for p:=1 to 10 do
    begin
-   ldc(s.cs,dx,dy,misw(ibuffer)*dzoom,mish(ibuffer)*dzoom,misarea(ibuffer),ibuffer,255,0,clnone,0);
+
+   //was: ldc(s.cs,dx,dy,misw(ibuffer)*dzoom,mish(ibuffer)*dzoom,misarea(ibuffer),ibuffer,255,0,clnone,0);
+   fdraw3(ibuffer,misarea(ibuffer),dx,dy,misw(ibuffer)*dzoom,mish(ibuffer)*dzoom,clnone,power_enabled ,viFeather ,false,false,true);
+
    inc(dx,misw(ibuffer)*dzoom);
    if (dx>=s.ci.right) then break;
-   end;
+
+   end;//p
 
    inc(dy,mish(ibuffer)*dzoom);
    dx:=xpad;
+
    end;
+
 begin
 try
 //init
@@ -10129,10 +10127,8 @@ xpad :=2*s.zoom;
 ypad :=2*s.zoom;
 ypad2:=10*s.zoom;
 
-//lds(cs,random(max16),false);
-
 //cls
-lds(s.cs,s.back,false);
+ffillArea(s.cs,s.back,false);
 
 //check
 if (icore=nil) then goto skipend;
@@ -10157,9 +10153,12 @@ a.power255  :=255;
 a.mirror    :=false;
 a.flip      :=false;
 
+//cls buffer - 04may2026
+mis__cls24( misarea(ibuffer) ,ibuffer.width,ibuffer.height,ibuffer.prows24,s.back );
+
+//draw sprite
 pic8__drawfast(a);
 
-//misclsarea(ibuffer, misarea(ibuffer), rgba0__int(0,100+random(156),0) );//lime
 
 
 //speed test - debug only
@@ -10218,11 +10217,6 @@ create2(xparent,false,true);
 end;
 
 constructor ttexedit.create2(xparent:tobject;xscroll,xstart:boolean);
-
-   function t(x:array of byte):longint;
-   begin
-   result:=tep__addone20c(1,x)
-   end;
 
    procedure maketoolpalette(xvertical:boolean;x:tbasictoolbar);
    var
@@ -10367,7 +10361,7 @@ xgrad4;
 with xhigh2 do
 begin
 itoolpal:=xtoolbar;
-itoolpal.osquareframe:=true;
+//?????itoolpal.osquareframe:=true;
 
 maketoolpalette(false,itoolpal);
 ipal:=tpal8.create(client,itex,itex.pcore);
@@ -10769,8 +10763,8 @@ var
 
    function pm(const xname:string):boolean;//partial match
    begin
-   result:=strmatch(strcopy1(n,1,low__len(xname)),xname);
-   if result then v:=strcopy1(n,low__len(xname)+1,low__len(n));
+   result:=strmatch(strcopy1(n,1,low__len32(xname)),xname);
+   if result then v:=strcopy1(n,low__len32(xname)+1,low__len32(n));
    end;
 begin//use for testing purposes only - 15mar2020
 //defaults
@@ -11141,7 +11135,7 @@ procedure ttex.xcreatetools;
    i:=xindex;
 
    //.name
-   for p:=1 to frcmax32(low__len(xname),sizeof(itoollist.tools[i].name)) do itoollist.tools[i].name[p-1]:=xname[p-1+stroffset];
+   for p:=1 to frcmax32(low__len32(xname),sizeof(itoollist.tools[i].name)) do itoollist.tools[i].name[p-1]:=xname[p-1+stroffset];
    //.info
    itoolcap[i]                      :=xname;//cap
    itoolcmd[i]                      :='tool.'+intstr32(i);
@@ -11333,7 +11327,7 @@ case tool of
 ttcZoom:begin
 
    x.benabled2['zoomin']       :=xok;
-   x.benabled2['zoomto.0']     :=xok;;
+   x.benabled2['zoomto.0']     :=xok;
    x.benabled2['zoomto.1']     :=xok;
    x.benabled2['zoomto.2']     :=xok;
    x.benabled2['zoomto.4']     :=xok;
@@ -11429,8 +11423,8 @@ var
 
    function pm(const xname:string):boolean;//partial match
    begin
-   result:=strmatch(strcopy1(n,1,low__len(xname)),xname);
-   if result then v:=strcopy1(n,low__len(xname)+1,low__len(n));
+   result:=strmatch(strcopy1(n,1,low__len32(xname)),xname);
+   if result then v:=strcopy1(n,low__len32(xname)+1,low__len32(n));
    end;
 begin//use for testing purposes only - 15mar2020
 //defaults
@@ -11452,9 +11446,9 @@ else if m('dither')           then dither:=not dither
 else if m('wrap')             then wrap:=not wrap
 else if m('fast')             then fast:=not fast
 else if m('zoomin')           then zoomin:=not zoomin
-else if pm('zoomto.')         then xzoomto(strint(v))
-else if pm('movexy.')         then movexy:=strint(v)
-else if pm('movestyle.')      then movestyle:=strint(v)
+else if pm('zoomto.')         then xzoomto(strint32(v))
+else if pm('movexy.')         then movexy:=strint32(v)
+else if pm('movestyle.')      then movestyle:=strint32(v)
 else if m('useonce')          then useonce:=not useonce
 //.hand
 else if m('handto.left')      then scrollx:=0
@@ -11470,7 +11464,7 @@ else if m('handto.center')    then
 else if m('sel.clear')        then selclear
 else if m('sel.all')          then selall
 else if m('sel.invert')       then selinv
-else if pm('selmode.')        then selmode:=strint(v)
+else if pm('selmode.')        then selmode:=strint32(v)
 //.other
 else if m('new.prompt')       then newprompt
 else if m('redo')             then redo
@@ -11557,7 +11551,7 @@ end;
 
 procedure ttex.xsyncbytes;
 begin
-ibytes:=low__len(pic8__todata(icore));
+ibytes:=low__len32(pic8__todata(icore));
 end;
 
 procedure ttex.disconnect;
@@ -12427,7 +12421,7 @@ else if (x='resize.fit') then
    //get
    toimage(s);
    missize(d,dw,dh);
-   mis__copyfast82432(maxarea,0,0,dw,dh,misarea(s),d,s);
+   mis__copyfast(maxarea,misarea(s),0,0,dw,dh,s,d);
    fromimage(d);
    end;
 
@@ -12481,20 +12475,20 @@ var
    dline:=nil;
    try
    //check
-   if (str__len(@a)<=0) then goto skipend;
+   if (str__len32(@a)<=0) then goto skipend;
    //init
    s:=str__new8;
    dline:=str__new8;
    str__add(@s,@a);
    str__clear(@a);
-   slen:=str__len(@s);
+   slen:=str__len32(@s);
    //start
    str__sadd(@a,':array[0..'+intstr32(slen-1)+'] of byte=('+rcode);
    //content
    for p:=1 to slen do
    begin
    str__sadd(@dline,intstr32(byte(s.bytes1[p]))+insstr(',',p<slen));
-   if (str__len(@dline)>=990) then//was 1015 for Win95 Delphi 3 but lowered to 990 for Win11 Notepad - 19jul2024
+   if (str__len32(@dline)>=990) then//was 1015 for Win95 Delphi 3 but lowered to 990 for Win11 Notepad - 19jul2024
       begin
       str__add(@a,@dline);
       str__sadd(@a,rcode);
@@ -12570,7 +12564,7 @@ if canpaste then
    data:=clip__pastetextb;
    toimage(s);
 
-   mis__copyfast82432(maxarea,0,0,misw(d),mish(d),misarea(s),d,s);
+   mis__copyfast(maxarea,misarea(s),0,0,misw(d),mish(d),s,d);
    fromimage2(d,false);
    end;
 except;end;
@@ -12580,7 +12574,7 @@ end;
 
 function ttex.icanpaste:boolean;
 begin
-result:=(not locked) and clip__canpasteimage;
+result:=(not locked) and clip__canpasteimage(true);
 end;
 
 procedure ttex.ipaste;
@@ -12592,7 +12586,7 @@ try
 if icanpaste then
    begin
    a:=misimg32(1,1);
-   if clip__pasteimage(a) then
+   if clip__pasteimage(a,true) then
       begin
       fromimage(a);
       xnewcoresyncvars;
@@ -12935,7 +12929,7 @@ function ttex.getdata__forundo:string;
 
    procedure vadd(const xdata:string);
    begin
-   result:=result+str__from32(low__len(xdata))+xdata;
+   result:=result+str__from32(low__len32(xdata))+xdata;
    end;
    
 begin
@@ -14007,13 +14001,14 @@ if (tool<>ttcMove) or ((tool=ttcMove) and (movestyle=tscMovesel) or (not gui.mou
    a.core:=@icore;
    pic8__drawfast(a);
    end;
-   
+
 //draw overlays
 dcol;
 dsel;
 
 //paint
-ldc(maxarea,0,0,ibuffer24.width,ibuffer24.height,misarea(ibuffer24),ibuffer24,255,0,clnone,0);
+//was: ldc(maxarea,0,0,ibuffer24.width,ibuffer24.height,misarea(ibuffer24),ibuffer24,255,0,clnone,0);
+fdraw3(ibuffer24,misarea(ibuffer24),0,0,ibuffer24.width,ibuffer24.height,clnone,power_enabled ,viFeather ,false,false,true);
 
 //error message
 if ofileinuse or obadfile then
@@ -14023,7 +14018,7 @@ if ofileinuse or obadfile then
    if obadfile then t :='Unknown Format'
    else             t :='File in use';
 
-   tw          :=low__fonttextwidth2(s.fn,t);
+   tw          :=fast__textwidth('',t,s.Rfn);
 
    ea.left     :=(cw-tw) div 2;
    ea.right    :=ea.left + tw;
@@ -14031,10 +14026,10 @@ if ofileinuse or obadfile then
    ea.bottom   :=ea.top + s.fnH;
 
    //background
-   lds( area__grow2(ea,30,12), clred, s.r);
+   ffillArea( area__grow2(ea,30,12), clred, s.r);
 
    //text
-   ldt(ea,ea.left,ea.top,clwhite,t,s.fn,s.f,s.r);
+   ftext(s.back,ea,ea.left,ea.top,clwhite,'',t,s.Rfn,true);
 
    end;
 
@@ -14143,7 +14138,7 @@ begin
 imastervolume100:=frcrange32(x,0,100);
 end;
 
-function tsndgen.onmessage(m,w,l:longint):longint;
+function tsndgen.onmessage(m:msg_message;w:msg_wparam;l:msg_lparam):msg_result;
 begin
 result:=0;
 

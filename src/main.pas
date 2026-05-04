@@ -4,17 +4,18 @@ interface
 {$ifdef gui4} {$define gui3} {$define gamecore}{$endif}
 {$ifdef gui3} {$define gui2} {$define net} {$define ipsec} {$endif}
 {$ifdef gui2} {$define gui}  {$define jpeg} {$endif}
-{$ifdef gui} {$define bmp} {$define ico} {$define gif} {$define snd} {$endif}
+{$ifdef gui} {$define snd} {$endif}
 {$ifdef con3} {$define con2} {$define net} {$define ipsec} {$endif}
-{$ifdef con2} {$define bmp} {$define ico} {$define gif} {$define jpeg} {$endif}
+{$ifdef con2} {$define jpeg} {$endif}
+{$ifdef WIN64}{$define 64bit}{$endif}
 {$ifdef fpc} {$mode delphi}{$define laz} {$define d3laz} {$undef d3} {$else} {$define d3} {$define d3laz} {$undef laz} {$endif}
-uses gosswin2, gossroot, {$ifdef gui}gossgui,{$endif} {$ifdef snd}gosssnd,{$endif} gosswin, gossio, gossimg, gossnet;
-{$align on}{$O+}{$W-}{$I-}{$U+}{$V+}{$B-}{$X+}{$T-}{$P+}{$H+}{$J-} { set critical compiler conditionals for proper compilation - 10aug2025 }
+uses gossroot, {$ifdef gui}gossgui, gosstext,{$endif} {$ifdef snd}gosssnd,{$endif} gosswin, gosswin2, gossio, gossimg, gossnet, gossfast, gossteps{$ifdef gamecore}, gossgame ,gamefiles{$endif};
+{$B-} {generate short-circuit boolean evaluation code -> stop evaluating logic as soon as value is known}
 //## ==========================================================================================================================================================================================================================
 //##
 //## MIT License
 //##
-//## Copyright 2025 Blaiz Enterprises ( http://www.blaizenterprises.com )
+//## Copyright 2026 Blaiz Enterprises ( http://www.blaizenterprises.com )
 //##
 //## Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
 //## files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
@@ -30,31 +31,35 @@ uses gosswin2, gossroot, {$ifdef gui}gossgui,{$endif} {$ifdef snd}gosssnd,{$endi
 //##
 //## ==========================================================================================================================================================================================================================
 //## Library.................. app code (main.pas)
-//## Version.................. 1.00.2700 (+11)
+//## Version.................. 1.00.2708 (+15)
 //## Items.................... 4
-//## Last Updated ............ 09nov2025, 11aug2025, 19may2025, 05may2025, 23apr2025, 13apr2025, 11apr2025, 01apr2025
-//## Lines of Code............ 6,400+
+//## Last Updated ............ 04may2026, 09nov2025, 11aug2025, 19may2025, 05may2025, 23apr2025, 13apr2025, 11apr2025, 01apr2025
+//## Lines of Code............ 6,500+
+//## Origin .................. Human generated and maintained
 //##
-//## main.pas ................ app code
-//## gossroot.pas ............ console/gui app startup and control
-//## gossio.pas .............. file io
-//## gossimg.pas ............. image/graphics
-//## gossnet.pas ............. network
-//## gosswin.pas ............. static Win32 api calls
-//## gosswin2.pas ............ dynamic Win32 api calls
-//## gosssnd.pas ............. sound/audio/midi/chimes
-//## gossgui.pas ............. gui management/controls
-//## gossdat.pas ............. app icons (24px and 20px) and help documents (gui only) in txt, bwd or bwp format
-//## gosszip.pas ............. zip support
-//## gossjpg.pas ............. jpeg support
-//## gossgame.pas ............ game support (optional)
-//## gamefiles.pas ........... internal files for game (optional)
+//## main.pas ................ App specific code
+//## gossdat.pas ............. App specific icons and help documents
+//## gossfast.pas ............ FastDraw - rapid render graphic procs
+//## gossgame.pas ............ GameCore - 2D game engine with integrated menu handler, xbox controller + mouse + keyboard support and window integration
+//## gamefiles.pas ........... Built-in file(s) for GameCore (optional)
+//## gossgui.pas ............. GUI management and controls
+//## gossimg.pas ............. Multi-format graphic procs for 8, 24 and 32 bit images with IO support
+//## gossio.pas .............. File IO and low level file/folder/disk/data format procs
+//## gossjpg.pas ............. JPEG IO (read/write jpeg image data via third party libraries)
+//## gossnet.pas ............. Networking - ip filtering, socket management etc
+//## gossroot.pas ............ App startup and control (GUI, console and service)
+//## gosssnd.pas ............. Sound, audio, midi and midi based chimes
+//## gossteps.pas ............ System, Folder and App images
+//## gosstext.pas ............ TextCore - non-GUI and GUI text engine for text boxes
+//## gosswin.pas ............. Win32 api calls for 32 and 64 bit (static / api references disabled by default)
+//## gosswin2.pas ............ Win32 api calls for 32 and 64 bit (dynamic - load as required with fallback failure handling and default value(s) support)
+//## gosszip.pas ............. ZIP IO (read/write zip data via third party libraries)
 //##
 //## ==========================================================================================================================================================================================================================
 //## | Name                   | Hierarchy         | Version   | Date        | Update history / brief description of function
 //## |------------------------|-------------------|-----------|-------------|--------------------------------------------------------
-//## | tapp                   | tbasicapp         | 1.00.120  | 21apr2025   | Custom app code goes inside this control - 20jul2024
-//## | tworkpanel             | tbasiccols        | 1.00.2155 | 11aug2025   | General and Gossamer related tools and operations - 21apr2025
+//## | tapp                   | tbasicapp         | 1.00.122  | 04may2026   | Custom app code goes inside this control - 21apr2025, 20jul2024
+//## | tworkpanel             | tbasiccols        | 1.00.2157 | 04may2026   | General and Gossamer related tools and operations - 11aug2025 ,21apr2025
 //## | d2laz__*               | family of procs   | 1.00.045  | 11aug2025   | Delphi 3 to Lazarus to conversion procs - 19may2025, 01apr2025
 //## | choco__*               | family of procs   | 1.00.373  | 23apr2025   | Chocolatey portable package (*.nupkg) creation - 11apr2025
 //## ==========================================================================================================================================================================================================================
@@ -292,7 +297,7 @@ procedure app__ontimer;
 
 //.support procs
 function app__netmore:tnetmore;//optional - return a custom "tnetmore" object for a custom helper object for each network record -> once assigned to a network record, the object remains active and ".clear()" proc is used to reduce memory/clear state info when record is reset/reused
-function app__findcustomtep(xindex:longint;var xdata:tlistptr):boolean;
+procedure app__customTEP(const xindex:longint);
 function app__syncandsavesettings:boolean;
 
 
@@ -471,11 +476,15 @@ xname:=strlow(xname);
 //get
 if      (xname='slogan')              then result:=info__app('name')+' by Blaiz Enterprises'
 else if (xname='width')               then result:='920'
-else if (xname='height')              then result:='700'
+else if (xname='height')              then result:='730'
+
 else if (xname='language')            then result:='english-australia'//for Clyde - 14sep2025
 else if (xname='codepage')            then result:='1252'
-else if (xname='ver')                 then result:='1.00.2700'
-else if (xname='date')                then result:='09nov2025'
+else if (xname='msix.tags')           then result:='-'//for Clyde - 31jan2026
+else if (xname='msstore.name')        then result:='BlaizTools'//optional - overrides default name for Clyde - 15apr2026
+
+else if (xname='ver')                 then result:='1.00.2708'
+else if (xname='date')                then result:='04may2026'
 else if (xname='name')                then result:='Blaiz Tools'
 else if (xname='web.name')            then result:='blaiztools'//used for website name
 else if (xname='des')                 then result:='Tools for working with the Gossamer codebase and app sourecode'
@@ -564,35 +573,6 @@ freeobj(@iapp);
 except;end;
 end;
 
-function app__findcustomtep(xindex:longint;var xdata:tlistptr):boolean;
-
-  procedure m(const x:array of byte);//map array to pointer record
-  begin
-  {$ifdef gui}
-  xdata:=low__maplist(x);
-  {$else}
-  xdata.count:=0;
-  xdata.bytes:=nil;
-  {$endif}
-  end;
-begin//Provide the program with a set of optional custom "tep" images, supports images in the TEA format (binary text image)
-//defaults
-result:=false;
-
-//sample custom image support
-
-//m(tep_none);
-{
-case xindex of
-5000:m(tep_write32);
-5001:m(tep_search32);
-end;
-}
-
-//successful
-//result:=(xdata.count>=1);
-end;
-
 function app__syncandsavesettings:boolean;
 begin
 //defaults
@@ -616,6 +596,56 @@ end;
 function app__netmore:tnetmore;//optional - return a custom "tnetmore" object for a custom helper object for each network record -> once assigned to a network record, the object remains active and ".clear()" proc is used to reduce memory/clear state info when record is reset/reused
 begin
 result:=tnetbasic.create;
+end;
+
+procedure app__customTEP(const xindex:longint);
+
+   procedure mc(const sm ,sc:array of byte);//mono + color
+   begin
+
+   tep__20( xindex ,sm ,sc ,it_rle8 ,it_img32 );
+
+   end;
+
+   procedure m(const sm:array of byte);//mono only
+   begin
+
+   tep__20( xindex ,sm ,[0] ,it_rle8 ,it_img32 );
+
+   end;
+
+   procedure m32(const sm:array of byte);//mono only
+   begin
+
+   tep__32( xindex ,sm ,[0] ,it_rle8 ,it_img32 );
+
+   end;
+
+   procedure c(const sc:array of byte);//color only
+   begin
+
+   tep__20( xindex ,[0] ,sc ,it_rle8 ,it_img32 );
+
+   end;
+
+   procedure m6(const sm:array of byte);//mono only
+   begin
+
+   tep__20( xindex ,sm ,[0] ,it_rle6 ,it_img32 );
+
+   end;
+
+begin
+
+//examples:
+{
+case xindex of
+
+tepExclude20          :m( tep_exclude20 );
+
+end;//case
+}
+
 end;
 
 function app__onmessage(m,w,l:longint):longint;
@@ -680,14 +710,14 @@ if (xvalue='') then exit;
 n:=xvalue+'.';
 lp:=0;
 //find
-for p:=1 to low__len(n) do
+for p:=1 to low__len32(n) do
 begin
 if (strbyte1(n,p)=ssDot) then
    begin
    if (strbyte1(n,p+1)=llv) and (strbyte1(n,p+2)=ssColon) then lp:=p+3
    else if (lp>=1) then
       begin
-      result:=strint(strcopy1(n,lp,p-lp));
+      result:=strint32(strcopy1(n,lp,p-lp));
       break;
       end;
    end;
@@ -743,12 +773,12 @@ end;
 
 function sup__datalen:longint;
 begin
-result:=str__len(@sup_data);
+result:=str__len32(@sup_data);
 end;
 
 function sup__datalen2:longint;
 begin
-result:=str__len(@sup_data2);
+result:=str__len32(@sup_data2);
 end;
 
 function sup__dataclear:boolean;
@@ -840,7 +870,7 @@ var
 
    function asizecopy(dw,dh:longint):boolean;
    begin
-   result:=missize(sup_image,dw,dh) and miscopyarea32(0,0,dw,dh,misarea(a),sup_image,a);
+   result:=missize(sup_image,dw,dh) and mis__copyfast(maxarea,misarea(a),0,0,dw,dh,a,sup_image);
    if not result then e:=gecTaskfailed;
    end;
 
@@ -923,7 +953,7 @@ if not sup__pasteimage(e)                              then goto skipend;
 aw:=misw(a);
 ah:=mish(a);
 low__scalecrop(aw,ah,misw(sup_image),mish(sup_image),ddw,ddh);
-if (not miscopyarea32((aw-ddw) div 2,(ah-ddh) div 2,ddw,ddh,misarea(sup_image),a,sup_image)) and etaskfailed then goto skipend;
+if (not mis__copyfast(maxarea,misarea(sup_image),(aw-ddw) div 2,(ah-ddh) div 2,ddw,ddh,sup_image,a)) and etaskfailed then goto skipend;
 if (not mask__fromdata(a,@m)) and etaskfailed          then goto skipend;
 if not asizecopy(dw,dh)                                then goto skipend;
 
@@ -1171,7 +1201,7 @@ a:=nil;
 try
 //init
 xcantext :=clip__canpastetext;
-xcanimage:=clip__canpasteimage;
+xcanimage:=clip__canpasteimage(true);//04may2026
 
 //check
 if (not xcantext) and (not xcanimage) then
@@ -1201,7 +1231,7 @@ if (not result) and xcantext then
 if (not result) and xcanimage then
    begin
    a:=misraw32(1,1);
-   if not clip__pasteimage(a) then
+   if not clip__pasteimage(a,true) then//04may2026
       begin
       e:=gecTaskfailed;
       goto skipend;
@@ -1246,11 +1276,11 @@ try
 sup__imageclear;
 
 //as image
-if clip__canpasteimage then
+if clip__canpasteimage(true) then
    begin
    sup__imageclear;
 
-   if clip__pasteimage(sup_image) then result:=true
+   if clip__pasteimage(sup_image,true) then result:=true
    else
       begin
       e:=gecTaskfailed;
@@ -1287,7 +1317,7 @@ sline    :=str__new8;
 str__add(@s,@sup_data);
 sup__dataclear;
 vsp      :=strcopy1('          ',1,frcrange32(xspacecount,0,10));
-vsplen   :=low__len(vsp);
+vsplen   :=low__len32(vsp);
 //line by line
 xonce    :=true;
 vsmallest:=5000;
@@ -1314,7 +1344,7 @@ else
             if (str__len(@sline)>=1) then
                begin
                int1:=0;
-               for p:=1 to str__len(@sline) do if (str__bytes1(@sline,p)=ssspace) then int1:=p else break;
+               for p:=1 to str__len32(@sline) do if (str__bytes1(@sline,p)=ssspace) then int1:=p else break;
                if (int1<vsmallest) then vsmallest:=int1;
                end;
             end
@@ -1517,9 +1547,9 @@ try
 spos     :=0;
 s        :=str__new8;
 sline    :=str__new8;
-xlen1    :=low__len(xscan1);
-xlen2    :=low__len(xscan2);
-xlen3    :=low__len(xscan3);
+xlen1    :=low__len32(xscan1);
+xlen2    :=low__len32(xscan2);
+xlen3    :=low__len32(xscan3);
 str__add(@s,@sup_data);
 sup__dataclear;
 
@@ -1536,7 +1566,7 @@ else if (xlen3<>0) and strmatch(xscan3,strcopy1(xline,1,xlen3)) then dlen:=xlen3
 else                                                                 dlen:=0;
 
 //set
-if (dlen>=1) then str__sadd(@sup_data, strcopy1(xline,dlen+1,low__len(xline)) +rcode )
+if (dlen>=1) then str__sadd(@sup_data, strcopy1(xline,dlen+1,low__len32(xline)) +rcode )
 else              str__sadd(@sup_data, xline +rcode );
 end;
 
@@ -1659,7 +1689,7 @@ s     :=str__new8;
 dline :=str__new8;
 str__add(@s,@sup_data);
 sup__dataclear;
-slen  :=str__len(@s);
+slen  :=str__len32(@s);
 
 //start
 str__sadd(@sup_data, insstr(xname+rcode,xname<>'') + ':array[0..'+intstr32(slen-1)+'] of byte=('+rcode );
@@ -1720,7 +1750,7 @@ a:=str__new8;
 a.sadd('POS      ASCII       CHAR'+rcode);
 a.sadd('------   -----       ----'+rcode);
 
-for p:=0 to frcmax32(sup_data.len-1,xlimit) do
+for p:=0 to frcmax32(sup_data.len32-1,xlimit) do
 begin
 v:=sup_data.bytes[p];
 
@@ -1734,7 +1764,7 @@ end;//p
 //show
 x:=a.text;
 str__clear(@a);
-app__gui.poptxt(x,0,'','');
+app__gui.poptxt(x,0,true,'','');//font2 - 04may2026
 except;end;
 //free
 str__free(@a);
@@ -1773,7 +1803,7 @@ var
    begin
    try
    //init
-   slen:=str__len(x);
+   slen:=str__len32(x);
    dlen:=0;
    if (slen<=0) then goto skipend;
    smax:=-2;
@@ -1784,11 +1814,11 @@ var
    //get
    for p:=0 to (slen-1) do
    begin
-   if (p>smax) and (not block__fastinfo(x,p,smem,smin,smax)) then goto skipend;
+   if (p>smax) and (not block64__fastinfo32(x,p,smem,smin,smax)) then goto skipend;
    v:=smem[p-smin];
    if not vbad(v) then
       begin
-      if (dlen>dmax) and (not block__fastinfo(x,dlen,dmem,dmin,dmax)) then goto skipend;
+      if (dlen>dmax) and (not block64__fastinfo32(x,dlen,dmem,dmin,dmax)) then goto skipend;
       dmem[dlen-dmin]:=v;
       inc(dlen);
       end;
@@ -1809,7 +1839,7 @@ var
    result:=false;
 
    //scan for bad return codes - 10aug2025: now detects return code errors properly
-   for p:=0 to (a.len-2) do if ((a.pbytes[p+0]=13) and (a.pbytes[p+1]<>10)) or ((p>=1) and (a.pbytes[p+0]=10) and (a.pbytes[p-1]<>13)) then
+   for p:=0 to (a.len32-2) do if ((a.pbytes[p+0]=13) and (a.pbytes[p+1]<>10)) or ((p>=1) and (a.pbytes[p+0]=10) and (a.pbytes[p-1]<>13)) then
       begin
       result:=true;
       inc(xerrorsfixed);
@@ -1994,14 +2024,29 @@ str__free(@xlist);
 end;
 
 function sup__packfiles_makeunit(xfolder,xincludemask,xexcludemask:string;xcompress,xsubfolders:boolean;var e:string):boolean;
+
+//-----------------------------------------------------------------------------------------------------------------------------
+//
+// Technical Note - 04may2026
+//
+// This proc has been upgraded to surpass Borland Delphi 3's technical limitation of ~4,000 case branches and associated
+// file information capacity for a single function - app crashes with an access violation - and instead spreads the load
+// across a series of linked functions, each responsible for 1,000 files.
+//
+//-----------------------------------------------------------------------------------------------------------------------------
+
 label
    skipend;
+
+const
+   xfunctionLoadLimit =1000;//limit each function to 1,000 files -> Borland Delphi 3 crashes with a load of 4,000 - 04may2026
+
 var
    uhead,udata:tstr8;
    flist:tdynamicstring;
-   p,xcount:longint;
+   p,xcount,xfunctionNameCount,xfunctionLoadCount:longint;
    xresult:boolean;
-   etmp:string;
+   xfunctionNameList,etmp:string;
 
    function xmemory:comp;
    begin
@@ -2021,27 +2066,37 @@ var
    function xpackfile(const xfolder,xpathfile:string):boolean;
    label
       skipend;
+
    var
       xname:string;
+      xorgSize:longint32;
+      
    begin
+
    //defaults
-   result:=false;
+   result   :=false;
+   xname    :='file__'+intstr32(xcount);
 
    try
-   xname:='file__'+intstr32(xcount);
 
    //load
    if not io__fromfile(xfolder+xpathfile,@sup_data,etmp) then
       begin
-      e:=etmp;
+
+      e     :=etmp;
       goto skipend;
+
       end;
+
+   xorgSize :=sup_data.len32;
 
    //compress
    if xcompress and (not low__compress(@sup_data)) then
       begin
-      e:=gecTaskfailed;
+
+      e     :=gecTaskfailed;
       goto skipend;
+
       end;
 
    //convert into array
@@ -2053,24 +2108,115 @@ var
    udata.sadd('//file: '+xpathfile+rcode);
    udata.add(sup_data);
 
-   //add to head
-   hadd(intstr32(xcount)+':xset('+xname+','+low__aorbstr('false','true',xcompress)+','+#39+low__remcharb(xpathfile,#39)+#39+');');
+   //add to head                                                               //new: uncompressed size
+   hadd(intstr32(xcount)+':xset('+xname+','+low__aorbstr('false','true',xcompress)+','+intstr32(xorgSize)+','+#39+low__remcharb(xpathfile,#39)+#39+');');
 
    //inc
-   inc(xcount);
+   inc(xcount);//overal number of files spread across all functions
+   inc(xfunctionLoadCount);//number of files in this function
 
    //successful
-   result:=true;
+   result    :=true;
+
    skipend:
+
    except;e:=gecTaskfailed;end;
+
    sup__dataclear;
+
    end;
+
+   procedure xendFunction(const xLinkToNewFunctionSubName:string);
+   begin
+
+   if (xLinkToNewFunctionSubName<>'') then
+      begin
+
+      //pass control to the next function in the chain
+      hadd('else result:=storage__findfile'+xLinkToNewFunctionSubName+'(xindex,xdata,xdatalen,xorgsize,xcompressed,xpathname);');
+
+      end;
+
+   hadd('end;//case');
+   hadd('');
+   hadd('end;');
+   hadd('');
+   hadd('');
+
+   end;
+
+   procedure xstartNewFunction;
+   var
+      xsubName:string;
+
+   begin
+
+   //reset this function's load to 0 files
+   xfunctionLoadCount:=0;
+
+   //inc to next function subname (2..N)
+   inc(xfunctionNameCount);
+
+   if (xfunctionNameCount>=2) then
+      begin
+
+      //new function's subname
+      xsubName        :=intstr32(xfunctionNameCount);
+
+      //end previous function and link to this function
+      xendFunction( xsubName );
+
+      end
+   else begin
+
+      xsubName      :='';
+
+      end;
+
+   //start the new function
+   hadd('');
+   hadd('');
+   hadd('function storage__findfile'+xsubName+'(const xindex:longint;var xdata:pointer;var xdatalen,xorgsize:longint;var xcompressed:boolean;var xpathname:string):boolean;');//04may2026
+   hadd('');
+   hadd('   procedure xset(const fdata:array of byte;const fcompressed:boolean;const fsize:longint;const fpathname:string);');
+   hadd('   begin');
+   hadd('');
+   hadd('   result     :=true;');
+   hadd('   xdata      :=@fdata;');
+   hadd('   xdatalen   :=high(fdata)+1;');
+   hadd('   xorgsize   :=fsize;');//new - 04may2026
+   hadd('   xcompressed:=fcompressed;');
+   hadd('   xpathname  :=fpathname;');
+   hadd('');
+   hadd('   end;');
+   hadd('');
+   hadd('begin');
+   hadd('');
+   hadd('//defaults');
+   hadd('result:=false;');
+   hadd('');
+   hadd('//find');
+   hadd('case xindex of');
+
+   //add this function's name to the function name list for placement at top of unit with "rcode" for each line
+   xfunctionNameList  :=xfunctionNameList+
+
+   'function storage__findfile'+xsubName+'(const xindex:longint;var xdata:pointer;var xdatalen,xorgsize:longint;var xcompressed:boolean;var xpathname:string):boolean;'+rcode;
+
+   end;
+
 begin
+
 //defaults
-e              :='';
-uhead          :=nil;
-udata          :=nil;
-xcount         :=0;
+result                :=false;//04may2026
+e                     :='';
+uhead                 :=nil;
+udata                 :=nil;
+xcount                :=0;
+xfunctionNameList     :='';
+xfunctionNameCount    :=0;
+xfunctionLoadCount    :=0;
+
 app__gui.xstatusstart3(3,tbL100_L,true);
 app__gui.xstatustext[0]:='Folder'+#9;
 app__gui.xstatustext[1]:='File'+#9;
@@ -2078,14 +2224,17 @@ app__gui.xstatustext[2]:='Memory'+#9;
 app__gui.xstatus(0,'Packing files...');
 
 try
+
 //range
-xfolder:=io__asfolderNIL(xfolder);
+xfolder     :=io__asfolderNIL(xfolder);
 
 //check
 if not io__folderexists(xfolder) then
    begin
-   e:='Folder not found: '+xfolder;
+
+   e        :='Folder not found: '+xfolder;
    goto skipend;
+
    end;
 
 //init
@@ -2094,33 +2243,20 @@ flist:=tdynamicstring.create;
 //.filelist
 if not io__filelist1(flist,false,xsubfolders,xfolder,xincludemask,xexcludemask) then
    begin
-   e:=gecOutofmemory;
+
+   e        :=gecOutofmemory;
    goto skipend;
+
    end;
 
 //.vars
-uhead :=str__new8;
-udata :=str__new8;
+uhead       :=str__new8;
+udata       :=str__new8;
 
+//start root function
+xstartNewFunction;
 
-//get
-hadd('');
-hadd('function storage__findfile(xindex:longint;var xdata:pointer;var xdatalen:longint;var xcompressed:boolean;var xpathname:string):boolean;');
-hadd('   procedure xset(const fdata:array of byte;fcompressed:boolean;const fpathname:string);');
-hadd('   begin');
-hadd('   result     :=true;');
-hadd('   xdata      :=@fdata;');
-hadd('   xdatalen   :=high(fdata)+1;');
-hadd('   xcompressed:=fcompressed;');
-hadd('   xpathname  :=fpathname;');
-hadd('   end;');
-hadd('begin');
-hadd('//defaults');
-hadd('result:=false;');
-hadd('');
-hadd('//find');
-hadd('case xindex of');
-
+//add files to the function(s)
 for p:=0 to (flist.count-1) do
 begin
 
@@ -2132,8 +2268,18 @@ app__gui.xstatustext[2]:='Memory'+#9+low__mbauto(xmemory,true);
 
 if app__gui.xstatustopped then
    begin
-   e:='';
+
+   e        :='';
    goto skipend;
+
+   end;
+
+//auto-start a new function
+if (xfunctionLoadcount>=xfunctionLoadLimit) then
+   begin
+
+   xstartNewFunction;
+
    end;
 
 //pack file
@@ -2141,44 +2287,55 @@ if not xpackfile(xfolder,flist.value[p]) then goto skipend;
 
 end;//p
 
-//finalise
-hadd('end;//case'+rcode);
-hadd(rcode);
-hadd('end;');
-hadd(rcode);
-hadd('end.');
+//end the function
+xendFunction( '' );
 
+//end the unit
+hadd('end.');
+hadd('');
 
 //set
 sup__dataclear;
+
 //.head
+dadd('');
+dadd('//---------------------------------------------------------------------------------------');
+dadd('// This unit of packed files was built using '+app__info('name')+' v'+app__info('ver')+' by '+app__info('author.name') );
+dadd('//---------------------------------------------------------------------------------------');
 dadd('');
 dadd('interface');
 dadd('');
-dadd('function storage__findfile(xindex:longint;var xdata:pointer;var xdatalen:longint;var xcompressed:boolean;var xpathname:string):boolean;');
-dadd('');
+dadd( xfunctionNameList );//list of all function names - has a trailing rcode -> includes a trailing blank line
+
 dadd('implementation');
 dadd('');
 dadd('const');
 dadd('');
+
 //.body
 str__add(@sup_data,@udata);
 str__clear(@udata);
+
 //.head (function at bottom)
 str__add(@sup_data,@uhead);
 str__clear(@uhead);
 
 //sucessful
-result:=true;
+result      :=true;
 skipend:
+
 except;e:=gecTaskfailed;end;
+
 try
+
 //stop status
 app__gui.xstatusstop;
+
 //free
 str__free(@uhead);
 str__free(@udata);
 freeobj(@flist);
+
 except;end;
 end;
 
@@ -2196,7 +2353,7 @@ var
    begin
    result:=false;
 
-   if (afolder<>'') then for p:=1 to (low__len(afolder)-6) do if (afolder[p-1+stroffset]='\') and strmatch(strcopy1(afolder,p,7),'\clean\') then
+   if (afolder<>'') then for p:=1 to (low__len32(afolder)-6) do if (afolder[p-1+stroffset]='\') and strmatch(strcopy1(afolder,p,7),'\clean\') then
       begin
       result:=true;
       break;
@@ -2366,7 +2523,7 @@ begin
 result:='';
 
 //get
-for p:=1 to low__len(x) do
+for p:=1 to low__len32(x) do
 begin
 c:=x[p-1+stroffset];
 
@@ -2701,7 +2858,7 @@ var
       begin
 
       //stop at end of name "(" or ";" or ":"
-      for p:=9 to low__len(xline) do
+      for p:=9 to low__len32(xline) do
       begin
       c:=xline[p-1+stroffset];
       if (c='(') or (c=';') or (c=':') then
@@ -2715,7 +2872,7 @@ var
       //use name part at and after dual underscore -> e.g. "low__fromfile" and "io__fromfile" both become "__fromfile" for better duplication detection - 23jul2024
       if xnamepartafterDualunderscore and(v<>'') then
          begin
-         int1:=low__len(v);
+         int1:=low__len32(v);
          if (int1>=2) then
             begin
             for p:=1 to (int1-1) do
@@ -2738,7 +2895,7 @@ var
          xval:=v;
          lc:=#0;
          //get
-         for p:=1 to low__len(v) do
+         for p:=1 to low__len32(v) do
          begin
          c:=v[p-1+stroffset];
          if (c=#9) then c:=#32;
@@ -2781,7 +2938,7 @@ var
    if not io__fileexists(x) then exit;
    if (dlist=nil) then exit;
    if (dcount<0) then dcount:=0;
-   xhintname:=strcopy1(x,1+low__len(io__asfolder(io__extractfilepath(sfilename))),low__len(x));
+   xhintname:=strcopy1(x,1+low__len32(io__asfolder(io__extractfilepath(sfilename))),low__len32(x));
 
    //init
    a    :=str__new8;
@@ -2953,8 +3110,8 @@ var
 
    function mv(x:string):boolean;
    begin
-   result:=strmatch(x,strcopy1(n,1,low__len(x)));
-   if result then v:=strcopy1(n,low__len(x)+1,low__len(n)) else v:='';
+   result:=strmatch(x,strcopy1(n,1,low__len32(x)));
+   if result then v:=strcopy1(n,low__len32(x)+1,low__len32(n)) else v:='';
    end;
 
    procedure xlines;
@@ -3129,7 +3286,7 @@ var
    if (xpos<1) then xpos:=1;
 
    //init
-   xlen:=low__len(xdata);
+   xlen:=low__len32(xdata);
    lp  :=xpos;
 
    //get
@@ -3158,8 +3315,8 @@ var
    begin
    //defaults
    result   :=false;
-   xdatalen :=low__len(xdata);
-   xlen     :=low__len(x);
+   xdatalen :=low__len32(xdata);
+   xlen     :=low__len32(x);
    v1       :='';
    v2       :='';
 
@@ -3225,7 +3382,7 @@ var
 
    //init
    x     :=a.text;
-   xlen  :=low__len(x);
+   xlen  :=low__len32(x);
    xpos  :=0;
 
    //get
@@ -3276,7 +3433,7 @@ var
    //init
    bcls;
    x          :=a.text;
-   xlen       :=low__len(x);
+   xlen       :=low__len32(x);
    xpos       :=0;
    xok        :=false;
    xdoneunits :=false;
@@ -3715,7 +3872,7 @@ s     :=x;
 x     :='';
 
 //get
-for p:=1 to low__len(s) do
+for p:=1 to low__len32(s) do
 begin
 v:=byte(s[p-1+stroffset]);
 
@@ -3746,7 +3903,7 @@ x     :='';
 lp    :=1;
 
 //get
-for p:=1 to low__len(s) do if (s[p-1+stroffset]='.') then
+for p:=1 to low__len32(s) do if (s[p-1+stroffset]='.') then
    begin
    v:=frcmin32(strint32(strcopy1(s,lp,p-lp)),0);
    lp:=p+1;
@@ -3773,7 +3930,7 @@ s     :=x;
 x     :='';
 
 //get
-for p:=1 to low__len(s) do
+for p:=1 to low__len32(s) do
 begin
 v:=byte(s[p-1+stroffset]);
 
@@ -3796,7 +3953,7 @@ var
 
    function m(const s:string):boolean;
    begin
-   result:=strmatch(strcopy1(x,1,low__len(s)),s);
+   result:=strmatch(strcopy1(x,1,low__len32(s)),s);
    end;
 
    function xcharcount(xchar:char;xmincount:longint):boolean;
@@ -3806,7 +3963,7 @@ var
    result:=false;
    xcount:=0;
 
-   for p:=0 to low__len(x) do if (x[p-1+stroffset]=xchar) then
+   for p:=0 to low__len32(x) do if (x[p-1+stroffset]=xchar) then
       begin
       inc(xcount);
       if (xcount>=xmincount) then
@@ -3823,7 +3980,7 @@ s     :=x;
 x     :='';
 
 //get
-for p:=1 to low__len(s) do
+for p:=1 to low__len32(s) do
 begin
 v:=byte(s[p-1+stroffset]);
 
@@ -3906,7 +4063,7 @@ end;
 
 function choco__form(var xdata:string;var xsavechanges,xduplicatetofolder:boolean;xexelist:tchocolist;sfilelist:tdynamicstring;xduplicatefiles:tfastvars):boolean;
 const
-   xscale=1.0;
+   xscale=1.1;
 var
    v:tfastvars;
    a:tbasicscroll;
@@ -4089,7 +4246,7 @@ var
    begin
    //get
    if      (x is tbasicedit) then z:=(x as tbasicedit).value
-   else if (x is tbasictick) then z:=bolstr((x as tbasictick).value)
+   //was: else if (x is tbasictick) then z:=bolstr((x as tbasictick).value)
    else if (x is tbasicbwp)  then
       begin
       str__clear(@xtemp);
@@ -4131,7 +4288,7 @@ xpreviouscontrol :=g.focuscontrol;
 a                :=nil;
 dw               :=round(700*xscale);
 dh               :=round(550*xscale);
-low__winzoom(dw,dh);//17mar2021
+gui__scale(dw,dh);//04may2026 - was: low__winzoom(dw,dh);//17mar2021
 da.left          :=(g.width-dw) div 2;
 da.top           :=(g.height-dh) div 2;
 da.right         :=da.left+dw-1;
@@ -4341,7 +4498,7 @@ var
    begin
    inc(xidcount);
    result:=strlow(low__tob64bstr(k64(xidcount)+x+ms64str,0));
-   if (strcopy1(result,low__len(result),1)='=') then strdel1(result,low__len(result),1);
+   if (strcopy1(result,low__len32(result),1)='=') then strdel1(result,low__len32(result),1);
    end;
 
    function xapperr:boolean;
@@ -4489,7 +4646,7 @@ var
 
    //init
    xfoundtag:=false;
-   xlen     :=low__len(result);
+   xlen     :=low__len32(result);
    p        :=1;
    lp       :=p;
 
@@ -4497,7 +4654,7 @@ var
    if (p<=xlen) and (result[p-1+stroffset]='(') and strmatch(strcopy1(result,p,4),'($$)') then
       begin
       result    :=strcopy1(result,1,p-1)+xscreenshot+strcopy1(result,p+4,xlen);
-      xlen      :=low__len(result);
+      xlen      :=low__len32(result);
       lp        :=p;
       xfoundtag :=true;
       end;
@@ -5175,7 +5332,7 @@ icore.clear;
 
 //get
 lp:=1;
-for p:=1 to low__len(x) do if (x[p-1+stroffset]='>') then
+for p:=1 to low__len32(x) do if (x[p-1+stroffset]='>') then
    begin
    b:=(strint32(strcopy1(x,lp,1))<>0);
    n:=strcopy1(x,lp+1,p-lp-1);
@@ -5267,7 +5424,7 @@ result:=client.ntoolbar('');
 result.halign     :=0;//left          
 result.onclick    :=__onclick;
 result.opartline  :=0.3;
-result.oscaleh    :=0.7;
+result.oscaleh    :=0.63;//0.7;
 result.oscalevpad :=0.1;
 result.oscalesep  :=0.0;
 end;
@@ -5738,7 +5895,7 @@ begin
 xnewbar;
 addbyname(cs_concise_part1);
 
-xnewbar.oscaleh:=0.7;
+xnewbar.oscaleh:=0.63;//was 0.7;
 addbyname(cs_concise_part2);
 
 xnewbar;
@@ -5819,11 +5976,11 @@ var
    var
       xlen:longint;
    begin
-   xlen  :=low__len(x)+1;
+   xlen  :=low__len32(x)+1;
    result:=strmatch(x+'.',strcopy1(xcode2,1,xlen));
    if result then
       begin
-      v   :=strcopy1(xcode2,xlen+1,low__len(xcode2));
+      v   :=strcopy1(xcode2,xlen+1,low__len32(xcode2));
       lv  :=strlow(v);
       vint:=strint32(v);
       end;
@@ -5969,7 +6126,8 @@ else if m2(cs_packfiles_makeunit) then
    if sup__openfolder('') then
       begin
       if not sup__packfiles_makeunit(sup_openfolder,'*','',mv('CS') or mv('C'),mv('CS') or mv('S'),e) then goto skipend;
-      if not sup__saveprompt2(fepas,true,e)                                                             then goto skipend;
+      
+      if not sup__saveprompt2(fepas,true,e)                                                           then goto skipend;
       //reduce memory
       sup__dataclear;
       end;
@@ -6259,9 +6417,10 @@ if system_debug then dbstatus(38,'Debug 010 - 21may2021_528am');//yyyy
 
 
 //self
-inherited create(strint32(app__info('width')),strint32(app__info('height')),true);
-ibuildingcontrol:=true;
-iloaded:=false;
+inherited create(strint32(app__info('width')),strint32(app__info('height')));
+
+ibuildingcontrol      :=true;
+iloaded               :=false;
 
 //start support procs
 sup__start;
@@ -6319,6 +6478,7 @@ xloadsettings;
 
 //finish
 createfinish;
+
 end;
 
 destructor tapp.destroy;

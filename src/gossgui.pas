@@ -37,9 +37,9 @@ uses gosswin2, gossroot, gossfast, gosstext, gossimg, gossio {$ifdef snd},gosssn
 //##
 //## ==========================================================================================================================================================================================================================
 //## Library.................. GUI (gossgui.pas)
-//## Version.................. 4.00.33315 (+5930) (Build no reduced by 5611 due to WordCore (now TextCore) removed to dedicated unit gosstext.pas - 16feb2026)
+//## Version.................. 4.00.33363 (+5942) (Build no reduced by 5611 due to WordCore (now TextCore) removed to dedicated unit gosstext.pas - 16feb2026)
 //## Items.................... 46
-//## Last Updated ............ 03may2026, 23apr2026, 22apr2026, 17apr2026, 15apr2026, 11apr2026, 07apr2026, 03apr2026,
+//## Last Updated ............ 06may2026, 03may2026, 23apr2026, 22apr2026, 17apr2026, 15apr2026, 11apr2026, 07apr2026, 03apr2026,
 //##                                      29mar2026, 26mar2026, 23mar2026, 18mar2026, 10mar2026, 06mar2026, 28feb2026, 26feb2026, 15feb2026, 01feb2026, 23jan2026, 13jan2026, 11jan2026, 07jan2026, 29dec2025, 27dec2025, 26dec2025, 17dec2025, 13dec2025, 12dec2025, 04dec2025, 01dec2025, 30nov2025, 28nov2025, 09nov2025, 06nov2025, 24oct2025, 08oct2025, 05oct2025, 29sep2025, 26sep2025, 18sep2025, 15sep2025, 09sep2025, 07sep2025, 28aug2025, 23aug2025, 15aug2025, 10aug2025, 08aug2025, 26jul2025, 24jul2025, 17jul2025, 14jul2025, 04jul2025, 16jun2025, 12jun2025, 09jun2025, 07jun2025, 03jun2025, 29may2025, 29apr2025, 13apr2025, 31mar2025, 24mar2025, 18feb2025, 28dec2024, 11dec2024, 29nov2024, 22nov2024, 15nov2024, 10nov2024, 04oct2024, 28aug2024, 01ug2024, 25jul2024, 28jun2024, 22mar2024, 09feb2024, 13dec2023, 25nov2023, 19may2023, 25feb2023, 30dec2022, 15nov2022, 06nov2022, 11oct2022, 28sep2022, 05jul2022, 29jun2022, 14jun2022, 31may2022, 14may2022, 30apr2022, 30mar2022, 27feb2022, 08feb2022, 31jan2021, 30dec2021,
 //##                                      19dec2021, 30sep2021, 29aug2021, 09aug2021, 27jul2021, 07jul2021, 20jun2021, 02jun2021, 30may2021, 12may2021, 10may2021, 30apr2021, 19apr2021, 14apr2021, 03apr2021, 31mar2021, 20mar2021, 08mar2021, 26feb2021, 01feb2021, 28jan2021, 11oct2020, 25sep2020, 07sep2020, 26aug2020, 22aug2020, 28jul2020, 23may2020, 10may2020
 //## Lines of Code............ 53,300+
@@ -66,21 +66,21 @@ uses gosswin2, gossroot, gossfast, gosstext, gossimg, gossio {$ifdef snd},gosssn
 //## ==========================================================================================================================================================================================================================
 //## | Name                   | Hierarchy         | Version   | Date        | Update history / brief description of function
 //## |------------------------|-------------------|-----------|-------------|--------------------------------------------------------
-//## | low level procs        | n/a               | 1.00.1890 | 03mar2026   | Collection of basic procedures and functions to support platform and it's controls etc - 14sep2025, 09sep2025, 05sep2025, 28aug2025, 23aug2025, 13mar2025, 11jan2025: ecomode now kicks in at 10min, 18dec2024, 17dec2024: low__font(), 11dec2024, 01dec2024: fixed font leak on Win98 for proc low__toLGF(), 26nov2024, 13dec2023, 19may2023, 11oct2022, 27sep2022, 14may2022, 21may2020
+//## | low level procs        | n/a               | 1.00.1900 | 06may2026   | Collection of basic procedures and functions for app support - 06may2026: removed legacy "low__plat()" support, 03mar2026, 14sep2025, 09sep2025, 05sep2025, 28aug2025, 23aug2025, 13mar2025, 11jan2025: ecomode now kicks in at 10min, 18dec2024, 17dec2024: low__font(), 11dec2024, 01dec2024: fixed font leak on Win98 for proc low__toLGF(), 26nov2024, 13dec2023, 19may2023, 11oct2022, 27sep2022, 14may2022, 21may2020
 //## | scale__*               | family of procs   | 1.00.092  | 17dec2025   | System wide scaling support - 10dec2025, 05sep2025
 //## | system__*              | family of procs   | 1.00.050  | 13may2025   | System management and Windows message handling
-//## | sysback__*             | family of procs   | 1.00.148  | 17apr2026   | Background image management procs (integrates with tbackgroundmanager) - 07mar2026, 01mar2026, 19aug2025, 11apr2025, 18mar2025
+//## | sysback__*             | family of procs   | 1.00.150  | 06may2026   | Background image management procs (integrates with tbackgroundmanager) - 17apr2026, 07mar2026, 01mar2026, 19aug2025, 11apr2025, 18mar2025
 //## | clip__*                | family of procs   | 1.00.382  | 03apr2026   | Clipboard copy/paste for text and images - 18mar2026, 01sep2025, 08aug2025: fixed "cf_png" bad value, 12jun2025, 01jun2025, 01jun2025, 29apr2025, 17mar2025, 17dec2024
 //## | canvas__*              | family of procs   | 1.00.050  | 01dec2024   | TCanvas abstraction procs
 //## | cols_*                 | color schemes     | 1.00.450  | 09mar2025   | Collection of built-in color schemes
 //## | tbasicapp              | tobjectex         | 1.00.045  | 10dec2025   | Basic GUI app structure, complete with GUI (tbasicsystem) - 10aug2024, 30jul2021, 24jul2021
 //## | trnd8                  | tobject           | 1.00.020  | 29nov2023   | Random stream generator
-//## | tbackgroundmanager     | tobject           | 1.00.332  | 02mar2026   | Handles static, animated and dynamic background imagery for "tbasicsystem" - 07jan2026, 13dec2025, 03jun2025
-//## | tbasicsystem           | tobject           | 1.00.6005 | 23apr2026   | GUI rendering and control system - 07apr2026, 03apr2026, 26mar2026, 10mar2026, 06mar2026, 01feb2026, 13jan2026, 29dec2025, 13dec2025, 01dec2025, 09nov2025, 08oct2025, 17sep2025, 09sep2025, 31aug2025, 27aug2025, 17aug2025, 10aug2025, 26jul2025, 04jul2025, 28may2025, 15may2025, 21apr2025, 18feb2025, 04feb2025: auto switches between using buffer 1+2 or only buffer 1 for optimal rendering, 28jan2025, 28nov2024: supports background exclusion areas, 21nov2024: background pauses for window resize/reposition, 18nov2024, 26jul2024m 28jun2024: fixed part paint, 09dec2023, 19nov2023, 12feb2023, 20may2022, 27mar2022: updated onaccept proc for deep drag and drop support, 26feb2022, Fixed ibuffer.w/h mismatch with mustmask - 21sep2021, 29aug2021, 28jul2021, 07jul2021, 18jun2021, 29may2021, 14apr2021, 03apr2021, 08mar2021, 25feb2021, 11oct2020, 28jul2020, 20may2020
+//## | tbackgroundmanager     | tobject           | 1.00.334  | 06may2026   | Handles static, animated and dynamic background imagery for "tbasicsystem" - 02mar2026, 07jan2026, 13dec2025, 03jun2025
+//## | tbasicsystem           | tobject           | 1.00.6015 | 06may2026   | GUI rendering and control system - 23apr2026, 07apr2026, 03apr2026, 26mar2026, 10mar2026, 06mar2026, 01feb2026, 13jan2026, 29dec2025, 13dec2025, 01dec2025, 09nov2025, 08oct2025, 17sep2025, 09sep2025, 31aug2025, 27aug2025, 17aug2025, 10aug2025, 26jul2025, 04jul2025, 28may2025, 15may2025, 21apr2025, 18feb2025, 04feb2025: auto switches between using buffer 1+2 or only buffer 1 for optimal rendering, 28jan2025, 28nov2024: supports background exclusion areas, 21nov2024: background pauses for window resize/reposition, 18nov2024, 26jul2024m 28jun2024: fixed part paint, 09dec2023, 19nov2023, 12feb2023, 20may2022, 27mar2022: updated onaccept proc for deep drag and drop support, 26feb2022, Fixed ibuffer.w/h mismatch with mustmask - 21sep2021, 29aug2021, 28jul2021, 07jul2021, 18jun2021, 29may2021, 14apr2021, 03apr2021, 08mar2021, 25feb2021, 11oct2020, 28jul2020, 20may2020
 //## | tbasiccontrol          | tobject           | 1.00.1270 | 29mar2026   | Flicker free base control with built-in _onnotify/_ontimer and _onpaint procs for easy customisation - 23mar2026, 25feb2026, 26dec2025, 04dec2025, 30nov2025, 05sep2025, 19jul2025, 03jul2025, 24may2025, 19apr2025, 31mar2025, 06jan2025, 25dec2024, 28nov2024, 19aug2024, 28jun2024: fixed ldso4 leak, 02dec2023: ldso4 cliparea handling, 17nov2023, 12jan2022, 09sep2021, 27mar2021, 11oct2020, 20may2020, 12apr2020, 14mar2020
 //## | tbasicimgview          | tbasiccontrol     | 1.00.755  | 03apr2026   | Animated image viewer - 18feb2025, 30jan2025, 26dec2024
 //## | tbasichelp             | tbasiccontrol     | 1.00.100  | 16may2025   | Realtime help scroller - 02aug2024, 12apr2020, 25mar2020
-//## | tbasicnav              | tbasiccontrol     | 1.00.1258 | 18sep2025   | Multi-purpose favorites/files/folders/open/save navigation control - 04sep2025, 05jun2025, 24jan2025, 28dec2024, 01dec2024: removed " - " from preview label,22nov2024, 20aug2024, 11feb2023, 11oct2022, 27sep2022, 28jun2022, 22may2022, 23mar2022, 12jan2022, 09aug2021, 28jul2021, 18jun2021, 06apr2021, 25mar2021, 22sep2020
+//## | tbasicnav              | tbasiccontrol     | 1.00.1270 | 05may2026   | Multi-purpose favorites/files/folders/open/save navigation control - 18sep2025, 04sep2025, 05jun2025, 24jan2025, 28dec2024, 01dec2024: removed " - " from preview label,22nov2024, 20aug2024, 11feb2023, 11oct2022, 27sep2022, 28jun2022, 22may2022, 23mar2022, 12jan2022, 09aug2021, 28jul2021, 18jun2021, 06apr2021, 25mar2021, 22sep2020
 //## | tbasicbwp              | tbasiccontrol     | 1.00.700  | 17feb2026   | GUI front-end for TextCore -> multi-format text box -> supports txt, bwd, bwp, rtf and dic text documents - 23jan2026, 27aug2025, 20apr2025, 31mar2025, 17dec2024, 09dec2024: keyboard shortcut removed for "copy as plain text", 28aug2024, 18feb2023, 04oct2022, 24sep2022, 18jun2022, 29may2021, 12mar2021
 //## | tbwpbar                | tbasiccontrol     | 1.00.160  | 01mar2026   | Font name / size / color and style toolbar for tbasicbwp text box - 15nov2023
 //## | tbasiccolor            | tbasiccontrol     | 1.00.365  | 24oct2025   | Color picker with optional shade ranges - 03feb2025, 09dec2024: xshadecolor24 proc for when low__capcolor fails, 09dec2024: tweaked color capture, 01mar2021
@@ -802,7 +802,7 @@ type
     function canpasteimage:boolean;
     function pasteimage:boolean;
     function canselectimage:boolean;
-    function selectimage:boolean;
+    function selectimage:boolean;//06may2026
     function canclearimage:boolean;
     function clearimage:boolean;
 
@@ -1069,6 +1069,7 @@ type
     istatustext           :array[0..9] of string;
     istatustep            :array[0..9] of longint;
     istatustitle          :string;
+    istatusscale          :double;//05may2026
     istatusshow           :boolean;
     istatusstopped        :boolean;
 
@@ -1292,7 +1293,7 @@ type
 
     function xpopnav(var xvalue:string;xcommonfolder,xstyle:string;var daction:string):boolean;
     function xpopnav2(var xvalue:string;var xfilterindex:longint;xfilterlist,xcommonfolder,xstyle,xhisname,xtitle:string;var daction:string):boolean;
-    function xpopnav3(var xvalue:string;var xfilterindex:longint;xfilterlist,xcommonfolder,xstyle,xhisname,xtitle:string;var daction:string;xcanpreview:boolean):boolean;
+    function xpopnav3(var xvalue:string;var xfilterindex:longint;xfilterlist,xcommonfolder,xstyle,xhisname,xtitle:string;var daction:string;const xcanpreview,xAllowUnknownFileTypes:boolean):boolean;
 
     property winemaximised:boolean read iwinemaximised;
     procedure form__center(xmonitorindex:longint);
@@ -1371,6 +1372,7 @@ type
     function mustmask                 :boolean;
     property maskval                  :longint                read getmaskval;
     property mask                     :tmask8                 read imask;
+    function mask__findval(const sx,sy:longint32):longint32;//06may2026
 
     //.background support
     property backgroundname           :string                 read getbackgroundname                  write setbackgroundname;
@@ -1399,7 +1401,7 @@ type
     function ndlg(da:twinrect;xshowhead:boolean):tbasicscroll;
     function ndlg2(da:twinrect;xshowhead,xstatic:boolean):tbasicscroll;
     function ndlg3(da:twinrect;xtep:longint;xtitle:string;xshowhead,xstatic:boolean):tbasicscroll;
-    function nstatus(xtitle:string):tbasicscroll;
+    function nstatus(xtitle:string;xscale:double):tbasicscroll;//05may2026
     function nscroll(da:twinrect):tbasicscroll;
     function nsetcolor(da:twinrect;xshowhead:boolean):tbasicsetcolor;//27feb2021
     function nsetcolor2(da:twinrect;xshowhead,xuse32:boolean):tbasicsetcolor;//17nov2023
@@ -1489,7 +1491,7 @@ type
     function popopen3(var xfilename:string;var xfilterindex:longint;xfilterlist,xcommonfolder,xtitle2:string;xcanpreview:boolean):boolean;
     function popsave(var xfilename:string;xfilterlist,xcommonfolder:string;var daction:string):boolean;
     function popsave2(var xfilename:string;xfilterlist,xcommonfolder,xtitle2:string;var daction:string):boolean;
-    function popsave3(var xfilename:string;xfilterlist,xcommonfolder,xtitle2:string;var daction:string;xcanpreview:boolean):boolean;
+    function popsave3(var xfilename:string;xfilterlist,xcommonfolder,xtitle2:string;var daction:string;const xcanpreview,xAllowUnknownFileTypes:boolean):boolean;
     function popfolder(var xfilename:string;const xcommonfolder:string):boolean;
     function popfolder1(var xfilename:string;const xmasklist,xcommonfolder:string):boolean;
     function popfolder2(var xfilename:string;const xmasklist,xcommonfolder:string;xshowfiles,xcanpreview:boolean):boolean;
@@ -1528,13 +1530,16 @@ type
     procedure xwaitfocus;
 
     //window handlers
-    procedure showappmenu(xallwinbuttons:boolean);//07sep2025, 27dec2024
+    procedure showappmenu(xallwinbuttons:boolean);//06may2026, 07sep2025, 27dec2024
     property winhover                 :longint                read iwinhover;
     property winhoverlayer            :longint                read iwinhoverlayer;
     property winfocus                 :longint                read iwinfocus write setwinfocus;
     property winfocuslayer            :longint                read iwinfocuslayer;
     function xwinfindlayer(xcoreindex:longint;var xlayer:longint):boolean;
     function xwinfindbyxy(sx,sy:longint;var xcoreindex,xwinlayer:longint):boolean;
+
+    function window__findxy(const sx,sy:longint;var xcoreindex,xwinlayer:longint32):boolean;//06may2026
+
     procedure xwintop(x:tbasiccontrol);
     procedure xwinbot(x:tbasiccontrol);
     procedure xwinnil(x:tbasiccontrol);
@@ -1544,6 +1549,11 @@ type
     function wtop(var x:tbasiccontrol;var xindex:longint):boolean;//xxxxxxxxxxxxx//dodgy, needs upgrading........
     function xacceptfindbyxy(sx,sy:longint;var xout:tbasiccontrol):boolean;//updated - 20mar2022
     procedure xsync_opacity;//02dec2024: streamlined viopacityspeed
+
+    //control handlers
+    function control__fastfindxy(const sx,sy:longint;var xcoreindex:longint):boolean;//07may2026
+    function control__fastfindxyb(const sx,sy:longint):longint32;
+
 
     //.drag support
     procedure dragstart(xcoreindex:longint);
@@ -1564,9 +1574,9 @@ type
 
     //.status support
     procedure xstatuspaintnow;
-    procedure xstatusstart(xrowcount:longint);
-    procedure xstatusstart2(xrowcount:longint;const xtab:string);//15may2022
-    procedure xstatusstart3(xrowcount:longint;const xtab:string;xresetcancel:boolean);//20may2022
+    procedure xstatusstart(const xscale:double;const xrowcount:longint);
+    procedure xstatusstart2(const xscale:double;const xrowcount:longint;const xtab:string);//15may2022
+    procedure xstatusstart3(const xscale:double;const xrowcount:longint;const xtab:string;xresetcancel:boolean);//20may2022
     procedure xstatusstop;
     property xstatustopped:boolean read getstatusstopped;
     procedure xstatus(xpert:double;xtitle:string);//15may2022
@@ -1576,6 +1586,7 @@ type
     procedure xstatus_sysstatus_alloff;
     property xstatustitle             :string                 read istatustitle;
     property xstatuspert              :double                 read istatuspert write setstatuspert;
+    property xstatusscale             :double                 read istatusscale;
 
     //system handlers
     procedure xcenter(x:tbasiccontrol);
@@ -2397,7 +2408,7 @@ type
     procedure setsortstyle(x:longint);
     function getdownindex:longint;
     procedure setdownindex(x:longint);
-    function xfiltername(xnewname:string;xaddfilterext:boolean):string;
+    function xfiltername(xnewname:string;xaddfilterext:boolean):string;//05may2026
     procedure findex_tep;
     function xenhancednames(x:string):string;
     function getitemindex:longint;
@@ -2430,6 +2441,7 @@ type
     ofindname:boolean;//default=false, true=selects name from list when value is a full filename - 19dec2021
     ocansort:boolean;//default=true=allow user to change sort style - 12jan2022
     onumber:boolean;//default=false, true=number only the files list section - 20mar2022
+    oAllowUnknownFileTypes:boolean;//default=false - 05may2026
     //.minmax range enforcer - 27sep2022
     ominsize:comp;
     omaxsize:comp;
@@ -5286,7 +5298,6 @@ var
    visleekGradient       :boolean=false;
 
    viStartupdone         :boolean=false;//changes to TRUE when system has finished starting, e.g. loaded vars, aligned atleast once and displayed splash(if set)- 15nov2023
-   viMaster              :boolean=true;//set in siIint() proc - FALSE=means program does not write settings to folder - read only mode
 
    //.midi device
    vimididevice          :longint=mmsys_mid_midimapper;//09sep2025, 05mar2022
@@ -5508,12 +5519,15 @@ var
 
    //system fast references ----------------------------------------------------
    sysfast_root          :string='';
+   sysfast_storage       :string='';//06may2026
    sysfast_settings      :string='';
+   sysfast_images        :string='';
+   sysfast_cursors       :string='';
    sysfast_schemes       :string='';
+   sysfast_temp          :string='';//06may2026
    sysfast_startmenu     :string='';
    sysfast_desktop       :string='';
    sysfast_programs      :string='';
-   sysfast_blaiz         :string='';
 
    //system multi-tab support --------------------------------------------------
    //.optional -> used for general reference and return values for host application
@@ -5537,17 +5551,12 @@ var
    syssettings           :tvars8=nil;
    prgsettings           :tvars8=nil;
 
-   //EXE system storage --------------------------------------------------------
-   //Streams are set when EXE has data packed behind it, which switches it to
-   //slave mode with "viMaster=false"
-   usrdata               :tstr8=nil;
-   sysmore               :tvars8=nil;
-
    //sysbox
    sysbox                :tobject=nil;//tracks last active text box - 15feb2026, 14nov2023
 
    //system cursor support -----------------------------------------------------
    system_cursorname     :string='';
+   system_cusorUntempName:string='';//06may2026
    system_cursorcolor1   :longint=0;
    system_cursorcolor2   :longint=0;
    system_cursorsize     :longint=0;
@@ -5707,14 +5716,6 @@ function low__getcursordownpos(var x:tpoint):boolean;
 function low__getcursordownposb:tpoint;
 
 
-//.master support --------------------------------------------------------------
-procedure master__storevars(xvars:tvars8;xsyssettings,xprgsettings,xwidth,xheight,xcursor:boolean;xtitle:string);
-procedure master__size(swidth,sheight:longint;var dwidth,dheight:longint);
-procedure master__title;
-procedure master__cursor;//uses smore: "cursor"
-procedure master__cursorCLEAN;
-
-
 //.raw support -----------------------------------------------------------------
 function low__imgdraw2432(s:tobject;stransparent:boolean;d:tobject;dx,dy,dswapblack:longint;dclip:twinrect;xgreyscale,xfocus:boolean):boolean;
 
@@ -5782,22 +5783,6 @@ function low__capcolor(const xpos,ypos:longint;const xfromcursor:boolean):longin
 function low__capcolor2(xpos,ypos:longint;const xfromcursor:boolean;const xfromGUIbuffer:tbasiccontrol;const xforceGUIbuffer:boolean):longint;//09sep2025
 function low__firstnbl(xdata,xoutdata:tstr8):boolean;//first non-blank line
 function low__firstnbl2(const xtext:string):string;
-
-
-//.platform support ------------------------------------------------------------
-function low__plat(xcmd,xprgname:string;xrunaction:boolean):string;
-function low__platroot:string;
-function low__platfolder(xname:string):string;
-function low__platfolder2(xname:string;xcreate:boolean):string;//10feb2023
-function low__platsyssettings:string;//system settings
-function low__platprgsettings:string;//prorgam settings - 05oct2020
-function low__platimages:string;//images folder - 12feb2022
-function low__plattemp:string;//tep folder - 19feb2022
-function low__platonce:string;
-function low__platactive:string;
-function low__platsysext(xext:string):string;//29aug2021
-function low__platprgext(xext:string):string;//29aug2021
-function low__platDLLname(xname:string):string;//26sep2021
 
 
 //.system timer support --------------------------------------------------------
@@ -6081,6 +6066,31 @@ function scale__fontRatioCorrection:double;
 function scale__counterScaling(const xvalue:longint):longint;
 
 
+//cursor procs -----------------------------------------------------------------
+//note: control app's cursor
+
+procedure cursor__load(xforce:boolean);
+function cursor__colorinfo(xname:string;var s,d:longint):boolean;//06may2026
+procedure cursor__loadinfo(var xname,xfilename:string);
+procedure cursor__save(xname:string;xhost:tbasicsystem);//09mar2025, 24jan2025
+procedure cursor__softsaveandload;
+
+function cursor__canformat(const xcursordata:pobject;var xformat:string):boolean;
+function cursor__canformatb(const xcursordata:pobject):boolean;
+
+procedure cursor__usetemp(const xcursordata:pobject);
+function cursor__canuntemp:boolean;
+procedure cursor__untemp;
+
+//.screen cursor
+procedure cursor__reloadifsizehaschanged;
+procedure cursor__set(x:longint);
+procedure cursor__reapply;
+function cursor__handle:longint;
+function cursor__size:longint;
+function cursor__cursor:longint;
+
+
 //app support ------------------------------------------------------------------
 function gui__dpi:longint;//10dec2025
 procedure gui__zoom(var aw,ah:longint);//10dec2025
@@ -6093,25 +6103,12 @@ procedure gui__smallfont2(const xinfo:tvirtualinfo;const xscaleThreshold:double;
 
 procedure gui__timers;
 
-//.dynamic cursor
-procedure app__loadcursor(xforce:boolean);
-function app__cursorcolorinfo(xname:string;var s,d:longint):boolean;
-procedure app__loadcursorinfo(var xname,xfilename:string);
-procedure app__savecursor(xname:string;xhost:tbasicsystem);//09mar2025, 24jan2025
-procedure app__cursorSoftsaveandload;
-
-//.screen cursor
-procedure app__reloadcursorifsizehaschanged;
+//.misc
 function app__cursor:longint;
-procedure app__setcursor(x:longint);
-
-procedure app__cursorReapply;
-function app__cursorhandle:longint;
 function app__gui:tbasicsystem;
 function app__guiactive:tbasicsystem;
 function app__guihandle:hauto;
 function app__guiactivehandle:hauto;
-function app__cursorsize:longint;
 
 //.realtime support - 25mar2022
 function app__realtimeOK:boolean;
@@ -6122,6 +6119,7 @@ procedure app__realtimeSYNC;//internally called by system procs - 19apr2022
 implementation
 
 uses main, gossteps, gossnet;
+
 
 
 //start-stop procs -------------------------------------------------------------
@@ -6214,15 +6212,6 @@ for p:=0 to high(syshis_nam) do syshis_nam[p]:='';
 
 //init system vars
 
-//system storage handlers ------------------------------------------------------
-usrdata:=str__new8;
-sysmore:=vnew;
-
-//.program code checker - use code "-1745" to disable - 27sep2022, 28aug2021
-xcodecheck;
-
-//.viMaster - FALSE=means code is not connected to a folder - all settings strictly in RAM - e.g. a EXE Document
-if (sysmore.len>=1) or (blen(usrdata)>=1) then viMaster:=false;
 
 //WINE Support - 02feb2022 -----------------------------------------------------
 system_winepresent:=io__driveexists('z:\');
@@ -6279,7 +6268,6 @@ sysback__init;
 siLoadsyssettings;
 siLoadprgsettings;
 
-master__cursor;
 except;end;
 end;
 
@@ -6313,15 +6301,6 @@ visyncevent:=nil;
 //system settings handlers -----------------------------------------------------
 siSavesyssettings;
 siSaveprgsettings;
-
-
-//master support cleanup -------------------------------------------------------
-master__cursorCLEAN;//15nov2023
-
-
-//system storage handlers ------------------------------------------------------
-str__free(@usrdata);
-freeobj(@sysmore);
 
 
 //system settings handlers #2 --------------------------------------------------
@@ -6360,8 +6339,8 @@ xname:=strlow(xname);
 if (strcopy1(xname,1,8)='gossgui.') then strdel1(xname,1,8) else exit;
 
 //get
-if      (xname='ver')        then result:='4.00.33315'
-else if (xname='date')       then result:='03may2026'
+if      (xname='ver')        then result:='4.00.33363'
+else if (xname='date')       then result:='06may2026'
 else if (xname='name')       then result:='GUI'
 else
    begin
@@ -6374,44 +6353,64 @@ end;
 
 //-- App Support - 30sep2021 ---------------------------------------------------
 //xxxxxxxxxxxxxxxxxxxxxxxxxxx//111111111111111111
-procedure app__cursorSoftsaveandload;
+procedure cursor__softsaveandload;
 var
    s,d:longint;
+
 begin
-app__cursorcolorinfo(system_cursorname,s,d);
-if (strcopy1(system_cursorname,1,1)='!') and ((system_cursorcolor1<>s) or (system_cursorcolor2<>d)) then app__savecursor(system_cursorname,nil);
-app__loadcursor(false);
+
+cursor__colorinfo(system_cursorname,s,d);
+
+if (strcopy1(system_cursorname,1,1)='!') and ((system_cursorcolor1<>s) or (system_cursorcolor2<>d)) then
+   begin
+
+   cursor__save(system_cursorname,nil);
+
+   end;
+
+cursor__load(false);
+
 end;
 
-function app__cursorcolorinfo(xname:string;var s,d:longint):boolean;
-      procedure xset(sr,sg,sb,dr,dg,db:longint);
+function cursor__colorinfo(xname:string;var s,d:longint):boolean;//06may2026
+
+      procedure xset(const sr,sg,sb,dr,dg,db:longint);
       begin
-      result:=true;
-      s:=rgba0__int(sr,sg,sb);
-      d:=rgba0__int(dr,dg,db);
+
+      result          :=true;
+      s               :=rgba0__int(sr,sg,sb);
+      d               :=rgba0__int(dr,dg,db);
+
       end;
 
-      procedure xset0(dr,dg,db:longint);
+      procedure xset0(const dr,dg,db:longint);
       begin
-      result:=true;
-      d:=rgba0__int(dr,dg,db);
-      s:=int__dif24(d,-100);
-      s:=int__makevis24(s,d,60);
+
+      result          :=true;
+      d               :=rgba0__int(dr,dg,db);
+      s               :=int__dif24(d,-100);
+      s               :=int__makevis24(s,d,60);
+
       end;
 
-      procedure xset1(x:longint);
+      procedure xset1(const x:longint);
       var
          a:tcolor32;
+
       begin
-      a:=inta__c32(x,255);
+
+      a               :=inta__c32(x,255);
       xset0(a.r,a.g,a.b);
+
       end;
+
 begin
+
 //defaults
-result:=false;
+result      :=false;
 
 //init
-xname:=strlow(xname);
+xname       :=strlow(xname);
 
 //get
 if      (xname='white')    then xset(0,0,0,255,255,255)
@@ -6426,11 +6425,23 @@ else if (xname='blue')     then xset0(150,211,255)
 else if (xname='green')    then xset0(154,255,122)
 else if (xname='grey')     then xset0(191,190,186)
 else if (xname='!title')   then xset1(vititle.background)
-else if (xname='!hover')   then xset1(vinormal.hover);
+else if (xname='!hover')   then xset1(vinormal.hover)
+
+else begin//06may2026
+
+   s        :=0;
+   d        :=0;
+
+   end;
+
 end;
 
-procedure app__savecursor(xname:string;xhost:tbasicsystem);//09mar2025, 24jan2025
+procedure cursor__save(xname:string;xhost:tbasicsystem);//09mar2025, 24jan2025
 var//Note: Saves data to disk, but for new cursor to take affect a call must be made to app__loadcursor() - 24jan2024
+   //
+   //Note: File name clarity: "sys-settings.cur" is used to create, cache, and load the built in colored cursors
+   //      of "red..white" and "adaptive *", whereas "prg-settings.cur" stores the "custom" cursor chosen by user - 06may2026
+
    n,sname,df,e:string;
    a:tstr8;
    b:tbasicimage;
@@ -6438,18 +6449,33 @@ var//Note: Saves data to disk, but for new cursor to take affect a call must be 
 
    procedure xusea;
    begin
-   try
+
    if (a=nil) then a:=str__new8;
+
    a.clear;
-   except;end;
+
    end;
 
    procedure xdefcursor;
    var
       e:string;
    begin
-   xname:='default';
-   io__tofilestr(low__platsysext('cur.inf'),xname,e);
+
+   xname    :='default';
+
+   io__tofilestr( app__settingsfile(sys_settings+'.cur.inf') ,xname,e);
+
+   end;
+
+   procedure xtmpcursor;//06may2026
+   var
+      e:string;
+   begin
+
+   xname    :='temp';
+
+   io__tofilestr( app__settingsfile(sys_settings+'.cur.inf') ,xname,e);
+
    end;
 
    procedure xsavecursor;
@@ -6460,24 +6486,32 @@ var//Note: Saves data to disk, but for new cursor to take affect a call must be 
       v,sw,sh,sx,sy:longint;
       sc,dc,c32:tcolor32;
       sr32:pcolorrow32;
+
    begin
-   try
+
    //defaults
-   a:=nil;
-   s:=nil;
+   a        :=nil;
+   s        :=nil;
+
+   try
 
    //init
-   a:=str__new8;
-   s:=misimg32(1,1);
-   df:=low__platsysext('cur');
-   sc:=inta__c32(ss,255);
-   dc:=inta__c32(dd,255);
+   a     :=str__new8;
+   s     :=misimg32(1,1);
+   df    :=app__settingsfile(sys_settings+'.cur');
+   sc    :=inta__c32(ss,255);
+   dc    :=inta__c32(dd,255);
 
    //load cursor template => red=transparent color, black=cursor outline, white=cursor inner area
    if system_osWin9X then a.aadd(cur_template_arrow32)//for Windows 95/98 which handles max 64x64 cursor but without alpha support
    else                   a.aadd(cur_template_arrow128);
 
-   if (io__anyformatb(@a)='ZIP') then low__decompress(@a);//25jan2025
+   if (io__anyformatb(@a)='ZIP') then
+      begin
+
+      low__decompress(@a);//25jan2025
+
+      end;
 
    //from image
    mis__fromdata(s,@a,e);
@@ -6485,240 +6519,531 @@ var//Note: Saves data to disk, but for new cursor to take affect a call must be 
    //color the cursor
    if misok32(s,sw,sh) then
       begin
+
       for sy:=0 to (sh-1) do
       begin
+
       if not misscan32(s,sy,sr32) then break;
 
       for sx:=0 to (sw-1) do
       begin
-      c32:=sr32[sx];
+
+      c32   :=sr32[sx];
 
       //.red = transparent background
       if (c32.r>c32.g) and (c32.r>c32.b) then
          begin
-         v:=255-c32.r;
-         c32.a:=v;
-         c32.r:=( (v*sc.r) + ((255-v)*(0)) ) div 256;
-         c32.g:=( (v*sc.g) + ((255-v)*(0)) ) div 256;
-         c32.b:=( (v*sc.b) + ((255-v)*(0)) ) div 256;
+
+         v            :=255-c32.r;
+
+         c32.a        :=v;
+         c32.r        :=( (v*sc.r) + ((255-v)*(0)) ) div 256;
+         c32.g        :=( (v*sc.g) + ((255-v)*(0)) ) div 256;
+         c32.b        :=( (v*sc.b) + ((255-v)*(0)) ) div 256;
+
          end
       else
          begin
-         v:=c32.r;
+
+         v            :=c32.r;
+
          if (c32.g>v) then v:=c32.g;
          if (c32.b>v) then v:=c32.b;
 
-         c32.r:=( (v*dc.r) + ((255-v)*(sc.r)) ) div 256;
-         c32.g:=( (v*dc.g) + ((255-v)*(sc.g)) ) div 256;
-         c32.b:=( (v*dc.b) + ((255-v)*(sc.b)) ) div 256;
+         c32.r        :=( (v*dc.r) + ((255-v)*(sc.r)) ) div 256;
+         c32.g        :=( (v*dc.g) + ((255-v)*(sc.g)) ) div 256;
+         c32.b        :=( (v*dc.b) + ((255-v)*(sc.b)) ) div 256;
 
          //if (v<=0) then c32.a:=120 else
-         c32.a:=255;
+         c32.a        :=255;
+
          end;
 
-      sr32[sx]:=c32;
+      sr32[sx]        :=c32;
+
       end;//dx
+
       end;//dy
+
       end;
 
    //save as cursor + auto hotspot
    cur32__todata(s,@a);//27may2025
 
    io__tofile(df,@a,e);
-   io__tofilestr(low__platsysext('cur.inf'),xname,e);
+   io__tofilestr(app__settingsfile(sys_settings+'.cur.inf'),xname,e);
+
    except;end;
-   try
+
+   //free
    str__free(@a);
    freeobj(@s);
-   except;end;
+
    end;
+
 begin
+
+//defaults
+a           :=nil;
+b           :=nil;
+
 try
+
 //init
-xname:=strlow(xname);
-sname:=xname;
-df:=low__platsysext('cur');
-a:=nil;
-b:=nil;
+xname       :=strlow(xname);
+sname       :=xname;
+df          :=app__settingsfile(sys_settings+'.cur');
 
 //get
 if      (xname='default')                           then xdefcursor
-else if app__cursorcolorinfo(xname,ss,dd)           then xsavecursor
+else if (xname='temp')                              then xtmpcursor//06may2026
+else if cursor__colorinfo(xname,ss,dd)              then xsavecursor
 else if (xname='custom') or (xname='custom.prompt') then
    begin
-   xname:='custom';
+
+   xname              :='custom';
 
    //prompt for custom cursor file
    if (sname='custom.prompt') and (xhost<>nil) and xhost.popopencur(sysfile_cursor,sysfile_cursor_openfilter,'',true) then
       begin
-      n:=io__readfileext_low(sysfile_cursor);
+
+      n               :=io__readfileext_low(sysfile_cursor);
 
       //.png
       if (n='png') then
          begin
+
          xusea;
-         b:=misimg32(1,1);
+         b            :=misimg32(1,1);
+
          if mis__fromfile(b,sysfile_cursor,e) then
             begin
+
             low__toico32(b,true,false,0,32,-1,-1,int1,int2,int3,a,e);
-            io__tofile(low__platprgext('cur'),@a,e);
+            io__tofile( app__settingsfile(prg_settings+'.cur') ,@a,e);
+
             end;
+
          end
+
       //.gif
       else if (n='gif') or (n='san') or (n='pic8') or (n='tea') or (n='img32') then//16sep2025
          begin
+
          xusea;
-         b:=misimg32(1,1);
-         b.ai.use32:=true;
+
+         b            :=misimg32(1,1);
+         b.ai.use32   :=true;
+
          if mis__fromfile(b,sysfile_cursor,e) then
             begin
+
             if b.ai.transparent then mask__feather(b,b,0,mispixel24VAL(b,0,0),int1);
+
             low__toani32(b,nil,'ani',false,0,b.ai.delay,-1,-1,true,a,e);
-            io__tofile(low__platprgext('cur'),@a,e);
+
+            io__tofile( app__settingsfile(prg_settings+'.cur') ,@a,e);
+
             end;
+
          end
+
       //.cur + ani
-      else io__copyfile(sysfile_cursor,low__platprgext('cur'),e);
+      else io__copyfile(sysfile_cursor, app__settingsfile(prg_settings+'.cur') ,e);
+
       end;
 
    //inform system we are using the custom cursor
-   io__tofilestr(low__platsysext('cur.inf'),xname,e);
+   io__tofilestr( app__settingsfile(sys_settings+'.cur.inf') ,xname,e);
 
    //load cursor - 09mar2025
-   app__loadcursor(true);
+   cursor__load(true);
+
    end
+
 else xdefcursor;
 
 //vars
 if (system_cursor=scArrow) then system_cursorchanged:=true;
+
 except;end;
-try
+
+//free
 str__free(@a);
 freeobj(@b);
-except;end;
+
 end;
 
-procedure app__loadcursorinfo(var xname,xfilename:string);
+procedure cursor__loadinfo(var xname,xfilename:string);
 var
    s,d:longint;
    e:string;
+
 begin
-try
+
 //get name from disk
-if not io__fromfilestr(low__platsysext('cur.inf'),xname,e) then xname:='default';
+if not io__fromfilestr( app__settingsfile(sys_settings+'.cur.inf') ,xname,e) then xname:='default';
 
 //decide
-xname:=strlow(xname);
+xname                        :=strlow(xname);
 
-if (xname='default') or (xname='custom') or app__cursorcolorinfo(xname,s,d) then
+if (xname='default') or (xname='temp') or (xname='custom') or cursor__colorinfo(xname,s,d) then
    begin
    //ok
    end
-else xname:='default';
+
+else xname                   :='default';
 
 //filename
 if      (xname='default')    then xfilename:=''
-else if (xname='custom')     then xfilename:=low__platprgext('cur') //program cursor
-else                              xfilename:=low__platsysext('cur');//system cursor
-except;end;
+else if (xname='custom')     then xfilename:=app__settingsfile(prg_settings +'.cur') //program cursor
+else if (xname='temp')       then xfilename:=app__settingsfile('temp'       +'.cur') //temp cursor
+else                              xfilename:=app__settingsfile(sys_settings +'.cur');//system cursor
+
 end;
 
-procedure app__loadcursor(xforce:boolean);
+procedure cursor__load(xforce:boolean);
 var
    xname,xfilename:string;
    s,d,xsize:longint;
+   xok:boolean;
+
 begin
-try
+
 //load info
-app__loadcursorinfo(xname,xfilename);
-app__cursorcolorinfo(xname,s,d);
+cursor__loadinfo(xname,xfilename);
+cursor__colorinfo(xname,s,d);
 
 //get
-xsize:=strint32(reg__readval(0,'Control Panel\Cursors\CursorBaseSize',true));
+xsize                        :=strint32(reg__readval(0,'Control Panel\Cursors\CursorBaseSize',true));
 
 if (xname<>system_cursorname) or ((strcopy1(xname,1,1)='!') and ((system_cursorcolor1<>s) or (system_cursorcolor2<>d)) ) or (system_cursorsize<>xsize) or xforce then
    begin
-   system_cursorname:=xname;
-   system_cursorcolor1:=s;
-   system_cursorcolor2:=d;
-   system_cursorsize:=xsize;
-   system_cursorref64:=slowms64+10000;//10s
-   xforce:=true;
+
+   system_cursorname         :=xname;
+   system_cursorcolor1       :=s;
+   system_cursorcolor2       :=d;
+   system_cursorsize         :=xsize;
+   system_cursorref64        :=slowms64+10000;//10s
+   xforce                    :=true;
+
    end;
 
 //set
 if xforce then
    begin
-   if (xfilename<>'') then system_cursorlist[scArrow]:=win____loadcursorfromfile(pchar(xfilename));
-   if (xfilename='') or (system_cursorlist[scArrow]=0) then system_cursorlist[scArrow]:=win____loadcursor(0,IDC_ARROW);
+
+   //init
+   xok                       :=(xfilename<>'') and io__fileexists( xfilename );//06may2026
+
+   //get
+   if xok                                         then system_cursorlist[scArrow]:=win____loadcursorfromfile(pchar(xfilename));
+   if (not xok) or (system_cursorlist[scArrow]=0) then system_cursorlist[scArrow]:=win____loadcursor(0,IDC_ARROW);
+
    end;
 
 //sync
 if (system_cursor=scArrow) and (xforce or system_cursorchanged) then
    begin
-   system_cursorchanged:=true;
-   app__setcursor(system_cursor);
+
+   system_cursorchanged      :=true;
+
+   cursor__set(system_cursor);
+
    end;
-except;end;
+
 end;
 
-procedure app__reloadcursorifsizehaschanged;
+function cursor__canformat(const xcursordata:pobject;var xformat:string):boolean;
+
+   function m(n:string):boolean;
+   begin
+
+   result:=strmatch(xformat,n);
+
+   end;
+
 begin
-if (not strmatch(system_cursorname,'default')) and (system_cursorsize<>strint32(reg__readval(0,'Control Panel\Cursors\CursorBaseSize',true))) then app__loadcursor(false);
+
+//defaults
+result      :=false;
+
+//check
+if not str__lock( xcursordata ) then exit;
+
+//get
+xformat     :=io__anyformatb( xcursordata );
+
+result      :=m('ico') or m('cur') or m('ani') or m('png') or m('gif') or m('png') or
+              m('san') or m('pic8') or m('tea') or m('img32');
+
+//free
+str__uaf( xcursordata );
+
+end;
+
+function cursor__canformatb(const xcursordata:pobject):boolean;
+var
+   str1:string;
+
+begin
+
+result      :=cursor__canformat( xcursordata ,str1 );
+
+end;
+
+function cursor__canusetemp(const xcursordata:pobject):boolean;
+begin
+
+result:=cursor__canformatb( xcursordata );
+
+end;
+
+procedure cursor__usetemp(const xcursordata:pobject);
+label
+   skipend;
+   
+var
+   xformat,e:string;
+   a:tstr8;
+   b:tbasicimage;
+   int1,int2,int3:longint32;
+   xok:boolean;
+
+   function m(n:string):boolean;
+   begin
+
+   result:=strmatch(xformat,n);
+
+   end;
+
+   procedure aclear;
+   begin
+
+   if (a=nil) then a:=str__new8;
+
+   a.clear;
+
+   end;
+
+   procedure bclear;
+   begin
+
+   if (b=nil) then b:=misimg32(1,1);
+
+   mis__clear(b);
+
+   end;
+
+begin
+
+//defaults
+a           :=nil;
+b           :=nil;
+xok         :=false;
+
+//check
+if not str__lock( xcursordata )               then exit;
+
+try
+
+//init
+if not cursor__canformat(xcursordata,xformat) then goto skipend;
+
+//store the current non-temp cursor name so we can revert back to it at a later stage
+if not strmatch(system_cursorname,'temp') then
+   begin
+
+   system_cusorUntempName:=system_cursorname;
+
+   end;
+
+//get -> write cursor data to temp.cur in app settings folder
+
+//.png
+if m('png') then
+   begin
+
+   aclear;
+   bclear;
+
+   if mis__fromdata(b,xcursorData,e) then
+      begin
+
+      low__toico32(b,true,false,0,32,-1,-1,int1,int2,int3,a,e);
+      io__tofile( app__settingsfile('temp.cur') ,@a,e);
+
+      xok:=true;
+
+      end;
+
+   end
+
+//.gif
+else if m('gif') or m('san') or m('pic8') or m('tea') or m('img32') then//16sep2025
+   begin
+
+   aclear;
+   bclear;
+
+   b.ai.use32   :=true;
+
+   if mis__fromdata(b,xcursorData,e) then
+      begin
+
+      if b.ai.transparent then mask__feather(b,b,0,mispixel24VAL(b,0,0),int1);
+
+      low__toani32(b,nil,'ani',false,0,b.ai.delay,-1,-1,true,a,e);
+
+      io__tofile( app__settingsfile('temp.cur') ,@a,e);
+
+      xok:=true;
+
+      end;
+
+   end
+
+//.cur + ani + ico
+else if m('ico') or m('cur') or m('ani') then
+   begin
+
+   io__tofile( app__settingsfile('temp.cur') ,xcursorData,e);
+
+   xok:=true;
+
+   end;
+
+//set
+if xok then
+   begin
+
+   io__tofilestr2( app__settingsfile(sys_settings+'.cur.inf') ,'temp' );
+
+   cursor__load( true );
+
+   end;
+
+skipend:
+
+except;end;
+
+//free
+str__uaf(xcursordata);
+if (b<>nil) then freeobj(@b);
+if (a<>nil) then str__free(@a);
+
+end;
+
+function cursor__canuntemp:boolean;
+begin
+
+result:=strmatch(system_cursorname,'temp') and (not strmatch(system_cusorUntempName,'temp'));//double check
+
+end;
+
+procedure cursor__untemp;
+begin
+
+if cursor__canuntemp then
+   begin
+
+   io__tofilestr2( app__settingsfile(sys_settings+'.cur.inf') ,system_cusorUntempName );
+
+   cursor__load( true );
+
+   end;
+
+end;
+
+procedure cursor__reloadifsizehaschanged;
+begin
+
+if (not strmatch(system_cursorname,'default')) and (system_cursorsize<>strint32(reg__readval(0,'Control Panel\Cursors\CursorBaseSize',true))) then cursor__load(false);
+
+end;
+
+function cursor__cursor:longint;
+begin
+
+result      :=system_cursor;
+
 end;
 
 function app__cursor:longint;
 begin
-result:=system_cursor;
+
+result      :=system_cursor;
+
 end;
 
-procedure app__setcursor(x:longint);
+procedure cursor__set(x:longint);
 begin
-x:=frcrange32(x,0,high(system_cursorlist));
+
+x                        :=frcrange32(x,0,high(system_cursorlist));
+
 if (x<>system_cursor) or (system_cursorlist[x]<>system_cursorREF) or system_cursorchanged then
    begin
+
    //catch any invalid cursors and replace with system arrow
    if (x>scNone) and (system_cursorlist[x]=0) then system_cursorlist[x]:=win____loadcursor(0,idc_arrow);
-   system_cursor:=x;
-   system_cursorREF:=system_cursorlist[x];
-   system_cursorchanged:=false;
-   app__cursorReapply;
+
+   system_cursor         :=x;
+   system_cursorREF      :=system_cursorlist[x];
+   system_cursorchanged  :=false;
+
+   cursor__reapply;
+
    end;
+
 end;
 
-procedure app__cursorReapply;
+procedure cursor__reapply;
 begin
+
 win____setcursor(system_cursorlist[system_cursor]);
+
 end;
 
-function app__cursorhandle:longint;
+function cursor__handle:longint;
 begin
-result:=system_cursorlist[system_cursor];
+
+result      :=system_cursorlist[system_cursor];
+
 end;
 
 function app__gui:tbasicsystem;
 begin
-result:=system_guifirst;
+
+result      :=system_guifirst;
+
 end;
 
 function app__guiactive:tbasicsystem;
 begin
-result:=system_guiactive;
+
+result      :=system_guiactive;
+
 end;
 
 function app__guihandle:hauto;
 begin
+
 if (system_guifirst<>nil) then result:=system_guifirst.handle else result:=0;
+
 end;
 
 function app__guiactivehandle:hauto;
 begin
+
 if (system_guiactive<>nil) then result:=system_guiactive.handle else result:=0;
+
 end;
 
-function app__cursorsize:longint;
+function cursor__size:longint;
 begin
-result:=system_cursorsize;
+
+result      :=system_cursorsize;
+
 end;
 
 function gui__dpi:longint;
@@ -6741,7 +7066,9 @@ end;
 
 procedure gui__smallfont(const xinfo:tvirtualinfo;var xfontindex,xfontheight:longint);
 begin
+
 gui__smallfont2(xinfo,1.0,xfontindex,xfontheight);
+
 end;
 
 procedure gui__smallfont2(const xinfo:tvirtualinfo;const xscaleThreshold:double;var xfontindex,xfontheight:longint);
@@ -6908,7 +7235,7 @@ if (v64>=systimer64) then
 if (slowms64>=system_cursorref64) then
    begin
 
-   app__reloadcursorifsizehaschanged;
+   cursor__reloadifsizehaschanged;
    system_cursorref64:=slowms64+10000;//10s
 
    end;
@@ -7156,7 +7483,7 @@ var
    s1(bkmHwobble,0);
    s1(bkmVwobble,0);
    s1(bkmFwobble,0);
-   s1(bkmCrate,0);//17apr2026
+   s0(bkmCrate,0);//off - 06may2026, 17apr2026
 
    end;
 
@@ -8431,7 +8758,7 @@ else if   (n='unfocusedopacity')  then result:=intstr32(viunfocusedopacity)
 else if   (n='opacityspeed')      then result:=intstr32(viopacityspeed)
 else if   (n='bordersize')     then result:=intstr32(vibordersize__root)
 else if   (n='scrollsize')     then result:=intstr32(viscrollsize__root)
-else if   (n='cursorname')     then app__loadcursorinfo(result,str1)//load name only - 29aug2021
+else if   (n='cursorname')     then cursor__loadinfo(result,str1)//load name only - 29aug2021
 else if   (n='backname')       then result:=vibackname//21jul2024
 else if   (n='framename')      then result:=viframename//23feb2022
 else if   (n='fontnameraw')    then result:=vifontnameraw//26mar2022
@@ -9166,14 +9493,14 @@ var
 
    try
    //get
-   n:=low__platfolder('schemes')+x+'.'+cnFileEXT;
+   n:=app__folderSchemes(true)+x+'.'+cnFileEXT;
 
    case xchecknameonly of
    true:result:=io__fileexists(n);
    else begin
       a:=str__new8;
 
-      if io__fromfile(low__platfolder('schemes')+x+'.'+cnFileEXT,@a,e) then
+      if io__fromfile(app__folderSchemes(true)+x+'.'+cnFileEXT,@a,e) then
          begin
 
          xdata:=a.text;
@@ -9477,296 +9804,6 @@ end;
 function sysstatus_stopped:boolean;//07oct2022
 begin
 result:=(sysprogram<>nil) and sysprogram.gui.xstatustopped;
-end;
-
-
-//platform support -------------------------------------------------------------
-function low__plat(xcmd,xprgname:string;xrunaction:boolean):string;
-var
-   xprgnameORG,v,xval:string;
-   p:longint;
-
-   function xstoragefolder:string;
-   begin
-   result:=app__folder2('',false);//don't create the folder here
-   end;
-
-   function xnospaces(const x:string):string;//02may2022
-   var
-      p:longint;
-   begin
-   result:=x;
-   for p:=1 to low__len32(result) do if (strcopy1(result,p,1)=#32) or (strcopy1(result,p,1)=#160) or (strcopy1(result,p,1)=#9) then result[p-1+stroffset]:=#32;
-   low__remchar(result,#32);
-   end;
-
-   function xvisit(xname,xmore:string):string;
-   begin
-   result:=app__info(xname+xmore);
-   if xrunaction and (result<>'') then runlow(result,'');
-   end;
-begin
-//defaults
-result:='';
-
-try
-//init
-xcmd:=strlow(xcmd);
-xval:='';
-xprgnameORG:=xprgname;
-if (xprgname='') then xprgname:=programwebname;
-//.split
-if (xcmd<>'') then
-   begin
-   for p:=1 to low__len32(xcmd) do if (strcopy1(xcmd,p,1)='.') then
-      begin
-      xval:=strcopy1(xcmd,p+1,low__len32(xcmd));
-      xcmd:=strcopy1(xcmd,1,p-1);
-      break;
-      end;//p
-   end;
-
-//get
-if      (xcmd='newinstance') then
-   begin
-   result:=io__exename;
-   if xrunaction then
-      begin
-      siSaveallsettings;
-      runLOW(result,'');
-      end;
-   end
-//.folder
-else if (xcmd='folder') then
-   begin
-   result:=xstoragefolder;//this folder and up we own
-   //filter
-   if (xprgname<>'') then
-      begin
-      xprgname:=io__safefilename(xprgname,true);
-      result:=io__asfolder(result+xprgname);
-      end;
-   //get
-   if xrunaction and viMaster and (not io__folderexists(result)) then io__makefolder(result);
-   end
-//.folderbe
-else if (xcmd='folderbe') then
-   begin
-   result:=xstoragefolder;//this folder and up we own
-   if xrunaction and viMaster and (not io__folderexists(result)) then io__makefolder(result);
-   end
-else if (xcmd='root') then result:=io__asfolder(io__extractfilepath(io__exename))
-else if (xcmd='showroot') then
-   begin
-   result:=io__asfolder(io__extractfilepath(io__exename));
-   runlow(result,'');
-   end
-
-//.help
-else if (xcmd='showhelp') then low__showhelp(not vihelp_show)
-
-//.websites and web links
-else if (xcmd='portal')       then result:=xvisit('url.portal','')
-else if (xcmd='contact')      then result:=xvisit('url.contact','')
-else if (xcmd='software')     then result:=xvisit('url.software','')
-else if (xcmd='instagram')    then result:=xvisit('url.instagram','')
-else if (xcmd='facebook')     then result:=xvisit('url.facebook','')
-else if (xcmd='mastodon')     then result:=xvisit('url.mastodon','')//11dec2023
-else if (xcmd='twitter')      then result:=xvisit('url.twitter','')
-else if (xcmd='sourceforge')  then result:=xvisit('url.sourceforge','')
-else if (xcmd='github')       then result:=xvisit('url.github','')//02dec2023
-else if (xcmd='nprogram') or (xcmd='program') then result:=xvisit('url.software','')
-else if (xcmd='nprogramzip') or (xcmd='programzip') then result:=xvisit('url.software.zip','')
-
-//.start menu
-else if (xcmd='startmenu') then
-   begin
-   result:=io__winprograms+app__info('linkname');
-   //.create
-   if      (xval='') or (xval='create') then
-      begin
-      if xrunaction and (not io__fileexists(result)) then io__createlink(result,io__exename,'','');
-      end
-   //.del
-   else if (xval='del') then
-      begin
-      if xrunaction then io__remfile(result);
-      end
-   //.exists
-   else if (xval='exists') then result:=bnc(io__fileexists(result))
-   //.toggle
-   else if (xval='toggle') then
-      begin
-      case io__fileexists(result) of
-      true:low__plat(xcmd+'.del',xprgname,xrunaction);//delete existing
-      else low__plat(xcmd,xprgname,xrunaction);//create new
-      end;//case
-      end
-   //.error
-   else showerror('Unknown directive "'+xcmd+'.'+xval+'" [006]');
-   end
-//.desktop
-else if (xcmd='desktop') then
-   begin
-   result:=io__windesktop+app__info('linkname');
-   //.create
-   if      (xval='') or (xval='create') then
-      begin
-      //init
-      if viwine then v:=io__remlastext(result)+'.desktop' else v:='';
-      //get
-      if xrunaction and ( (not io__fileexists(result)) and (not io__fileexists(v)) ) then
-         begin
-         io__createlink(result,io__exename,'','');
-         //Note: Wine writes the ".lnk" and makes it's own ".desktop" files -> only the ".desktop" works as a link so we should delete the ".lnk" as it just wastes desktop space - 05feb2022
-         if viwine and io__fileexists(result) and (v<>'') then
-            begin
-            //slight delay on a Windowed Ubuntu v20 - so try 20 times 100ms apart - 05feb2022
-            for p:=1 to 20 do
-            begin
-            if io__fileexists(v) then
-               begin
-               io__remfile(result);
-               break;
-               end;
-            win____sleep(100);
-            end;//p
-            end;
-         end;
-      end
-   //.del
-   else if (xval='del') then
-      begin
-      if xrunaction then
-         begin
-         io__remfile(result);
-         //Note: Wine generates a duplicate file ending with ".desktop" - 05feb2022
-         if viwine then io__remfile(io__remlastext(result)+'.desktop');
-         end;
-      end
-   //.exists
-   else if (xval='exists') then result:=bnc(io__fileexists(result))
-   //.toggle
-   else if (xval='toggle') then
-      begin
-      case io__fileexists(result) of
-      true:low__plat(xcmd+'.del',xprgname,xrunaction);//delete existing
-      else low__plat(xcmd,xprgname,xrunaction);//create new
-      end;//case
-      end
-   //.error
-   else showerror('Unknown directive "'+xcmd+'.'+xval+'" [006]');
-   end
-//.startup (auto startup) link
-else if (xcmd='startup') then
-   begin
-   result:=io__winstartup+io__safefilename(io__exename,false)+'.lnk';
-   //.create
-   if      (xval='') or (xval='create') then
-      begin
-      if xrunaction and (not io__fileexists(result)) then io__createlink(result,io__exename,'','');
-      end
-   //.del
-   else if (xval='del') then
-      begin
-      if xrunaction then io__remfile(result);
-      end
-   //.exists
-   else if (xval='exists') then result:=bnc(io__fileexists(result))
-   //.toggle
-   else if (xval='toggle') then
-      begin
-      case io__fileexists(result) of
-      true:low__plat(xcmd+'.del',xprgname,xrunaction);//delete existing
-      else low__plat(xcmd,xprgname,xrunaction);//create new
-      end;//case
-      end
-   //.error
-   else showerror('Unknown directive "'+xcmd+'.'+xval+'" [007]');
-   end
-else showerror('Unknown directive "'+xcmd+'" [007]');
-except;end;
-end;
-
-function low__platroot:string;
-begin
-result:=low__plat('root','',true);
-end;
-
-function low__platfolder(xname:string):string;//06oct2020
-begin
-case (xname<>'') of
-true:result:=low__plat('folder',xname,true);
-else result:=low__plat('folderbe','',true);
-end;
-end;
-
-function low__platfolder2(xname:string;xcreate:boolean):string;//10feb2023
-begin
-case (xname<>'') of
-true:result:=low__plat('folder',xname,xcreate);
-else result:=low__plat('folderbe','',xcreate);
-end;
-end;
-
-function low__plattemp:string;
-begin
-result:=low__platfolder('temp');
-end;
-
-function low__platDLLname(xname:string):string;//26sep2021
-begin
-//was: result:=low__platfolder('settings')+strlow(xname)+insstr('-',xname<>'')+io__ownname+'.dll';
-result:=low__platfolder('settings')+strlow(xname)+'.'+'d'+'ll';
-end;
-
-function low__platsyssettings:string;
-begin
-//was: result:=low__platfolder('settings')+'sys-'+io__ownname+'.ini';
-result:=low__platfolder('settings')+'sys-settings.ini';
-end;
-
-function low__platprgsettings:string;
-begin
-//was: result:=low__platfolder('settings')+'prg-'+io__ownname+'.ini';
-result:=low__platfolder('settings')+'prg-settings.ini';
-end;
-
-function low__platonce:string;
-begin
-//was: result:=low__platfolder('settings')+io__ownname+'.one';
-result:=low__platfolder('settings')+'active.one';
-end;
-
-function low__platactive:string;
-begin
-//was: result:=low__platfolder('settings')+io__ownname+'.act';
-result:=low__platfolder('settings')+'active.act';
-end;
-
-function low__platimages:string;
-begin
-result:=low__platfolder('images');
-end;
-
-function low__platsysext(xext:string):string;//29aug2021
-begin
-xext:=strlow(xext);
-case viMaster of
-//was: true:result:=low__platfolder('settings')+'sys-'+io__ownname+insstr('.',xext<>'')+xext;
-true:result:=low__platfolder('settings')+'sys-settings'+insstr('.',xext<>'')+xext;
-else result:=io__wintemp+'sys-'+intstr32(system_instanceid)+insstr('.',xext<>'')+xext;
-end;
-end;
-
-function low__platprgext(xext:string):string;//29aug2021
-begin
-xext:=strlow(xext);
-case viMaster of
-//was: true:result:=low__platfolder('settings')+'prg-'+io__ownname+insstr('.',xext<>'')+xext;
-true:result:=low__platfolder('settings')+'prg-settings'+insstr('.',xext<>'')+xext;
-else result:=io__wintemp+'prg-'+intstr32(system_instanceid)+insstr('.',xext<>'')+xext;
-end;
 end;
 
 function low__t(x:boolean):longint;
@@ -11635,10 +11672,10 @@ a      :=nil;
 try
 //init
 a      :=str__new8;
-result :=io__fromfile(low__platsyssettings,@a,e);
+result :=io__fromfile(app__folderSettings(true)+sys_settings+'.ini',@a,e);
 
 //get
-if viMaster then result:=io__fromfile(low__platsyssettings,@a,e) else result:=a.add(sysmore.d['_syssettings']);
+if viMaster then result:=io__fromfile(app__folderSettings(true)+sys_settings+'.ini',@a,e);//06may2026
 
 if viMaster and (not result) then viAppFirstRun:=true;
 
@@ -11674,7 +11711,7 @@ try
 //init
 a     :=str__new8;
 
-if viMaster then result:=io__fromfile(low__platprgsettings,@a,e) else result:=a.add(sysmore.d['_prgsettings']);
+if viMaster then result:=io__fromfile(app__folderSettings(true)+prg_settings+'.ini',@a,e);//06may2026
 
 if zzok(prgsettings,1042) then
    begin
@@ -11762,7 +11799,7 @@ begin
 
 if (app__gui<>nil) then app__gui.xsavePosSize;//13dec2025
 
-result:=zzok(syssettings,1046) and zzok(syssettings,1047) and viMaster and io__tofile(low__platsyssettings,cache__ptr(syssettings.data),e);
+result:=zzok(syssettings,1046) and zzok(syssettings,1047) and viMaster and io__tofile(app__folderSettings(true)+sys_settings+'.ini',cache__ptr(syssettings.data),e);
 
 end;
 
@@ -11770,7 +11807,7 @@ function siSaveprgsettings:boolean;
 var
    e:string;
 begin
-result:=zzok(prgsettings,1048) and zzok(prgsettings,1049) and viMaster and io__tofile(low__platprgsettings,cache__ptr(prgsettings.data),e);
+result:=zzok(prgsettings,1048) and zzok(prgsettings,1049) and viMaster and io__tofile(app__folderSettings(true)+prg_settings+'.ini',cache__ptr(prgsettings.data),e);
 end;
 
 procedure siSaveallsettings;//23mar2022
@@ -12488,22 +12525,29 @@ if (int1<>viwavedevice) then
    end;
 viwavedeviceNEW:=int1;//update any "nwavedevice" control
 
-//sync system links - 10dec2025, 30mar2022
-low__plat('startmenu.'+low__aorbstr('del','create',vistartlink),'',true);
-low__plat('desktop.'+low__aorbstr('del','create',videsktoplink),'',true);
-low__plat('startup.'+low__aorbstr('del','create',vistartuplink),'',true);//09dec2023
+
+//sync system links - 06may2026, 10dec2025, 30mar2022 --------------------------
+
+link__startmenu( low__aorb(la_delete,la_create,vistartlink  ) );
+link__desktop  ( low__aorb(la_delete,la_create,videsktoplink) );
+link__startup  ( low__aorb(la_delete,la_create,vistartuplink) );
+
 
 //sync mainhelp
 low__showhelp(vihelp_show);//24jul2021
 
+
 //sync cursor - 29aug2021
-app__cursorSoftsaveandload;
+cursor__softsaveandload;
+
 
 //on tops
 system__setontop(viontop);
 
+
 //background
 if (app__gui<>nil) then app__gui.backgroundname:=vibackname;
+
 
 //inc
 low__iroll(vidataid,1);
@@ -13449,15 +13493,21 @@ begin
 result:=(strcopy1(x,1,1)=intdisk_char);
 end;
 
-procedure low__reloadfastvars;
+procedure low__reloadfastvars;//06may2026
 begin
-sysfast_root        :=low__platroot;
-sysfast_settings    :=low__platfolder('settings');
-sysfast_schemes     :=low__platfolder('schemes');
+
+sysfast_root        :=app__folderRoot(true);//06may2026
+sysfast_storage     :=app__folderStorage(true);
+sysfast_temp        :=app__folderTemp(true);
+sysfast_images      :=app__folderImages(true);
+sysfast_cursors     :=app__folderCursors(true);
+sysfast_settings    :=app__folderSettings(true);
+sysfast_schemes     :=app__folderSchemes(true);
+
 sysfast_startmenu   :=io__winstartmenu;
 sysfast_desktop     :=io__windesktop;
 sysfast_programs    :=io__winprograms;
-sysfast_blaiz       :=low__platfolder('');
+
 end;
 
 
@@ -15472,135 +15522,6 @@ xframeSimple( s );
 end;
 
 
-//-- Master Support - 15nov2023 ------------------------------------------------
-procedure master__storevars(xvars:tvars8;xsyssettings,xprgsettings,xwidth,xheight,xcursor:boolean;xtitle:string);
-var
-   n,e:string;
-   a:tstr8;
-begin
-try
-//init
-a:=nil;
-//check
-if (xvars=nil) then exit;
-//init
-a:=str__new8;
-//get
-if xsyssettings then xvars.d['_syssettings']:=syssettings.data;
-if xprgsettings then xvars.d['_prgsettings']:=prgsettings.data;
-if (sysprogram<>nil) then
-   begin
-   if xwidth       then xvars.i['_width']:=frcmin32(sysprogram.rootwin.clientwidth,0);
-   if xheight      then xvars.i['_height']:=frcmin32(sysprogram.rootwin.clientheight,0);
-   end;
-if (xtitle<>'') then xvars.value['_title']:=xtitle;
-//.cursor
-if xcursor then
-   begin
-   //init
-   io__fromfile(low__platsysext('cur.inf'),@a,e);
-   n:=strlow(a.text);
-   //get
-   xvars.value['_curinf']:=n;
-   //.system cursor
-   if (n<>'default') and (n<>'custom') then
-      begin
-      io__fromfile(low__platsysext('cur'),@a,e);
-      xvars.d['_syscur']:=a;
-      end
-   else xvars.value['_syscur']:='';
-   //.custom cursor
-   if (n='custom') then
-      begin
-      io__fromfile(low__platprgext('cur'),@a,e);
-      xvars.d['_prgcur']:=a;
-      end
-   else xvars.value['_prgcur']:='';
-   end;
-except;end;
-
-//free
-freeobj(@a);
-
-end;
-
-procedure master__size(swidth,sheight:longint;var dwidth,dheight:longint);//uses smore: "width" and "height"
-const
-   xmin=32;
-var
-   int1:longint;
-begin
-try
-//range
-int1:=frcmin32(vizoom,1);
-swidth:=frcmin32(swidth,xmin);
-sheight:=frcmin32(sheight,xmin);
-//decide
-if not viMaster then
-   begin
-   if sysmore.found('_width')  then swidth:=frcmin32(sysmore.i['_width'],xmin);
-   if sysmore.found('_height') then sheight:=frcmin32(sysmore.i['_height'],xmin);
-   end;
-dwidth:=swidth div int1;
-dheight:=sheight div int1;
-except;end;
-end;
-
-procedure master__title;//uses smore: "title"
-var
-   str1:string;
-begin
-try
-if (not viMaster) and (sysprogram<>nil) and (app__gui<>nil) then
-   begin
-   str1:=sysmore.value['_title'];
-   if sysprogram.rootwin.xhavehead then sysprogram.rootwin.xhead.caption:=str1;
-   app__gui.caption:=str1;
-   end;
-except;end;
-end;
-
-procedure master__cursor;//uses smore: "cursor"
-var
-   a:tstr8;
-   e:string;
-begin
-try
-//init
-a:=nil;
-if not viMaster then
-   begin
-   //init
-   a:=str__new8;
-   //get
-   if sysmore.dget('_prgcur',a) and (a.len>=1) then io__tofile(low__platprgext('cur'),@a,e);
-   if sysmore.dget('_syscur',a) and (a.len>=1) then io__tofile(low__platsysext('cur'),@a,e);
-   io__tofile(low__platsysext('cur.inf'),cache__ptr(sysmore.d['_curinf']),e);
-   end;
-except;end;
-
-//free
-str__free(@a);
-
-end;
-
-procedure master__cursorCLEAN;
-begin
-try
-
-if not viMaster then
-   begin
-
-   io__remfile(low__platprgext('cur'));
-   io__remfile(low__platsysext('cur'));
-   io__remfile(low__platsysext('cur.inf'));
-
-   end;
-
-except;end;
-end;
-
-
 //-- Range Support -------------------------------------------------------------
 function low__newid:longint;
 begin//Range: 0..N
@@ -17049,7 +16970,7 @@ var
    //.need to reload cursor if it's size has changed -> else Windows displays a corrupted cursor on Win11
    if (wm.r=htcaption) then
       begin
-      app__reloadcursorifsizehaschanged;
+      cursor__reloadifsizehaschanged;
       end;
 
    end;
@@ -17944,7 +17865,7 @@ begin
 result:=(sysback_datafromfile[iuse_itemindex]<>'');
 end;
 
-function tbackgroundmanager.selectimage:boolean;
+function tbackgroundmanager.selectimage:boolean;//06may2026
 var
    a:tbasicimage;
    e:string;
@@ -17955,7 +17876,7 @@ a:=nil;
 
 try
 //get
-if canselectimage and gui.popopenimg(sysfile_background,sysfile_background_openfilter,'images') then
+if canselectimage and gui.popopenimg(sysfile_background,sysfile_background_openfilter,app__folderimages(true)) then
    begin
    a:=misimg32(1,1);
 
@@ -18659,6 +18580,7 @@ istatuswin               :=nil;
 istatustime              :=slowms64;
 istatuspert              :=0;
 istatusrowcount          :=0;
+istatusscale             :=1.0;//05may2026
 istatustab               :=tbDefault;//05oct2022 -> unrestricted second column
 
 for p:=0 to high(istatustext) do
@@ -18927,6 +18849,27 @@ if classnameis('tbasicsystem') then track__inc(satSystem,-1);
 except;end;
 end;
 
+function tbasicsystem.mask__findval(const sx,sy:longint32):longint32;//06may2026
+var
+   sr8      :pcolorrows8;
+begin
+
+//defaults
+result      :=-1;
+
+//check
+if not imasking then exit;
+
+//find
+if (sx>=0) and (sy>=0) and (sx<imask.width) and (sy<imask.height) then
+   begin
+
+   result   :=imask.mval2(sx,sy);
+
+   end;
+
+end;
+
 procedure tbasicsystem.xsavePosSize;
 begin
 
@@ -18986,7 +18929,7 @@ end;
 
 procedure tbasicsystem.setcursor(x:longint);
 begin
-app__setcursor(x);
+cursor__set(x);
 end;
 
 function tbasicsystem.haverootwin:boolean;
@@ -19287,11 +19230,15 @@ end;
 
 procedure tbasicsystem.form__wmsetcursor(var m:twinmessage);
 begin
+
 if (tint4( msg_l32(m.l) ).bytes[0]=htclient) or (tint4( msg_l32(m.l) ).bytes[0]=htcaption) then
    begin
-   app__cursorReapply;
+
+   cursor__reapply;
    m.r:=1;
+
    end;
+
 end;
 
 procedure tbasicsystem.form__wmentersizemove;
@@ -19942,36 +19889,54 @@ closeunlock;
 except;end;
 end;
 
-procedure tbasicsystem.showappmenu(xallwinbuttons:boolean);//07sep2025, 27dec2024
+procedure tbasicsystem.showappmenu(xallwinbuttons:boolean);//06may2026, 07sep2025, 27dec2024
 var
    a:tstr8;
    xcode:longint;
-   xcode2,xhint1:string;
+   hv,xcode2,xhint1,xhint2:string;
    bol1:boolean;
+
+   function h(const n:string):boolean;
+   begin
+
+   result   :=( app__info(n)<>'' );
+   hv       :=n;
+
+   end;
+
 begin
 
 //defaults
-a    :=nil;
+a           :=nil;
 
 try
+
 //init
-a    :=str__new8;
+a           :=str__new8;
 low__menuinit(a);
+
+
+//online resources ------------------------------------------------------------
 
 low__menutitle(a,tepnone,'Online Resources','');
 
-xhint1:='External Content|View webpage in browser';
+xhint1      :='External Content|View webpage in browser';
+xhint2      :='External Content|Contact us via our contact form';
 
-if (app__info('url.software')<>'')    then low__menuitem2(a,strint32(app__info('software.tep')),'App Website',xhint1,'nprogram',100,aknone,true);
-if (app__info('url.portal')<>'')      then low__menuitem2(a,strint32(app__info('portal.tep')),app__info('portal.name'),xhint1,'be',100,aknone,true);
-if (app__info('url.github')<>'')      then low__menuitem2(a,tepGitHub20,'GitHub',xhint1,'github',100,aknone,true);
-if (app__info('url.sourceforge')<>'') then low__menuitem2(a,tepSourceforge20,'Sourceforge',xhint1,'sourceforge',100,aknone,true);
-if (app__info('url.mastodon')<>'')    then low__menuitem2(a,tepMastodon20,'Mastodon',xhint1,'mastodon',100,aknone,true);
-if (app__info('url.facebook')<>'')    then low__menuitem2(a,tepFacebook20,'Facebook',xhint1,'facebook',100,aknone,true);
-if (app__info('url.twitter')<>'')     then low__menuitem2(a,tepTwitter20,'X',xhint1,'twitter',100,aknone,true);
-if (app__info('url.instagram')<>'')   then low__menuitem2(a,tepInstagram20,'Instagram',xhint1,'instagram',100,aknone,true);
-if (app__info('url.contact')<>'')     then low__menuitem2(a,tepTXT20,'Contact Us','External Content|Contact us via our contact form','contact',100,aknone,true);//07sep2025
+if h('url.software'     )  then low__menuitem2(a ,strint32(app__info('software.tep'))  ,'App Website'             ,xhint1 ,hv,100,aknone,true);
+if h('url.portal'       )  then low__menuitem2(a ,strint32(app__info('portal.tep'))    ,app__info('portal.name')  ,xhint1 ,hv,100,aknone,true);
+if h('url.github'       )  then low__menuitem2(a ,tepGitHub20                          ,'GitHub'                  ,xhint1 ,hv,100,aknone,true);
+if h('url.sourceforge'  )  then low__menuitem2(a ,tepSourceforge20                     ,'Sourceforge'             ,xhint1 ,hv,100,aknone,true);
+if h('url.mastodon'     )  then low__menuitem2(a ,tepMastodon20                        ,'Mastodon'                ,xhint1 ,hv,100,aknone,true);
+if h('url.facebook'     )  then low__menuitem2(a ,tepFacebook20                        ,'Facebook'                ,xhint1 ,hv,100,aknone,true);
+if h('url.twitter'      )  then low__menuitem2(a ,tepTwitter20                         ,'X'                       ,xhint1 ,hv,100,aknone,true);
+if h('url.instagram'    )  then low__menuitem2(a ,tepInstagram20                       ,'Instagram'               ,xhint1 ,hv,100,aknone,true);
+if h('url.contact'      )  then low__menuitem2(a ,tepTXT20                             ,'Contact Us'              ,xhint2 ,hv,100,aknone,true);//07sep2025
+
 low__menuitem2(a,tepAbout20,'About','About|About this app','about',100,aknone,true);
+
+
+//settings and information -----------------------------------------------------
 
 low__menutitle(a,tepnone,'Settings and Information','');
 low__menuitem2(a,tepCapture20,'Capture Snapshot','Snapshot|Capture a snapshot of app and copy to Clipboard','snapshot.program',100,aknone,true);
@@ -19980,17 +19945,41 @@ low__menuitem2(a,tep__yes(viTouch),'Touch','Touch|Toggle touch mode for larger c
 low__menuitem2(a,tep__yes(viHint),'Hints','Hints | Toggle display of popup hints','toggle.hint',100,aknone,true);
 low__menuitem2(a,tep__yes(viHelp),'Realtime Help','Realtime Help | Toggle display of scrolling realtime help','toggle.realtimehelp',100,aknone,true);
 
-if viMaster then low__menuitem2(a,tepOptions20,'Options','App Options|Adjust app coloring, font size and other settings','options',100,aknone,true);
+if viMaster then
+   begin
 
-if viMaster and ((sizeof(apphelp)>=2) or (sizeof(syshelp)>=2)) then low__menuitem2(a,tepHelp20,'Help','App Help|Toggle app help panel, or press the "F1" key to show','help',100,aknone,true);//24jul2021
+   low__menuitem2(a,tepOptions20,'Options','App Options|Adjust app coloring, font size and other settings','options',100,aknone,true);
 
-if mm_ok or mid_ok or wav_ok then low__menuitem2(a,tepVol20,'Volume Mixer','External App|Show Volume Mixer','mixer',100,aknone,low__canshowvol);
+   end;
+
+if viMaster and ((sizeof(apphelp)>=2) or (sizeof(syshelp)>=2)) then
+   begin
+
+   low__menuitem2(a,tepHelp20,'Help','App Help|Toggle app help panel, or press the "F1" key to show','help',100,aknone,true);//24jul2021
+
+   end;
+
+if mm_ok or mid_ok or wav_ok then
+   begin
+
+   low__menuitem2(a,tepVol20,'Volume Mixer','External App|Show Volume Mixer','mixer',100,aknone,low__canshowvol);
+
+   end;
 
 low__menuitem2(a,tepRefresh20,'Restore Default Scale','Defaults|Restore default scale','defaultscale',100,aknone,viscale<>1.0);
-if viMaster then low__menuitem2(a,tepRefresh20,'Restore Defaults...','Defaults|Restore default settings or press the "F2" key','defaults',100,aknone,true);
 
-//.position
-bol1:=canposition;
+if viMaster then
+   begin
+
+   low__menuitem2(a,tepRefresh20,'Restore Defaults...','Defaults|Restore default settings or press the "F2" key','defaults',100,aknone,true);
+
+   end;
+
+
+//position ---------------------------------------------------------------------
+
+bol1        :=canposition;
+
 low__menutitle(a,tepnone,'Position','Position app on screen');
 low__menuitem2(a,tepTop20,'Top of Screen','App|Position app window at top of screen','position.t',100,aknone,bol1);
 low__menuitem2(a,tepLeft20,'Left of Screen','App|Position app window at left of screen','position.l',100,aknone,bol1);
@@ -19999,20 +19988,34 @@ low__menuitem2(a,tepBottom20,'Bottom of Screen','App|Position app window at bott
 //was: low__menuitem2(a,tep__yes(vilockposition),'Lock Position','Ticked: Lock main window in place - disallow resize, disallow move | Not Ticked: Allow main window to resize and move','position.lt',100,aknone,bol1);
 
 low__menutitle(a,tepnone,'Window','Window options');
+
 if xallwinbuttons then
    begin
+
    if (state='n') then low__menuitem2(a,tepmax,'Maximise','App|Maximise app window','win.max',100,aknone,true)
    else                low__menuitem2(a,tepnor,'Normalise','App|Normalise app window','win.nor',100,aknone,true);
+
    end;
+
 low__menuitem2(a,tepmin,'Minimise','App|Minimise app window','win.min',100,aknone,xallwinbuttons and (state<>'-'));
 low__menuitem2(a,tepclo,'Close','App|Close app','win.clo',100,aknone,true);
 
-//.additional
+
+//additional -------------------------------------------------------------------
+
 low__menutitle(a,tepnone,'Additional','');
-if programnewinstance then low__menuitem2(a,tepexe20,'New App Instance','App|Launch a new instance of this app','newinstance',100,aknone,true);
+
+if programnewinstance then
+   begin
+
+   low__menuitem2(a,tepexe20,'New App Instance','App|Launch a new instance of this app','newinstance',100,aknone,true);
+
+   end;
+
 low__menuitem2(a,tepFolder20,'Show App Folder','App|Show the folder which contains this app','folder',100,aknone,true);
 
-//.finalise
+
+//finalise ---------------------------------------------------------------------
 low__menuend(a);
 
 //.pop
@@ -20026,54 +20029,92 @@ str__free(@a);
 end;
 
 function tbasicsystem.__onappmenu(sender:tbasiccontrol;xstyle:string;xcode:longint;xcode2:string;xtepcolor:longint):boolean;
+var
+   v:string;
+   v32:longint32;
+
+   procedure u(const n:string);//run url
+   var
+      v:string;
+
+   begin
+
+   v        :=app__info( n );
+   if (v<>'') then runlow( v ,'' );
+
+   end;
+
+   function m(const n:string):boolean;
+   begin
+
+   result:=strmatch(n,xcode2);
+
+   end;
+
+   function mv(const x:string):boolean;
+   begin
+
+   result:=strm(xcode2,x,v,v32);
+
+   end;
+
 begin
+
 //defaults
-result:=true;//handled
+result      :=true;//handled
 
 try
+
 //information
-if (xcode2='about') then xshowabout
-else if (xcode2='toggle.ontop') then
+if m('about') then xshowabout
+else if m('toggle.ontop') then
    begin
    syssettings.b['ontop']:=not syssettings.b['ontop'];
    viSyncandsave;
    end
-else if (xcode2='toggle.touch') then//27mar2022
+else if m('toggle.touch') then//27mar2022
    begin
    syssettings.b['touch']:=not syssettings.b['touch'];
    viSyncandsave;
    end
-else if (xcode2='toggle.hint') then//27dec2024
+else if m('toggle.hint') then//27dec2024
    begin
    syssettings.b['hint']:=not syssettings.b['hint'];
    viSyncandsave;
    end
-else if (xcode2='toggle.realtimehelp') then//09mar2025
+else if m('toggle.realtimehelp') then//09mar2025
    begin
    syssettings.b['realtimehelp']:=not syssettings.b['realtimehelp'];
    viSyncandsave;
    end
-else if (xcode2='snapshot.program') then xsnapshot//03nov2023
-else if (xcode2='options') then xshowoptions
-else if (xcode2='mixer') then low__showvol//06nov2022
-else if (xcode2='help') then xshowhelp
-else if (xcode2='defaultscale') then xdefaultscale//10dec2025
-else if (xcode2='defaults') then xdefaults
-//visit blaiz enterprises
-else if (xcode2='be') then low__plat('portal','',true)
-else if (xcode2='contact') then low__plat('contact','',true)
-else if (xcode2='vintage') then low__plat('vintage','',true)
-else if (xcode2='software') then low__plat('software','',true)
-else if (xcode2='nprogram') then low__plat('nprogram','',true)//new program
-else if (xcode2='vprogram') then low__plat('vprogram','',true)//vintage program
-else if (xcode2='instagram') then low__plat('instagram','',true)
-else if (xcode2='facebook') then low__plat('facebook','',true)
-else if (xcode2='mastodon') then low__plat('mastodon','',true)
-else if (xcode2='twitter') then low__plat('twitter','',true)
-else if (xcode2='sourceforge') then low__plat('sourceforge','',true)//02dec2023
-else if (xcode2='github') then low__plat('github','',true)//02dec2023
+else if m('snapshot.program') then xsnapshot//03nov2023
+else if m('options') then xshowoptions
+else if m('mixer') then low__showvol//06nov2022
+else if m('help') then xshowhelp
+else if m('defaultscale') then xdefaultscale//10dec2025
+else if m('defaults') then xdefaults
+
+//url links
+else if mv('url.')            then u( xcode2 )
+
+{
+else if m('be')               then u('url.portal')
+else if m('contact')          then u('url.contact')
+else if m('instagram')        then u('url.instagram')
+else if m('facebook')         then u('url.facebook')
+else if m('mastodon')         then u('url.mastodon')
+else if m('twitter')          then u('url.twitter')
+else if m('sourceforge')      then u('url.sourceforge')
+else if m('github')           then u('url.github')
+else if m('vintage')          then u('url.software')
+else if m('software')         then u('url.software')
+else if m('nprogram')         then u('url.software')
+else if m('vprogram')         then u('url.software')
+{}
+
 //position
 else if strmatch(strcopy1(xcode2,1,9),'position.') then position(xcode2)//27feb2022
+
 //window - 06nov2022
 else if (xcode2='win.max') then
    begin
@@ -20086,8 +20127,16 @@ else if (xcode2='win.clo') then
    if mainwindow then siCloseprompt(self);//18feb2025
    end
 //additional
-else if (xcode2='newinstance') then low__plat('newinstance','',true)
-else if (xcode2='folder') then low__plat('showroot','',true)
+else if (xcode2='newinstance') then
+   begin
+
+   siSaveallsettings;
+   runlow(  io__exename ,'' );
+
+   end
+
+else if (xcode2='folder')      then runlow( app__folderroot(true) ,'' )//06may2026
+
 //not handled
 else result:=false;
 except;end;
@@ -21071,8 +21120,10 @@ xhost:=xhost0;
 //cursor
 with dsel3('Cursor','cursorname','',0,'cursorname') do
 begin
-osepv:=vsp;
-itemsperline:=5;
+
+osepv                 :=vsp;
+itemsperline          :=5;
+
 xadd('Default','default','Cursor | Use the default mouse pointer');
 xadd('Adaptive - Hover','!hover','Adaptive Cursor | A mouse pointer that color harmonises to the app''s color scheme');
 xadd('Adaptive - Title','!title','Adaptive Cursor | A mouse pointer that color harmonises to the app''s color scheme');
@@ -21088,9 +21139,12 @@ xadd('Grey','grey',cursor_builtin_hint('grey'));
 xadd('Black','black',cursor_builtin_hint('black'));
 xadd('White','white',cursor_builtin_hint('white'));
 xadd('Custom','custom','Custom Cursor | User definable mouse pointer. Select to use, and select again to choose a new cursor.');
+
 reload;
-ovalueclick:=true;
-ospbackname:='blue';
+
+ovalueclick           :=true;
+ospbackname           :='blue';
+
 end;
 
 
@@ -21557,7 +21611,7 @@ for p:=0 to (cnCustomLimit-1) do badd('Custom '+intstr32(1+p),'custom'+intstr32(
 //files
 baddtitle('Saved');
 if (ishowoptions_list<>nil) then ishowoptions_list.onumberfrom3:=bcount;
-nav__list(a,nlName,low__platfolder('schemes'),'*.'+cnFileEXT,'',false,false,true);
+nav__list(a,nlName,app__folderSchemes(true),'*.'+cnFileEXT,'',false,false,true);
 for p:=0 to max32 do
 begin
 case nav__get(a,p,xstyle,xtep,xsize,xname,xlabel) of
@@ -21792,12 +21846,12 @@ var
       else if (xcode2='darken') and zzok(ishowoptions_colors,7104) then ishowoptions_colors.tosys('?darken.hex',true)
       else if (xcode2='paste') and zzok(ishowoptions_colors,7104) then ishowoptions_colors.tosys('?paste.hex',true)
       else if (xcode2='pastenew') and zzok(ishowoptions_colors,7104) then ishowoptions_colors.tosys('?pastenew.hex',true)
-      else if (xcode2='folder') then runlow(low__platfolder('schemes'),'')
+      else if (xcode2='folder') then runlow(app__folderSchemes(true),'')
       else if (xcode2='save') then
          begin
-         if (sysfile_colorscheme='') then sysfile_colorscheme:=low__platfolder('schemes')+'Untitled.'+cnFileEXT;
+         if (sysfile_colorscheme='') then sysfile_colorscheme:=app__folderSchemes(true)+'Untitled.'+cnFileEXT;
          daction:='';
-         if popsave(sysfile_colorscheme,pebcs,low__platfolder('schemes'),daction) then
+         if popsave(sysfile_colorscheme,pebcs,app__folderSchemes(true),daction) then
             begin
             b:=str__new8;
             b.text:=low__getcolors(@vinormal,@vititle,@vimorecolors);//25may2021
@@ -21816,12 +21870,14 @@ var
    end;
 begin
 try
+
 //defaults
-n:='';
-v:='';
-str1:='';
+n           :='';
+v           :='';
+str1        :='';
+
 //init
-xname:=strlow(xname);
+xname       :=strlow(xname);
 
 
 //get
@@ -21898,6 +21954,7 @@ else if (sender is tbasicsel) then
          end;//case
 
          end
+
       else if (n='fontname') or (n='fontname2') then
          begin
          str1:=(sender as tbasicsel).nams[int1];
@@ -21911,6 +21968,7 @@ else if (sender is tbasicsel) then
             else goto skipend;
             end;
          end
+
       else if (n='cursorname') then
          begin
 
@@ -21924,9 +21982,12 @@ else if (sender is tbasicsel) then
       //set
       if (str1<>'') then
          begin
-         if (n='cursorname') then app__savecursor(str1,(sender as tbasicsel).gui)//24jan2025, 29aug2021
-         else syssettings.s[n]:=str1;
+
+         if (n='cursorname') then cursor__save(str1,(sender as tbasicsel).gui)//24jan2025, 29aug2021
+         else                     syssettings.s[n]:=str1;
+
          end
+
       else syssettings.i[n]:=int1;
 
       vimustsync:=true;
@@ -22019,9 +22080,11 @@ if (ishowoptions_options<>nil) and (ishowoptions_frameoptions<>nil) then
 except;end;
 end;
 
-procedure tbasicsystem.xshowhelp;
+procedure tbasicsystem.xshowhelp;//06may2026
 begin
-low__plat('showhelp','',false);
+
+low__showhelp(not vihelp_show);
+
 end;
 
 procedure tbasicsystem.xdefaults;//10dec2025
@@ -22036,7 +22099,7 @@ xstartbw(true);
 if not popquery22('Restore Defaults','To restore default settings for appearance, background, font, settings etc, click the "Restore Defaults" button below or press the "Enter" key.','','Restore Defaults',false,false) then goto skipend;
 
 //get
-app__savecursor('default',nil);
+cursor__save('default',nil);
 siLoadsyssettingsfrom(nil);
 
 skipend:
@@ -22323,55 +22386,115 @@ end;
 function tbasicsystem.xwinfindlayer(xcoreindex:longint;var xlayer:longint):boolean;
 var
    p:longint;
-begin
-//defaults
-result:=false;
 
-try
-xlayer:=-1;//not found
+begin
+
+//defaults
+result      :=false;
+xlayer      :=-1;//not found
+
 //find
 if (xcoreindex>=0) and (xcoreindex<icorecount) and (winlist.count>=1) then
    begin
+
    for p:=0 to (winlist.count-1) do if (xcoreindex=winlist.list[p]) then
       begin
+
       xlayer:=p;
       result:=true;
+
       break;
+
       end;//p
+
    end;
-except;end;
+
 end;
 
 function tbasicsystem.xwinfindbyxy(sx,sy:longint;var xcoreindex,xwinlayer:longint):boolean;
-var
-   p,i:longint;
 begin
-//defaults
-result:=false;
 
-try
-xcoreindex:=0;
-xwinlayer:=0;
+result:=window__findxy(sx,sy,xcoreindex,xwinlayer);
+
+end;
+
+function tbasicsystem.window__findxy(const sx,sy:longint;var xcoreindex,xwinlayer:longint32):boolean;//06may2026
+var
+   i,p:longint;
+
+begin
+
+//defaults
+result      :=false;
+xcoreindex  :=0;
+xwinlayer   :=0;
+
 //check
 if (winlist.count<=0) then exit;
+
 //find
 for p:=(winlist.count-1) downto 0 do
 begin
-i:=winlist.list[p];
+
+i           :=winlist.list[p];
+
 if xinuse(i) and (icore[i].winstyle>wmcontrol) and icore[i].visible then
    begin
+
    if (sx>=icore[i].paintarea.left) and (sx<=icore[i].paintarea.right) and (sy>=icore[i].paintarea.top) and (sy<=icore[i].paintarea.bottom) then
       begin
-      xcoreindex:=i;
-      xwinlayer:=p;
-      result:=true;
+
+      xcoreindex      :=i;
+      xwinlayer       :=p;
+      result          :=true;
+
       break;
+
       end;
+
    //.dialog -> go no further than topmost dialog
    if (icore[i].winstyle=wmdialog) then break;
+
    end;
+
 end;//p
-except;end;
+
+end;
+
+function tbasicsystem.control__fastfindxy(const sx,sy:longint;var xcoreindex:longint):boolean;//07may2026
+var
+   p:longint;
+
+begin
+
+//defaults
+result                :=false;
+xcoreindex            :=-1;//not found
+
+
+//find control on the window
+for p:=pred(icorecount) downto 0 do
+begin
+
+if (icore[p]<>nil) and icore[p].visible and area__within( icore[p].paintarea ,sx ,sy ) then
+   begin
+
+   result             :=true;
+   xcoreindex         :=p;
+
+   break;
+
+   end;
+
+end;//p
+
+end;
+
+function tbasicsystem.control__fastfindxyb(const sx,sy:longint):longint32;
+begin
+
+control__fastfindxy(sx,sy,result);
+
 end;
 
 function tbasicsystem.xfindwinname(xwinname:string;var x:tbasicscroll):boolean;
@@ -22399,6 +22522,7 @@ if (winlist.count>=1) then
    end;
 except;end;
 end;
+
 
 function tbasicsystem.xacceptfindbyxy(sx,sy:longint;var xout:tbasiccontrol):boolean;//updated - 20mar2022
 var
@@ -23021,7 +23145,7 @@ ph          :=round(vinormal.fsH*0.75);
 //get
 ha.left     :=ihintxy.x;
 ha.right    :=ha.left;
-ha.top      :=ihintxy.y+app__cursorsize;
+ha.top      :=ihintxy.y+cursor__size;
 ha.bottom   :=ha.top+(2*ph);
 w           :=0;
 
@@ -23071,7 +23195,7 @@ if (ihintxy.y>(height div 2)) then
    begin
 
    v        :=ha.bottom-ha.top+1;
-   ha.top:=ihintxy.y-v-app__cursorsize;
+   ha.top:=ihintxy.y-v-cursor__size;
    ha.bottom:=ha.top+v;
 
    end;
@@ -25963,27 +26087,33 @@ sysstatus_blaizfolder:=-1;
 sysstatus_blaizfolder_setpert:=false;
 end;
 
-procedure tbasicsystem.xstatusstart(xrowcount:longint);
+procedure tbasicsystem.xstatusstart(const xscale:double;const xrowcount:longint);
 begin//note: *=reuse current tab setting - 15may2022
-xstatusstart3(xrowcount,'*',true);
+xstatusstart3(xscale,xrowcount,'*',true);
 end;
 
-procedure tbasicsystem.xstatusstart2(xrowcount:longint;const xtab:string);
+procedure tbasicsystem.xstatusstart2(const xscale:double;const xrowcount:longint;const xtab:string);
 begin
-xstatusstart3(xrowcount,xtab,true);
+xstatusstart3(xscale,xrowcount,xtab,true);
 end;
 
-procedure tbasicsystem.xstatusstart3(xrowcount:longint;const xtab:string;xresetcancel:boolean);//20may2022
+procedure tbasicsystem.xstatusstart3(const xscale:double;const xrowcount:longint;const xtab:string;xresetcancel:boolean);//20may2022
 begin
+
 if (xtab<>'') and (xtab<>'*') then istatustab:=xtab;
 
 if xresetcancel then
    begin
+
    istatusstopped:=false;
    xstatus_sysstatus_alloff;//low level support - 04oct2022
+
    end;
-istatusrowcount:=frcrange32(xrowcount,0,high(istatustext)+1);
-istatustime:=slowms64;
+
+istatusscale          :=frcminD64(xscale,0.1);            
+istatusrowcount       :=frcrange32(xrowcount,0,high(istatustext)+1);
+istatustime           :=slowms64;
+
 end;
 
 procedure tbasicsystem.xstatustab(const xtab:string);
@@ -26071,7 +26201,7 @@ if xshow and (istatuswin<>nil) then
 case xshow of
 true:begin
 
-   xstatusstart3(istatusrowcount,'*',false);
+   xstatusstart3(istatusscale,istatusrowcount,'*',false);
 
    if (istatuswin=nil) then
       begin
@@ -26085,7 +26215,7 @@ true:begin
       amouseupfinalise;
 
       //create
-      istatuswin:=nstatus(istatustitle);
+      istatuswin:=nstatus(istatustitle,istatusscale);
       istatuswin.xmenu.orowcount:=istatusrowcount;
       istatuswin.xmenu.ofast:=true;
       istatuswin.xmenu.orows:=true;
@@ -26151,7 +26281,7 @@ pumptimer2;
 except;end;
 end;
 
-function tbasicsystem.nstatus(xtitle:string):tbasicscroll;
+function tbasicsystem.nstatus(xtitle:string;xscale:double):tbasicscroll;//05may2026
 const
    xcancelcap='';
 var
@@ -26163,6 +26293,10 @@ begin
 result                 :=nil;
 
 try
+
+//range
+if (xscale<0.1) then xscale:=0.1;//05may2026
+
 //get
 result                 :=tbasicscroll.create(self);
 result.tag             :=winfocus;//remember previous focus
@@ -26192,7 +26326,7 @@ result.xhelp;//every normal window has help by default
 result.oautoheight     :=true;
 
 //.da
-gui__scale3(400,320,100,50,dw,dh);//11dec2025
+gui__scale3( round32(400*xscale) ,320 ,100 ,50 ,dw ,dh );//11dec2025
 
 da.left                :=(width-dw) div 2;
 da.top                 :=(height-dh) div 2;
@@ -27647,7 +27781,7 @@ perle32+
 peany;
 
 //get
-result:=xpopnav3(xfilename,xfilterindex,xfilterlist,strdefb(xcommonfolder,low__platimages),'open','','Open Image',daction,true);
+result:=xpopnav3(xfilename,xfilterindex,xfilterlist,strdefb(xcommonfolder,app__folderImages(true)),'open','','Open Image',daction,true,false);
 except;end;
 end;
 
@@ -27723,7 +27857,7 @@ else
    end;
 
 //get
-result:=xpopnav3(xfilename,xfilterindex,xfilterlist,strdefb(xcommonfolder,low__platimages),'save','','Save Image'+xtitle2,daction,true);
+result:=xpopnav3(xfilename,xfilterindex,xfilterlist,strdefb(xcommonfolder,app__folderImages(true)),'save','','Save Image'+xtitle2,daction,true,false);
 except;end;
 end;
 
@@ -27763,7 +27897,7 @@ if xmore then
    end;
 
 //get
-result:=xpopnav3(xfilename,xfilterindex,xfilterlist,strdefb(xcommonfolder,low__platfolder('cursors')),'open','','Open Cursor',daction,xcanpreview);
+result:=xpopnav3(xfilename,xfilterindex,xfilterlist,strdefb(xcommonfolder,app__folderCursors(true)),'open','','Open Cursor',daction,xcanpreview,false);
 except;end;
 end;
 
@@ -27782,7 +27916,7 @@ var
    daction:string;
 begin
 daction:='';
-result:=xpopnav3(xfilename,xfilterindex,xfilterlist,xcommonfolder,'open','','Open'+insstr(#32,xtitle2<>'')+xtitle2,daction,xcanpreview);
+result:=xpopnav3(xfilename,xfilterindex,xfilterlist,xcommonfolder,'open','','Open'+insstr(#32,xtitle2<>'')+xtitle2,daction,xcanpreview,false);
 end;
 
 function tbasicsystem.popsave(var xfilename:string;xfilterlist,xcommonfolder:string;var daction:string):boolean;
@@ -27792,15 +27926,15 @@ end;
 
 function tbasicsystem.popsave2(var xfilename:string;xfilterlist,xcommonfolder,xtitle2:string;var daction:string):boolean;
 begin
-result:=popsave3(xfilename,xfilterlist,xcommonfolder,xtitle2,daction,false);
+result:=popsave3(xfilename,xfilterlist,xcommonfolder,xtitle2,daction,false,false);
 end;
 
-function tbasicsystem.popsave3(var xfilename:string;xfilterlist,xcommonfolder,xtitle2:string;var daction:string;xcanpreview:boolean):boolean;
+function tbasicsystem.popsave3(var xfilename:string;xfilterlist,xcommonfolder,xtitle2:string;var daction:string;const xcanpreview,xAllowUnknownFileTypes:boolean):boolean;
 var
    xfilterindex:longint;
 begin
 xfilterindex:=0;
-result:=xpopnav3(xfilename,xfilterindex,xfilterlist,xcommonfolder,'save','','Save'+insstr(#32,xtitle2<>'')+xtitle2,daction,xcanpreview);
+result:=xpopnav3(xfilename,xfilterindex,xfilterlist,xcommonfolder,'save','','Save'+insstr(#32,xtitle2<>'')+xtitle2,daction,xcanpreview,xAllowUnknownFileTypes);
 end;
 
 function tbasicsystem.popfolder(var xfilename:string;const xcommonfolder:string):boolean;
@@ -27820,7 +27954,7 @@ var
 begin
 int1:=0;
 daction:='';
-result:=xpopnav3(xfilename,int1,xmasklist,xcommonfolder,low__aorbstr('folder','folder2',xshowfiles),'','',daction,xcanpreview);
+result:=xpopnav3(xfilename,int1,xmasklist,xcommonfolder,low__aorbstr('folder','folder2',xshowfiles),'','',daction,xcanpreview,false);
 end;
 
 function tbasicsystem.popnewfolder(xfolder:string;var xoutfolder:string):boolean;//14apr2021
@@ -27989,12 +28123,13 @@ end;
 
 function tbasicsystem.xpopnav2(var xvalue:string;var xfilterindex:longint;xfilterlist,xcommonfolder,xstyle,xhisname,xtitle:string;var daction:string):boolean;
 begin
-result:=xpopnav3(xvalue,xfilterindex,xfilterlist,xcommonfolder,xstyle,xhisname,xtitle,daction,false);
+result:=xpopnav3(xvalue,xfilterindex,xfilterlist,xcommonfolder,xstyle,xhisname,xtitle,daction,false,false);
 end;
 
-function tbasicsystem.xpopnav3(var xvalue:string;var xfilterindex:longint;xfilterlist,xcommonfolder,xstyle,xhisname,xtitle:string;var daction:string;xcanpreview:boolean):boolean;
+function tbasicsystem.xpopnav3(var xvalue:string;var xfilterindex:longint;xfilterlist,xcommonfolder,xstyle,xhisname,xtitle:string;var daction:string;const xcanpreview,xAllowUnknownFileTypes:boolean):boolean;
 label
    redo;
+
 var
    a:tbasicscroll;
    b:tbasicnav;
@@ -28002,29 +28137,41 @@ var
    xpreviousfocus,dw,dh:longint;
    xpreviouscontrol:tbasiccontrol;
    xcap:string;
+
 begin
+
 //defaults
-result:=false;
+result                :=false;
+a                     :=nil;
 
 try
-xpreviousfocus:=winfocus;
-xpreviouscontrol:=focuscontrol;
-a:=nil;
+
+//init
+xpreviousfocus        :=winfocus;
+xpreviouscontrol      :=focuscontrol;
+
 //init
 if (xstyle='nav') then
    begin
+
    dw:=600;
    dh:=550;
+
    end
+
 else if (xstyle='fav') then
    begin
+
    dw:=500;
    dh:=450;
+
    end
 else
    begin
+
    dw:=800;
    dh:=650;//21dec2024 - was: 550;
+
    end;
 
 //was: low__winzoom(dw,dh);//17mar2021
@@ -28036,11 +28183,14 @@ da.right:=da.left+dw-1;
 da.bottom:=da.top+dh-1;
 
 //get
-a:=ndlg(da,false);
-a.oborderstyle:=bsSystem100;
-a.static:=true;
-b:=a.nnav;
-b.oautoheight:=true;
+a                            :=ndlg(da,false);
+a.oborderstyle               :=bsSystem100;
+a.static                     :=true;
+
+b                            :=a.nnav;
+b.oautoheight                :=true;
+b.oAllowUnknownFileTypes     :=xAllowUnknownFileTypes;//05may2026
+
 a.xhelp;
 a.xgrad;
 
@@ -28374,7 +28524,7 @@ if xaddonly and (xvalue>=0) then
 
 //load
 xdata:=str__new8;
-io__fromfile(low__platfolder('settings')+'colhis.txt',@xdata,e);
+io__fromfile(app__folderSettings(true)+'colhis.txt',@xdata,e);
 //.edit
 if xeditonly then
    begin
@@ -28441,7 +28591,7 @@ if xaddonly or xeditonly then
       xdata.sadd(low__digpad11(c32.r,3)+','+low__digpad11(c32.g,3)+','+low__digpad11(c32.b,3)+','+low__digpad11(c32.a,3)+rcode);
       end;//p
       end;
-   if not io__tofile(low__platfolder('settings')+'colhis.txt',@xdata,e) then goto skipend;
+   if not io__tofile(app__folderSettings(true)+'colhis.txt',@xdata,e) then goto skipend;
    result:=true;
    goto skipend;
    end;
@@ -39482,6 +39632,7 @@ inherited create2(xparent,false);
 ohead                 :=false;
 ominsize              :=min64;
 omaxsize              :=max64;
+oAllowUnknownFileTypes:=false;//05may2026
 ifolderid             :=0;
 onumber               :=false;
 ipreview              :=false;//22may2022
@@ -40247,7 +40398,7 @@ begin
 if low__setint(isortstyle,frcrange32(x,0,nlMax)) then imustreload:=true;
 end;
 
-procedure tbasicnav.setfilterlist(x:string);//18sep2025
+procedure tbasicnav.setfilterlist(x:string);//05may2026, 18sep2025
 var//Note: expects a list of KNOWN extensions e.g. "bat;txt;bmp;tea" etc
    dcount,dindex,xlen,lp,p:longint;
    dlabel,dext,dmask:string;
@@ -40280,7 +40431,7 @@ if (xlen>=1) then
       begin
 
       //add
-      if io__findext(strcopy1(x,lp,p-lp),dlabel,dext,dmask) then
+      if io__findext2(strcopy1(x,lp,p-lp),dlabel,dext,dmask,oAllowUnknownFileTypes) then
          begin
 
          if (dcount>=high(fcap)) then break;
@@ -40404,7 +40555,7 @@ imustname:=xmustname;
 except;end;
 end;
 
-function tbasicnav.xfiltername(xnewname:string;xaddfilterext:boolean):string;
+function tbasicnav.xfiltername(xnewname:string;xaddfilterext:boolean):string;//05may2026
 var
    xfilter:string;
 
@@ -40427,33 +40578,50 @@ var
    except;end;
    end;
 begin
-result:='';
+
+//defaults
+result      :='';
 
 try
+
 //init
-xfilter:=filter;
+xfilter     :=filter;
+
 //get
 case xmultimaskORanymask of
 true:begin
-   result:=io__safename(io__extractfilename(xnewname));//filename with extension assumed
+
+   result   :=io__safename(io__extractfilename(xnewname));//filename with extension assumed
+
    end;
 else begin
+
    case xaddfilterext of
    true:begin
+
       result:=io__safename(io__extractfilename(xnewname));
+
       if (xfilter<>'') and (not strmatch(xfilter,io__lastext(result))) then
          begin
+
          result:=result+'.?';//fake ext for "low__forceext2()" to work with - 09mar2021
-         result:=io__forceext2(result,xfilter,false);//use currently active filter - 03mar2021
+         result:=io__forceext2(result,xfilter,false,oAllowUnknownFileTypes);//use currently active filter - 05may2026, 03mar2021
+
          end;
+
       end;
+
    else result:=io__safename(io__remlastext(io__extractfilename(xnewname)));
+
    end;//case
+
 //   if not xaddfilterext then result:=io__remlastext(result);//only remove ext if value is being assigned to internal "iname.value" else it might be a name with a user defined extension that must be preserved - 09mar2021
 //   result:=io__safename(result);
 //   if xaddfilterext and (xfilter<>'') then result:=low__forceext2(result,xfilter,false);//use currently active filter - 03mar2021
    end;
+
 end;//case
+
 except;end;
 end;
 
@@ -41810,7 +41978,7 @@ if zzok(ifav,7303) and zzok(ifavcore,7304) then
    //get
    a                  :=str__new8;
 
-   io__fromfile(low__platfolder('settings')+'fav.txt',@a,e);
+   io__fromfile(app__folderSettings(true)+'fav.txt',@a,e);
 
    ifavcore.text      :=low__limitlines(low__remdup2(a.text,true,false,false),ifavlimit);//11sep2021
 
@@ -41846,7 +42014,7 @@ function tbasicnav.savefav(xdata:tstr8):boolean;
 var
    e:string;
 begin
-result:=io__tofile(low__platfolder('settings')+'fav.txt',@xdata,e);
+result:=io__tofile(app__folderSettings(true)+'fav.txt',@xdata,e);
 end;
 
 procedure tbasicnav.addfav(xfolder:string);
@@ -41879,7 +42047,7 @@ if zzok(ifav,7305) and zzok(ifavcore,7306) and (xfolder<>'') then
    xfolder:=io__makeportablefilename(xfolder);//make folder portable!!! - 11sep2021
    a:=str__new8;
    b:=str__new8;
-   io__fromfile(low__platfolder('settings')+'fav.txt',@b,e);
+   io__fromfile(app__folderSettings(true)+'fav.txt',@b,e);
    str1:=b.text;
    a.text:=low__limitlines(low__remdup2(xfolder+insstr(rcode,str1<>'')+str1,true,false,false),ifavlimit);
    savefav(a);
@@ -51320,7 +51488,7 @@ else if strmatch(n,'?paste_and_use') then
 else if (strcopy1(n,1,1)<>'?') then
    begin
    //init
-   f:=low__platfolder('schemes')+xname+'.'+cnFileEXT;//no forced lowercase or uppercase on xname
+   f:=app__folderSchemes(true)+xname+'.'+cnFileEXT;//no forced lowercase or uppercase on xname
    b:=str__new8;
    c:=str__new8;
    //get
@@ -51348,9 +51516,9 @@ else if (n='?paste') or (n='?paste.hex') then
 //.paste new
 else if (n='?pastenew') or (n='?pastenew.hex') then
    begin
-   if (sysfile_colorscheme='') then sysfile_colorscheme:=low__platfolder('schemes')+'Untitled.'+cnFileEXT;
+   if (sysfile_colorscheme='') then sysfile_colorscheme:=app__folderSchemes(true)+'Untitled.'+cnFileEXT;
    daction:='';
-   if gui.popsave(sysfile_colorscheme,pebcs,low__platfolder('schemes'),daction) then
+   if gui.popsave(sysfile_colorscheme,pebcs,app__folderSchemes(true),daction) then
       begin
       b:=str__new8;
       str1:=clip__pastetextb;
@@ -53313,4 +53481,5 @@ str__free(@xdata);
 end;
 
 end.
+
 

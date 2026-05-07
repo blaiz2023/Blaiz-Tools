@@ -3994,7 +3994,7 @@ if (xname[p-1+stroffset]='\') then
    end;
 end;//p
 //.enforcing trailing slash for xname - 28may2022
-if (strcopy1(xname,length(xname),1)<>'\') then xname:=xname+'\';
+if (strcopy1(xname,low__len32(xname),1)<>'\') then xname:=xname+'\';
 //get
 xbuflen:=sizeof(xbuf);
 case xrootstyle of

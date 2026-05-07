@@ -11,7 +11,8 @@ uses
   gosssnd in 'gosssnd.pas',
   gosswin in 'gosswin.pas',
   gosszip in 'gosszip.pas',
-  gossjpg in 'gossjpg.pas';
+  gossjpg in 'gossjpg.pas',
+  gossgame in 'gossgame.pas';
 
 //include multi-format icon - Delphi 3 can't compile an of 256x256 @ 32 bit -> resource error/out of memory error - 19nov2024
 {$R blaiztools-256.res}

@@ -31,10 +31,10 @@ uses gosswin2, gossroot, gossio, gosswin, gossimg, gossgui {$ifdef snd},gosssnd{
 //##
 //## ==========================================================================================================================================================================================================================
 //## Library.................. GameCore game support (gossgame.pas)
-//## Version.................. 4.00.11065 (+78)
+//## Version.................. 4.00.11068 (+80)
 //## Items.................... 9
-//## Last Updated ............ 04may2026, 03apr2026, 26mar2026, 03mar2026, 02oct2025, 16sep2025, 08aug2025, 29jul2025, 14jul2025, 06jul2025, 11feb2025, 04feb2025, 01feb2025
-//## Lines of Code............ 15,100+
+//## Last Updated ............ 07may2026, 06may2026, 04may2026, 03apr2026, 26mar2026, 03mar2026, 02oct2025, 16sep2025, 08aug2025, 29jul2025, 14jul2025, 06jul2025, 11feb2025, 04feb2025, 01feb2025
+//## Lines of Code............ 15,200+
 //## Origin .................. Human generated and maintained
 //##
 //## main.pas ................ App specific code
@@ -58,7 +58,7 @@ uses gosswin2, gossroot, gossio, gosswin, gossimg, gossgui {$ifdef snd},gosssnd{
 //## ==========================================================================================================================================================================================================================
 //## | Name                   | Hierarchy         | Version   | Date        | Update history / brief description of function
 //## |------------------------|-------------------|-----------|-------------|--------------------------------------------------------
-//## | game__*                | family of procs   | 1.00.3172 | 26mar2026   | Game control procs - 03mar2026, 08aug2025, 29jul2025, 16jul2025, 06jul2025
+//## | game__*                | family of procs   | 1.00.3173 | 07may2026   | Game control procs - 26mar2026, 03mar2026, 08aug2025, 29jul2025, 16jul2025, 06jul2025
 //## | pic8__*                | family of procs   | 1.00.1680 | 24jul2025   | Pic8 rapid-render game sprite - supports images from 1x1 to 128x128. Dual 32bit color palettes, indivdual color flash/flicker modes. Animate pixels and create movement perception without animation or the need for multiple cells. Simple, compact and fast. Render speed: ~60fps++ at 1920x1080 using 20x20 tiles on an Intel Core i5 2.5 GHz. - 11feb2025
 //## | tpic8                  | tobjectex         | 1.00.002  | 04jul2025   | Dynamically created version of tpiccore8
 //## | tsnd                   | tstr8             | 1.00.002  | 04jul2025   | Data stream for sound (wave)
@@ -480,18 +480,28 @@ type
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx//eeeeeeeeeeeeeeeeeeeee
    tpre8=class(tbasiccontrol)//previewer
    private
-    ifasttimer:comp;
+
+    ifasttimer:longint64;
     ihost:tobject;
     icore:ppiccore8;
     ibuffer:trawimage;
+    imustmode:longint32;
+
    public
+
     //create
     constructor create(xparent:tobject;xhost:tobject;xcore:ppiccore8); virtual;
     constructor create2(xparent:tobject;xhost:tobject;xcore:ppiccore8;xstart:boolean); virtual;
     destructor destroy; override;
+
     procedure _ontimer(sender:tobject); override;
     procedure _onpaint(sender:tobject); override;
+    function _onnotify(sender:tobject):boolean; override;
     procedure disconnect;
+
+    //misc
+    property mustmode:longint read imustmode write imustmode;//-1=user clicked left side of image, 1=user clicked right side of image, 0=no useful click info
+
    end;
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxx//22222222222222222222222
@@ -1536,7 +1546,7 @@ for p:=0 to high(game_slotlist) do game_slotlist[p]:=nil;
 
 for p:=0 to max32 do if storage__findfile(p,x,xlen,xorgSize,xcompressed,xname) then inc(game_filecount) else break;
 
-if (game_filecount<=0) then showerror('Game requires files in "gamefiles.pas" - none detected');
+//was: if (game_filecount<=0) then showerror('Game requires files in "gamefiles.pas" - none detected');
 
 {$endif}
 
@@ -1675,8 +1685,8 @@ xname:=strlow(xname);
 if (strcopy1(xname,1,9)='gossgame.') then strdel1(xname,1,9) else exit;
 
 //get
-if      (xname='ver')        then result:='4.00.11065'
-else if (xname='date')       then result:='04may2026'
+if      (xname='ver')        then result:='4.00.11068'
+else if (xname='date')       then result:='07may2026'
 else if (xname='name')       then result:='GameCore'
 else
    begin
@@ -10007,6 +10017,7 @@ inherited create2(xparent,false);
 
 //vars
 ifasttimer     :=0;
+imustmode      :=0;
 
 if (xhost<>nil) and (xhost is ttex) then ihost:=xhost else ihost:=nil;
 
@@ -10040,6 +10051,27 @@ begin
 ihost       :=nil;
 icore       :=nil;
 
+end;
+
+function tpre8._onnotify(sender:tobject):boolean;
+begin
+
+//defaults
+result      :=false;//handled
+
+try
+
+if gui.mousedown and (not gui.mousewasdown) then
+   begin
+   if      (mousedownxy.x<round(clientwidth*0.3)) then imustmode:=-1//prev
+   else if (mousedownxy.x>round(clientwidth*0.7)) then imustmode:=1//next
+   else                                                imustmode:=0;//none
+   end;
+
+//event
+if assigned(onnotify) then result:=onnotify(sender);
+
+except;end;
 end;
 
 procedure tpre8._ontimer(sender:tobject);
@@ -10121,11 +10153,15 @@ var
 
 begin
 try
+
 //init
 infovars(s);
-xpad :=2*s.zoom;
-ypad :=2*s.zoom;
-ypad2:=10*s.zoom;
+
+xpad        :=2*s.zoom;
+ypad        :=2*s.zoom;
+ypad2       :=10*s.zoom;
+dy          :=xpad;
+dx          :=xpad;
 
 //cls
 ffillArea(s.cs,s.back,false);
@@ -10134,12 +10170,10 @@ ffillArea(s.cs,s.back,false);
 if (icore=nil) then goto skipend;
 
 //init
-dy:=xpad;
-dx:=xpad;
-dh:=icore.h;
+dh          :=icore.h;
 
 //size
-if (misw(ibuffer)<>icore.w) or (mish(ibuffer)<>icore.h) then missize(ibuffer,icore.w,icore.h);//?????????
+if (misw(ibuffer)<>icore.w) or (mish(ibuffer)<>icore.h) then missize(ibuffer,icore.w,icore.h);
 
 //draw
 a.core      :=@icore^;
@@ -13897,11 +13931,8 @@ var
    s:tclientinfo;
    a:tdrawfastinfo;
    da,ea:twinrect;
-   cw,ch,vscrollx,vscrolly,vzoom,tw,i,int1,int2,dfont,fnH2,fn2,ccs,sx,sy,sw,sh,dw,dh:longint;
-   bol1,bol2:boolean;
-   sr24:pcolorrow24;
-   c32:tcolor32;
-   cnone24:tcolor24;
+   cw,ch,vscrollx,vscrolly,vzoom,tw,int1:longint;
+   bol1:boolean;
    t:string;
 
    procedure dcol;

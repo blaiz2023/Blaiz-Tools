@@ -32,10 +32,10 @@ uses {$ifdef laz}classes, {$endif} sysutils, gosswin2, gosswin, gossteps;
 //##
 //## ==========================================================================================================================================================================================================================
 //## Library.................. Root (gossroot.pas)
-//## Version.................. 4.00.6873 (+872)
+//## Version.................. 4.00.6876 (+872)
 //## Items.................... 49
-//## Last Updated ............ 04may2026, 03may2026, 20apr2026, 11apr2026, 09apr2026, 02apr2026, 26mar2026, 18mar2026, 10mar2026, 07mar2026, 20feb2026, 17feb2026, 05feb2026, 01feb2026, 31jan2026, 05jan2026, 23dec2025, 19dec2025, 18dec2025, 15dec2025, 13dec2025, 10dec2025, 08dec2025, 04dec2025, 06nov2025, 02nov2025, 24oct2025, 10oct2025, 08oct2025, 03oct2025, 29sep2025, 26sep2025, 18sep2025, 14sep2025, 13sep2025, 07sep2025, 10aug2025, 09aug2025, 29jul2025, 19jul2025, 15jul2025, 07jul2025, 03jul2025, 19jun2025, 11jun2025, 28may2025, 26apr2025, 11apr2025, 31mar2025, 21mar2025, 08mar2025, 20feb2025, 29jan2025, 11jan2025, 17dec2024, 06dec2024, 27nov2024, 15nov2024, 11nov2024, 01nov2024, 31oct2024, 12oct2024, 24aug2024: images extensions fix, 26jul2024: str__write, 20jul2024: zip_* procs updated, 18jun2024: GUI support added, 02may2024: low__ref256/U, 28apr2024: low__uptime(), 17apr2024
-//## Lines of Code............ 34,800+
+//## Last Updated ............ 06may2026, 04may2026, 03may2026, 20apr2026, 11apr2026, 09apr2026, 02apr2026, 26mar2026, 18mar2026, 10mar2026, 07mar2026, 20feb2026, 17feb2026, 05feb2026, 01feb2026, 31jan2026, 05jan2026, 23dec2025, 19dec2025, 18dec2025, 15dec2025, 13dec2025, 10dec2025, 08dec2025, 04dec2025, 06nov2025, 02nov2025, 24oct2025, 10oct2025, 08oct2025, 03oct2025, 29sep2025, 26sep2025, 18sep2025, 14sep2025, 13sep2025, 07sep2025, 10aug2025, 09aug2025, 29jul2025, 19jul2025, 15jul2025, 07jul2025, 03jul2025, 19jun2025, 11jun2025, 28may2025, 26apr2025, 11apr2025, 31mar2025, 21mar2025, 08mar2025, 20feb2025, 29jan2025, 11jan2025, 17dec2024, 06dec2024, 27nov2024, 15nov2024, 11nov2024, 01nov2024, 31oct2024, 12oct2024, 24aug2024: images extensions fix, 26jul2024: str__write, 20jul2024: zip_* procs updated, 18jun2024: GUI support added, 02may2024: low__ref256/U, 28apr2024: low__uptime(), 17apr2024
+//## Lines of Code............ 34,200+
 //## Origin .................. Human generated and maintained
 //##
 //## main.pas ................ App specific code
@@ -59,7 +59,7 @@ uses {$ifdef laz}classes, {$endif} sysutils, gosswin2, gosswin, gossteps;
 //## ==========================================================================================================================================================================================================================
 //## | Name                   | Hierarchy         | Version   | Date        | Update history / brief description of function
 //## |------------------------|-------------------|-----------|-------------|--------------------------------------------------------
-//## | app__*                 | family of procs   | 1.00.492  | 04may2026   | App related procs - 02apr2026, 10mar2026, 05mar2026, 13dec2025, 23oct2025, 28sep2025, 07sep2025, 19aug2025, 15jul2025, 19jun2025, 18feb2025, 29jan2025, 27nov2024
+//## | app__*                 | family of procs   | 1.00.495  | 06may2026   | App related procs - 02apr2026, 10mar2026, 05mar2026, 13dec2025, 23oct2025, 28sep2025, 07sep2025, 19aug2025, 15jul2025, 19jun2025, 18feb2025, 29jan2025, 27nov2024
 //## | dialog__*              | family of procs   | 1.00.070  | 10oct2025   | MS Dialogs
 //## | printer__*             | family of procs   | 1.00.050  | 26apr2025   | Printer related procs
 //## | font__*                | family of procs   | 1.00.070  | 26apr2025   | Font related procs
@@ -168,6 +168,15 @@ const
    system_debugRESIZE   =false;
    system_debugFASTSTAT =false;
    {$endif}
+
+
+   //core app names ------------------------------------------------------------
+
+   prg_settings              ='prg-settings';
+   sys_settings              ='sys-settings';
+
+   //---------------------------------------------------------------------------
+
 
    //memory block size
    system_blocksize          =8192;//do not set below 4096 -> required by tintlist32/tintlist64/tstr9 for a large data range
@@ -3301,6 +3310,9 @@ var
    gui__running           :boolean=false;
    gui__closing           :boolean=false;
 
+   //false=program does not write settings to folder - read only mode
+   viMaster               :boolean=true;
+
    //.detect and control shutdown of app - 14jul2025
    app__closeinited       :boolean=false;//app is in the process of closing (all prompts are done) only "app__closepaused=true" prevents shutdown
    app__closepaused       :boolean=false;//used by an app to control the shutdown process - 07jul2025
@@ -3539,7 +3551,6 @@ function programnewinstance:boolean;
 function programslogan:string;
 function programpaid:longint;//desktop paid status -> 0=free, 1..N=paid - also works inconjunction with "system_storeapp" and it's cost value to determine PAID status is used within help etc - 30mar2022
 function programpaid_store:longint;//store paid status
-function programcheck_mode:longint;
 
 //pointer procs ----------------------------------------------------------------
 function ptr__shift(const xstart:pointer3264;xshift:longint64):pointer3264;
@@ -4293,14 +4304,21 @@ function app__uptimegreater(x:comp):boolean;
 function app__uptimestr:string;
 
 //.folder
-function app__rootfolder:string;//14feb2025
 function app__folder:string;
 function app__folder2(xsubfolder:string;xcreate:boolean):string;
-function app__folder3(xsubfolder:string;xcreate,xalongsideexe:boolean):string;//15jan2024
+function app__folder3(xsubfolder:string;xcreate,xalongsideexe:boolean):string;//06may2026, 15jan2024
 function app__subfolder(xsubfolder:string):string;
 function app__subfolder2(xsubfolder:string;xalongsideexe:boolean):string;
 function app__settingsfile(xname:string):string;
 function app__settingsfile2(xname:string;xcreatefolder:boolean):string;//23oct2025
+
+function app__folderRoot(const xcreate:boolean):string;//06may2026
+function app__folderStorage(const xcreate:boolean):string;//06may2026
+function app__folderTemp(const xcreate:boolean):string;//06may2026
+function app__folderSettings(const xcreate:boolean):string;//06may2026
+function app__folderSchemes(const xcreate:boolean):string;//06may2026
+function app__folderCursors(const xcreate:boolean):string;//06may2026
+function app__folderImages(const xcreate:boolean):string;//06may2026
 
 //.settings
 //..load+save
@@ -4338,7 +4356,7 @@ procedure app__install_uninstall;
 function app__GUIresources:longint;//27aug2025
 procedure app__boot(xEventDriven,xFileCache,xGUImode:boolean);//28sep2025, 19aug2025
 procedure app__checkvars;//04may2025, 29jan2025
-function app__valuedefaults(xname:string):string;//04may2026, 08aug2025
+function app__valuedefaults(xname:string):string;//06may2026, 04may2026, 08aug2025
 procedure app__checkCompilerOptionsForMaxSpeed;//15jul2025
 procedure app__run;//run - 30dec2025: better timing control and accuracy, 07sep2025, 17jun2025, 19aug2024: adjust GUI start position
 function app__running:boolean;
@@ -4712,24 +4730,6 @@ function low__cdstr(x:tstr8):boolean;//critical-decoder
 function low__cdstr2(x:tstr8;xshow,xclose:boolean):boolean;//critical-decoder BUT doesn't shutdown! - 09nov2019, 08mar2018
 function low__cdmix(x:tstr8):boolean;//critical-decoder dual layer
 function low__cdmixb(x:tstr8):tstr8;//critical-decoder dual layer
-
-
-//check procs ------------------------------------------------------------------
-//requires "check" compiler option otherwise defaults to "OK - all checks pass"
-procedure acheck(const x:array of byte;xuserval:longint);
-function  tcheck(x:string;xuserval:longint):string;
-function  scheck(x:string;xuserval:longint):boolean;
-procedure icheck(x,xuserval:longint);
-function  xcheck(x:tstr8;xuserval:longint):boolean;
-//.check code generators
-function amakecheck(const x:array of byte):longint;
-function tmakecheck(x:string):longint;
-function smakecheck(x:string):longint;
-function imakecheck(x:longint):longint;
-function xmakecheck(x:tstr8):longint;
-//.code checker
-procedure xcodecheck;//10aug2024, 14nov2023, 11oct2022
-procedure low__makecodecheck(xfilename:string);
 
 
 //multi-undo procs - 25jun2022 -------------------------------------------------
@@ -5967,8 +5967,8 @@ xname:=strlow(xname);
 if (strcopy1(xname,1,9)='gossroot.') then strdel1(xname,1,9) else exit;
 
 //get
-if      (xname='ver')        then result:='4.00.6873'
-else if (xname='date')       then result:='04may2026'
+if      (xname='ver')        then result:='4.00.6876'
+else if (xname='date')       then result:='06may2026'
 else if (xname='name')       then result:='Root'
 else if (xname='mode.int')   then result:=intstr32(info__mode)
 else if (xname='mode')       then
@@ -6374,11 +6374,6 @@ end;
 function programpaid_store:longint;//store paid status
 begin
 result:=strint32(info__app('paid.store'));
-end;
-
-function programcheck_mode:longint;
-begin
-result:=strint32(info__app('check.mode'));
 end;
 
 
@@ -15851,20 +15846,26 @@ end;
 
 function app__adminlevel:boolean;
 begin
+
 result:=root__adminlevel;
+
 end;
 
 function app__folder:string;
 begin
+
 result:=app__folder2('',true);
+
 end;
 
 function app__folder2(xsubfolder:string;xcreate:boolean):string;
 begin
+
 result:=app__folder3(xsubfolder,xcreate,false);
+
 end;
 
-function app__folder3(xsubfolder:string;xcreate,xalongsideexe:boolean):string;//15jan2024
+function app__folder3(xsubfolder:string;xcreate,xalongsideexe:boolean):string;//06may2026, 15jan2024
 begin
 
 case system_msix of
@@ -15873,6 +15874,9 @@ true:begin
 
    result:=io__asfolder(io__appdata+io__extractfilename(io__exename)+'_storage');
 
+   //create storage folder
+   if xcreate then io__makefolder(result);
+
    end;
 
 //.normal desktop app can use its own root folder for files:
@@ -15880,42 +15884,109 @@ else begin
 
    //xalongsideexe=false="exe path\", true="exe path\<exe name>_storage\"
    result:=io__asfolder(io__extractfilepath(io__exename));
-   if not xalongsideexe then result:=io__asfolder(result+io__extractfilename(io__exename)+'_storage');
+
+   if not xalongsideexe then
+      begin
+
+      result:=io__asfolder(result+io__extractfilename(io__exename)+'_storage');
+
+      //create storage folder
+      if xcreate then io__makefolder(result);
+
+      end;
 
    end;
 end;//case
 
-//subfolder
-if (xsubfolder<>'') then result:=io__asfolder(result+xsubfolder);
+//sub-folder
+if (xsubfolder<>'') then
+   begin
 
-//create
-if xcreate then io__makefolder(result);
+   //get
+   result:=io__asfolder(result+xsubfolder);
 
-end;
+   //create sub-folder
+   if xcreate then io__makefolder(result);
 
-function app__rootfolder:string;//14feb2025
-begin
-result:=io__asfolder(io__extractfilepath(io__exename));
+   end;
+
 end;
 
 function app__subfolder(xsubfolder:string):string;
 begin
+
 result:=app__subfolder2(xsubfolder,false);
+
 end;
 
 function app__subfolder2(xsubfolder:string;xalongsideexe:boolean):string;
 begin
+
 result:=app__folder3(xsubfolder,true,xalongsideexe);
+
 end;
 
 function app__settingsfile(xname:string):string;
 begin
+
 result:=app__settingsfile2(xname,true);
+
 end;
 
 function app__settingsfile2(xname:string;xcreatefolder:boolean):string;//23oct2025
 begin
-result:=app__folder3('settings',xcreatefolder,false)+io__extractfilename(xname);
+
+result:=app__folderSettings(xcreatefolder)+io__extractfilename(xname);
+
+end;
+
+function app__folderRoot(const xcreate:boolean):string;//06may2026
+begin
+
+result:=io__asfolder(io__extractfilepath(io__exename));
+
+end;
+
+function app__folderStorage(const xcreate:boolean):string;//06may2026
+begin
+
+result:=app__folder3('',xcreate,false);
+
+end;
+
+function app__folderTemp(const xcreate:boolean):string;//06may2026
+begin
+
+result:=app__folder3('temp',xcreate,false);
+
+end;
+
+function app__folderSettings(const xcreate:boolean):string;//06may2026
+begin
+
+result:=app__folder3('settings',xcreate,false);
+
+end;
+
+function app__folderSchemes(const xcreate:boolean):string;//06may2026
+begin
+
+result:=app__folder3('schemes',xcreate,false);
+
+end;
+
+function app__folderCursors(const xcreate:boolean):string;//06may2026
+begin
+
+result:=app__folder3('cursors',xcreate,false);
+
+end;
+
+function app__folderImages(const xcreate:boolean):string;//06may2026
+begin
+
+result:=app__folder3('images',xcreate,false);
+
 end;
 
 procedure app__breg(xname:string;xdefval:boolean);//register boolean for settings
@@ -16190,7 +16261,7 @@ xonce:=true;
 c('ver');
 c('date');
 c('name');
-c('check.mode');
+//was: c('check.mode');//discontinued - 06may2026
 
 {$ifdef gui}
 c('width');
@@ -16222,7 +16293,7 @@ c('help.maxwidth');
 except;end;
 end;
 
-function app__valuedefaults(xname:string):string;//04may2026, 08aug2025
+function app__valuedefaults(xname:string):string;//06may2026, 04may2026, 08aug2025
 begin
 
 //init
@@ -16286,9 +16357,8 @@ else if (xname='help.maxwidth')       then result:='500'//pixels - right column 
 //.paid/store support
 else if (xname='paid')                then result:='0'//desktop paid status ->  programpaid -> 0=free, 1..N=paid - also works inconjunction with "system_storeapp" and it's cost value to determine PAID status is used within help etc
 else if (xname='paid.store')          then result:='0'//store paid status
-//.anti-tamper programcode checker - updated dual version (program EXE must be secured using "Blaiz Tools") - 11oct2022
-else if (xname='check.mode')          then result:='-91234356'//disable check
-//else if (xname='check.mode')          then result:='234897'//enable check
+
+//.fallback
 else                                       result:='';
 
 end;
@@ -16824,7 +16894,7 @@ if xremove then
    if xguimode then
       begin
 
-      app__savecursor('default',nil);
+      cursor__save('default',nil);
       siLoadsyssettingsfrom(nil);
       viSyncandsave2(true);
 
@@ -33841,557 +33911,6 @@ result:=bol1 and bol2;
 except;end;
 try;str__uaf(@x);except;end;
 end;
-
-
-//check procs ------------------------------------------------------------------
-procedure xcodecheck;//10aug2024, 14nov2023, 11oct2022
-label
-   redo,skipone,skipdone,skipend;
-var
-   aid,bid,ap,bp:longint;
-   usrdata,s,x:tstr8;
-   sysmore:tvars8;
-   xshowerror:boolean;
-   e:string;
-begin
-try
-//defaults
-s:=nil;
-x:=nil;
-usrdata:=nil;
-sysmore:=nil;
-ap:=0;
-bp:=0;
-aid:=0;
-bid:=0;
-xshowerror:=false;
-
-//init - load data streams for client/slave mode - 14nov2023
-s:=str__new8;
-x:=str__new8;
-usrdata:=str__new8;
-sysmore:=vnew;
-if not io__fromfile(io__exename,@s,e) then goto skipend;//failed to load file -> skip security check - 14nov2023, 11oct2022
-if not io__exeread(s,x,nil,nil,usrdata,sysmore) then
-   begin
-   xshowerror:=true;
-   goto skipdone;//failed split at marker -> raise error - 14nov2023, 11oct2022
-   end;
-
-
-{$ifdef check}
-//check
-if (programcheck_mode=(-91234351-5)) then goto skipend;//use -91234356 to disable security check - 11oct2022
-//check
-if (programcheck_mode<>(234876+21)) then goto skipdone;//must use "234897" for a security check - 11oct2022
-//.a
-aonce:=true;
-a1:=programcode_checkid[0];
-a2:=programcode_checkid[1];
-a3:=programcode_checkid[2];
-//.b
-bonce:=true;
-b1:=programcode_checkid2[0];
-b2:=programcode_checkid2[1];
-b3:=programcode_checkid2[2];
-//get
-p:=1;
-redo:
-v:=x.pbytes[p-1];
-//.skip over security checkid
-if aonce and (v=a1) and (x.bytes[p]=a2) and (x.bytes[p+1]=a3) and x.asame4(p-1,low(programcode_checkid),high(programcode_checkid)-5,programcode_checkid,true) then//exclude the very last four chars at least - 11oct2022
-   begin
-   aonce:=false;
-   ap:=p+sizeof(programcode_checkid)-5;
-   inc(p,sizeof(programcode_checkid));
-   goto skipone;
-   end;
-//.skip over security checkid2
-if bonce and (v=b1) and (x.bytes[p]=b2) and (x.bytes[p+1]=b3) and x.asame4(p-1,low(programcode_checkid2),high(programcode_checkid2)-5,programcode_checkid2,true) then//exclude the very last four chars at least - 11oct2022
-   begin
-   bonce:=false;
-   bp:=p+sizeof(programcode_checkid2)-5;
-   inc(p,sizeof(programcode_checkid2));
-   goto skipone;
-   end;
-
-//.calc b
-case v of
-0     :dec(bid,17);
-1..2  :inc(bid,14);
-3..15 :dec(bid,350);
-16..24:inc(bid,19);
-25..32:dec(bid,3);
-33..54:inc(bid,73);
-55..68:inc(bid,3);
-69..73:dec(bid,2);
-74..95:dec(bid,6);
-96..100:inc(bid,24);
-101..110:inc(bid,52);
-111..140:inc(bid,15);
-141..158:inc(bid,112);
-159..169:dec(bid,11);
-170..182:inc(bid,234);
-183..192:dec(bid,7);
-193..215:inc(bid,83);
-216..227:inc(bid,127);
-228..232:dec(bid,52);
-233..254:inc(bid,101);
-255:dec(bid,10);
-end;//case
-
-//.calc a
-case v of
-0     :dec(aid,197);
-1..2  :inc(aid,44);
-3..15 :dec(aid,500);
-16..24:inc(aid,91);
-25..32:dec(aid,25);
-33..54:inc(aid,66);
-55..68:inc(aid,2);
-69..73:dec(aid,1);
-74..95:inc(aid,5);
-96..100:inc(aid,33);
-101..110:inc(aid,50);
-111..140:inc(aid,17);
-141..158:inc(aid,73);
-159..169:dec(aid,12);
-170..182:inc(aid,19);
-183..192:dec(aid,6);
-193..215:inc(aid,90);
-216..227:inc(aid,114);
-228..232:dec(aid,87);
-233..254:inc(aid,31);
-255:dec(aid,3);
-end;//case
-
-//.loop
-inc(p);
-skipone:
-if (p<=x.len) then goto redo;
-
-//add length
-//.a
-inc(aid,x.len);
-inc(aid,98712);
-//.b
-inc(bid,x.len div 3);
-inc(aid,187231);
-
-//show fatal error
-skipdone:
-i1:=high(programcode_checkid)-3;
-i2:=high(programcode_checkid2)-3;
-z1.val:=aid;
-z2.val:=bid;
-
-{//debug only:
-showtext(
-intstr32(aid)+'<<A>>'+rcode+
-'a: '+intstr32(z1.bytes[0])+'='+intstr32(programcode_checkid[i1])+rcode+
-'b: '+intstr32(z1.bytes[1])+'='+intstr32(programcode_checkid[i1+1])+rcode+
-'c: '+intstr32(z1.bytes[2])+'='+intstr32(programcode_checkid[i1+2])+rcode+
-'d: '+intstr32(z1.bytes[3])+'='+intstr32(programcode_checkid[i1+3])+rcode+
-intstr32(bid)+'<<B>>'+rcode+
-'a: '+intstr32(z2.bytes[0])+'='+intstr32(programcode_checkid2[i2])+rcode+
-'b: '+intstr32(z2.bytes[1])+'='+intstr32(programcode_checkid2[i2+1])+rcode+
-'c: '+intstr32(z2.bytes[2])+'='+intstr32(programcode_checkid2[i2+2])+rcode+
-'d: '+intstr32(z2.bytes[3])+'='+intstr32(programcode_checkid2[i2+3])+rcode+
-'');
-{}//yyy
-
-
-if (z1.bytes[0]<>programcode_checkid[i1])  or (z1.bytes[1]<>programcode_checkid[i1+1])  or (z1.bytes[2]<>programcode_checkid[i1+2])  or (z1.bytes[3]<>programcode_checkid[i1+3]) or
-   (z2.bytes[0]<>programcode_checkid2[i2]) or (z2.bytes[1]<>programcode_checkid2[i2+1]) or (z2.bytes[2]<>programcode_checkid2[i2+2]) or (z2.bytes[3]<>programcode_checkid2[i2+3]) or
-   xshowerror then
-   begin
-   //Note: Message below is same for other content checkers BUT this one is
-   //      encrypted via "low__cemix()" and thus cannot be patterned matched
-   //      by code Hackers to detect security check points easily - 30aug2020
-   //'Fatal Error: Program is incomplete, damaged or has been tampered with.'
-   if (x=nil) then x:=str__new8 else x.clear;
-   x.aadd([81,0,0,0,159,214,17,48,48,177,74,58,70,15,121,35,234,93,197,240,107,83,233,122,48,71,183,2,133,78,215,100,29,62,118,47,89,84,41,180,197,222,248,221,180,38,210,7,36,2,197,213,197,122,180,46,4,226,210,254,166,5,35,114,220,36,127,174,151,5,151,86,139,73,243,44,251,165,196,8,244,125,197,19,167,52,173,50,1,151,197,64,33,196,254,103,89,62,172,46,140,75,21,79,92,164,252,92,184,224,130,8,226,146,243,181,59,174,86,51,160,1,179,226,251,126,142,208,214,71,50,173,20,36,232,5,206,199,150,48,190,220,175,242,146,73,23,193,191,191,160,184,242,223,245,71,169,40,138,72,152,41,44,112,113,69,46,39,244,255]);
-   low__cdmix(x);
-   showerror8(x);
-   app__halt;//11oct2022
-   end;
-{$else}
-skipone:
-skipdone:
-if xshowerror then
-   begin
-   //Note: Message below is same for other content checkers BUT this one is
-   //      encrypted via "low__cemix()" and thus cannot be patterned matched
-   //      by code Hackers to detect security check points easily - 30aug2020
-   //'Fatal Error: Program is incomplete, damaged or has been tampered with.'
-   if (x=nil) then x:=str__new8 else x.clear;
-   x.aadd([81,0,0,0,159,214,17,48,48,177,74,58,70,15,121,35,234,93,197,240,107,83,233,122,48,71,183,2,133,78,215,100,29,62,118,47,89,84,41,180,197,222,248,221,180,38,210,7,36,2,197,213,197,122,180,46,4,226,210,254,166,5,35,114,220,36,127,174,151,5,151,86,139,73,243,44,251,165,196,8,244,125,197,19,167,52,173,50,1,151,197,64,33,196,254,103,89,62,172,46,140,75,21,79,92,164,252,92,184,224,130,8,226,146,243,181,59,174,86,51,160,1,179,226,251,126,142,208,214,71,50,173,20,36,232,5,206,199,150,48,190,220,175,242,146,73,23,193,191,191,160,184,242,223,245,71,169,40,138,72,152,41,44,112,113,69,46,39,244,255]);
-   low__cdmix(x);
-   {$ifdef gui}showerror8(x);{$endif}
-   app__halt;//11oct2022
-   end;
-{$endif}
-
-
-skipend:
-except;end;
-try
-str__free(@s);
-str__free(@x);
-str__free(@usrdata);
-str__free(@sysmore);
-except;end;//28jan2021
-end;
-
-{$ifdef check}
-procedure low__makecodecheck(xfilename:string);
-label
-   redo,skipone,skipdone,skipend;
-var
-   i4:tint4;
-   aid,bid,ap,bp,a1,a2,a3,b1,b2,b3,v,p:longint;
-   x:tstr8;
-   aonce,bonce:boolean;
-   e:string;
-begin
-try
-//defaults
-x:=nil;
-ap:=0;
-bp:=0;
-aid:=0;
-bid:=0;
-//init
-x:=str__new8;
-if not io__fromfile(xfilename,@x,e) then goto skipend;//fail to load file -> skip security check - 11oct2022
-//.a
-aonce:=true;
-a1:=programcode_checkid[0];
-a2:=programcode_checkid[1];
-a3:=programcode_checkid[2];
-//.b
-bonce:=true;
-b1:=programcode_checkid2[0];
-b2:=programcode_checkid2[1];
-b3:=programcode_checkid2[2];
-//get
-p:=1;
-redo:
-v:=x.pbytes[p-1];
-//.skip over security checkid
-if aonce and (v=a1) and (x.bytes[p]=a2) and (x.bytes[p+1]=a3) and x.asame4(p-1,low(programcode_checkid),high(programcode_checkid)-5,programcode_checkid,true) then//exclude the very last four chars at least - 11oct2022
-   begin
-   aonce:=false;
-   ap:=p+sizeof(programcode_checkid)-5;
-   inc(p,sizeof(programcode_checkid));
-   goto skipone;
-   end;
-//.skip over security checkid2
-if bonce and (v=b1) and (x.bytes[p]=b2) and (x.bytes[p+1]=b3) and x.asame4(p-1,low(programcode_checkid2),high(programcode_checkid2)-5,programcode_checkid2,true) then//exclude the very last four chars at least - 11oct2022
-   begin
-   bonce:=false;
-   bp:=p+sizeof(programcode_checkid2)-5;
-   inc(p,sizeof(programcode_checkid2));
-   goto skipone;
-   end;
-
-//.calc b
-case v of
-0     :dec(bid,17);
-1..2  :inc(bid,14);
-3..15 :dec(bid,350);
-16..24:inc(bid,19);
-25..32:dec(bid,3);
-33..54:inc(bid,73);
-55..68:inc(bid,3);
-69..73:dec(bid,2);
-74..95:dec(bid,6);
-96..100:inc(bid,24);
-101..110:inc(bid,52);
-111..140:inc(bid,15);
-141..158:inc(bid,112);
-159..169:dec(bid,11);
-170..182:inc(bid,234);
-183..192:dec(bid,7);
-193..215:inc(bid,83);
-216..227:inc(bid,127);
-228..232:dec(bid,52);
-233..254:inc(bid,101);
-255:dec(bid,10);
-end;//case
-
-//.calc a
-case v of
-0     :dec(aid,197);
-1..2  :inc(aid,44);
-3..15 :dec(aid,500);
-16..24:inc(aid,91);
-25..32:dec(aid,25);
-33..54:inc(aid,66);
-55..68:inc(aid,2);
-69..73:dec(aid,1);
-74..95:inc(aid,5);
-96..100:inc(aid,33);
-101..110:inc(aid,50);
-111..140:inc(aid,17);
-141..158:inc(aid,73);
-159..169:dec(aid,12);
-170..182:inc(aid,19);
-183..192:dec(aid,6);
-193..215:inc(aid,90);
-216..227:inc(aid,114);
-228..232:dec(aid,87);
-233..254:inc(aid,31);
-255:dec(aid,3);
-end;//case
-
-//.loop
-inc(p);
-skipone:
-if (p<=x.len) then goto redo;
-
-//add length
-//.a
-inc(aid,x.len);
-inc(aid,98712);
-//.b
-inc(bid,x.len div 3);
-inc(aid,187231);
-
-//store
-//.a
-i4.val:=aid;
-x.pbytes[ap+0]:=i4.bytes[0];
-x.pbytes[ap+1]:=i4.bytes[1];
-x.pbytes[ap+2]:=i4.bytes[2];
-x.pbytes[ap+3]:=i4.bytes[3];
-//.b
-i4.val:=bid;
-x.pbytes[bp+0]:=i4.bytes[0];
-x.pbytes[bp+1]:=i4.bytes[1];
-x.pbytes[bp+2]:=i4.bytes[2];
-x.pbytes[bp+3]:=i4.bytes[3];
-
-//save
-if      (ap=0) then showtext('Bad number A')
-else if (bp=0) then showtext('Bad number B')
-else if not io__tofile(xfilename,@x,e) then showtext('Save failed: '+e);
-skipend:
-except;end;
-
-//free
-str__free(@x);//28jan2021
-
-end;
-
-function amakecheck(const x:array of byte):longint;
-var
-   a:tstr8;
-begin
-a:=str__newaf8;
-a.aadd(x);
-result:=xmakecheck(a);
-end;
-
-function tmakecheck(x:string):longint;
-begin
-result:=smakecheck(x);
-end;
-
-function smakecheck(x:string):longint;
-begin
-result:=xmakecheck(str__newaf8b(x));
-end;
-
-function imakecheck(x:longint):longint;
-begin
-result:=xmakecheck(str__newaf8b(intstr32(x)));
-end;
-
-function xmakecheck(x:tstr8):longint;
-label
-   skipend;
-var
-   v,p:longint;
-   z:tint4;
-begin
-//defaults
-result:=0;
-
-try
-//check
-if zznil(x,2031) or (x.len<1) then goto skipend;
-//get
-for p:=1 to x.len do
-begin
-v:=x.pbytes[p-1];
-case v of
-0     :dec(result,197);
-1..2  :inc(result,44);
-3..16 :dec(result,500);
-17..24:inc(result,91);
-25..32:dec(result,25);
-33..54:inc(result,66);
-55..68:inc(result,2);
-69..73:dec(result,1);
-74..88:inc(result,5);
-89..100:inc(result,33);
-101..109:inc(result,50);
-110..114:dec(result,21);
-115..122:inc(result,13);
-123..140:inc(result,17);
-141..158:inc(result,73);
-159..169:dec(result,12);
-170..182:inc(result,19);
-183..202:dec(result,6);
-203..215:inc(result,90);
-216..227:inc(result,114);
-228..239:dec(result,87);
-240..254:inc(result,31);
-255:dec(result,3);
-end;//case
-end;//p
-skipend:
-//add length
-inc(result,x.len);
-inc(result,x.len div 3);
-//add default ID offset
-inc(result,59324);
-//roll some of the values
-z.val:=result;
-z.bytes[0]:=255-z.bytes[0];
-z.bytes[2]:=255-z.bytes[2];
-result:=z.val;
-except;end;
-try;str__af(@x);except;end;
-end;
-
-procedure acheck(const x:array of byte;xuserval:longint);
-var
-   a:tstr8;
-begin
-try
-if (xuserval=-133) then exit;//disable checker
-a:=str__newaf8;//auto create
-a.aadd(x);
-xcheck(a,xuserval);
-except;end;
-end;
-
-function tcheck(x:string;xuserval:longint):string;
-begin
-if scheck(x,xuserval) then result:=x else result:='';
-end;
-
-function scheck(x:string;xuserval:longint):boolean;
-var
-   a:tstr8;
-begin
-result:=false;
-
-try
-a:=str__newaf8;
-a.text:=x;
-if xcheck(a,xuserval) then result:=true;
-except;end;
-end;
-
-procedure icheck(x,xuserval:longint);
-begin
-xcheck(str__newaf8b(intstr32(x)),xuserval);
-end;
-
-function xcheck(x:tstr8;xuserval:longint):boolean;
-var
-   a:tstr8;
-   xval:longint;
-begin
-//defaults
-result:=false;
-
-try
-//get
-if (not str__lock(@x)) or (x.len<1) then
-   begin
-   xuserval:=0;
-   xval:=-1;
-   end
-else xval:=xmakecheck(x);
-//show fatal error
-if (xval<>xuserval) then
-   begin
-   //Note: Message below is same for other content checkers BUT this one is
-   //      encrypted via "low__cemix()" and thus cannot be patterned matched
-   //      by code Hackers to detect security check points easily - 30aug2020
-   //'Fatal Error: Program is incomplete, damaged or has been tampered with.'
-   a:=str__new8;
-   a.aadd([81,0,0,0,159,214,17,48,48,177,74,58,70,15,121,35,234,93,197,240,107,83,233,122,48,71,183,2,133,78,215,100,29,62,118,47,89,84,41,180,197,222,248,221,180,38,210,7,36,2,197,213,197,122,180,46,4,226,210,254,166,5,35,114,220,36,127,174,151,5,151,86,139,73,243,44,251,165,196,8,244,125,197,19,167,52,173,50,1,151,197,64,33,196,254,103,89,62,172,46,140,75,21,79,92,164,252,92,184,224,130,8,226,146,243,181,59,174,86,51,160,1,179,226,251,126,142,208,214,71,50,173,20,36,232,5,206,199,150,48,190,220,175,242,146,73,23,193,191,191,160,184,242,223,245,71,169,40,138,72,152,41,44,112,113,69,46,39,244,255]);
-   low__cdmix(a);
-   showerror8(a);
-   app__halt;
-   end
-else result:=true;
-except;end;
-try;str__uaf(@x);except;end;//28jan2021
-end;
-{$else}
-procedure low__makecodecheck(xfilename:string);
-begin
-showerror('Check support disabled, used "check" compiler option');
-end;
-
-function amakecheck(const x:array of byte):longint;
-begin
-result:=0;
-end;
-
-function tmakecheck(x:string):longint;
-begin
-result:=0;
-end;
-
-function smakecheck(x:string):longint;
-begin
-result:=0;
-end;
-
-function imakecheck(x:longint):longint;
-begin
-result:=0;
-end;
-
-function xmakecheck(x:tstr8):longint;
-begin
-result:=0;
-str__af(@x);
-end;
-
-procedure acheck(const x:array of byte;xuserval:longint);
-begin
-
-end;
-
-function tcheck(x:string;xuserval:longint):string;
-begin
-result:=x;
-end;
-
-function scheck(x:string;xuserval:longint):boolean;
-begin
-result:=true;
-end;
-
-procedure icheck(x,xuserval:longint);
-begin
-
-end;
-
-function xcheck(x:tstr8;xuserval:longint):boolean;
-begin
-result:=true;
-str__uaf(@x);
-end;
-{$endif}//----------------------------------------------------------------------
 
 
 //-- multi-undo procs ----------------------------------------------------------

@@ -31,10 +31,10 @@ uses gossroot, {$ifdef gui}gossgui, gosstext,{$endif} {$ifdef snd}gosssnd,{$endi
 //##
 //## ==========================================================================================================================================================================================================================
 //## Library.................. app code (main.pas)
-//## Version.................. 1.00.2708 (+15)
+//## Version.................. 1.00.2730 (+17)
 //## Items.................... 4
-//## Last Updated ............ 04may2026, 09nov2025, 11aug2025, 19may2025, 05may2025, 23apr2025, 13apr2025, 11apr2025, 01apr2025
-//## Lines of Code............ 6,500+
+//## Last Updated ............ 07may2026, 04may2026, 09nov2025, 11aug2025, 19may2025, 05may2025, 23apr2025, 13apr2025, 11apr2025, 01apr2025
+//## Lines of Code............ 6,700+
 //## Origin .................. Human generated and maintained
 //##
 //## main.pas ................ App specific code
@@ -59,7 +59,7 @@ uses gossroot, {$ifdef gui}gossgui, gosstext,{$endif} {$ifdef snd}gosssnd,{$endi
 //## | Name                   | Hierarchy         | Version   | Date        | Update history / brief description of function
 //## |------------------------|-------------------|-----------|-------------|--------------------------------------------------------
 //## | tapp                   | tbasicapp         | 1.00.122  | 04may2026   | Custom app code goes inside this control - 21apr2025, 20jul2024
-//## | tworkpanel             | tbasiccols        | 1.00.2157 | 04may2026   | General and Gossamer related tools and operations - 11aug2025 ,21apr2025
+//## | tworkpanel             | tbasiccols        | 1.00.2177 | 07may2026   | General and Gossamer related tools and operations - 04may2026, 11aug2025 ,21apr2025
 //## | d2laz__*               | family of procs   | 1.00.045  | 11aug2025   | Delphi 3 to Lazarus to conversion procs - 19may2025, 01apr2025
 //## | choco__*               | family of procs   | 1.00.373  | 23apr2025   | Chocolatey portable package (*.nupkg) creation - 11apr2025
 //## ==========================================================================================================================================================================================================================
@@ -336,6 +336,7 @@ function sup__openprompt(const xformatlst:string;var e:string):boolean;
 function sup__openprompt2(const xformatlst:string;xloadfile:boolean;var e:string):boolean;
 function sup__saveprompt(const xformatlst:string;var e:string):boolean;
 function sup__saveprompt2(const xformatlst:string;xinsertUNITNAME:boolean;var e:string):boolean;
+function sup__savepromptOnlyNoSave(const xformatlst:string;var e:string):boolean;//07may2026
 function sup__openfolder(xfilterlist:string):boolean;
 function sup__openimageprompt(var e:string):boolean;
 function sup__openimageprompt_browsersupported(var e:string):boolean;
@@ -408,7 +409,7 @@ function sup__doclist(xreset:boolean):boolean;//cycle through supported doc list
 procedure sup__markduplicate_procnames(sfilename:string;snamepartafterDualunderscore,xsubfolders:boolean);//19mar2025
 procedure sup__cleanunitfiles(xfolder:string;xsubfolders:boolean);//10aug2025
 procedure sup__charinfo;
-function sup__packfiles_makeunit(xfolder,xincludemask,xexcludemask:string;xcompress,xsubfolders:boolean;var e:string):boolean;
+function sup__packfiles_makeunit(dunitFilename,xfolder,xincludemask,xexcludemask:string;xcompress,xsubfolders:boolean;var e:string):boolean;
 
 //.text manipulation
 function sup__manipulatetext(n:string;var e:string):boolean;
@@ -454,7 +455,7 @@ implementation
 
 {$ifdef gui}
 uses
-    gossdat;
+    gossdat, gosszip;
 {$endif}
 
 
@@ -483,8 +484,8 @@ else if (xname='codepage')            then result:='1252'
 else if (xname='msix.tags')           then result:='-'//for Clyde - 31jan2026
 else if (xname='msstore.name')        then result:='BlaizTools'//optional - overrides default name for Clyde - 15apr2026
 
-else if (xname='ver')                 then result:='1.00.2708'
-else if (xname='date')                then result:='04may2026'
+else if (xname='ver')                 then result:='1.00.2730'
+else if (xname='date')                then result:='07may2026'
 else if (xname='name')                then result:='Blaiz Tools'
 else if (xname='web.name')            then result:='blaiztools'//used for website name
 else if (xname='des')                 then result:='Tools for working with the Gossamer codebase and app sourecode'
@@ -1088,14 +1089,16 @@ function sup__saveprompt2(const xformatlst:string;xinsertunitname:boolean;var e:
 var
    xaction,df,etmp:string;
 begin
+
 //defaults
 result   :=false;
 xaction  :='';
 df       :=strdefb(sup_savefile,sup_openfile);
 
 //prompt
-if app__gui.popsave3(df,xformatlst,'','',xaction,true) then
+if app__gui.popsave3(df,xformatlst,'','',xaction,true,false) then
    begin
+
    //insert Pascal "unit name" here before saving stream
    if xinsertunitname then sup_data.sins('unit '+low__remcharb(io__remlastext(io__extractfilename(df)),#39)+';'+rcode,0);//need unique name here
 
@@ -1103,8 +1106,33 @@ if app__gui.popsave3(df,xformatlst,'','',xaction,true) then
    sup_savefile:=df;
    result      :=io__tofile(df,@sup_data,etmp);
    if not result then e:=etmp;
+
    end
+
 else e:='';//no error
+
+end;
+
+function sup__savepromptOnlyNoSave(const xformatlst:string;var e:string):boolean;//07may2026
+var
+   xaction,df,etmp:string;
+begin
+
+//defaults
+e        :='';//no error
+xaction  :='';
+df       :=strdefb(sup_savefile,sup_openfile);
+
+//prompt
+result   :=app__gui.popsave3(df,xformatlst,'','',xaction,true,false);
+
+if result then
+   begin
+
+   sup_savefile:=df;
+
+   end;
+
 end;
 
 function sup__saveimageprompt(var e:string):boolean;
@@ -1887,7 +1915,7 @@ s              :=nil;
 flist          :=nil;
 xerrorsfixed   :=0;
 xunitsfixed    :=0;
-app__gui.xstatusstart3(3,tbL100_L,true);
+app__gui.xstatusstart3(2.0,3,tbL100_L,true);
 app__gui.xstatustext[0]:='Folder'+#9;
 app__gui.xstatustext[1]:='Unit'+#9;
 app__gui.xstatustext[2]:='Errors';
@@ -2023,7 +2051,7 @@ if not result then e:=gecTaskfailed;
 str__free(@xlist);
 end;
 
-function sup__packfiles_makeunit(xfolder,xincludemask,xexcludemask:string;xcompress,xsubfolders:boolean;var e:string):boolean;
+function sup__packfiles_makeunit(dunitFilename,xfolder,xincludemask,xexcludemask:string;xcompress,xsubfolders:boolean;var e:string):boolean;
 
 //-----------------------------------------------------------------------------------------------------------------------------
 //
@@ -2040,17 +2068,45 @@ label
 
 const
    xfunctionLoadLimit =1000;//limit each function to 1,000 files -> Borland Delphi 3 crashes with a load of 4,000 - 04may2026
+   xunitSizeLimit     =20000000;//20 Mb
+   xnameSep           ='__autonamed__';
+   xmaxCompression    =false;//true=more compression but slower, false=less compression but faster
 
 var
    uhead,udata:tstr8;
    flist:tdynamicstring;
-   p,xcount,xfunctionNameCount,xfunctionLoadCount:longint;
+   p,xcount,xunitNameCount,xfunctionLoadCount:longint;
+   xbeforeSize,xafterSize:longint64;
    xresult:boolean;
-   xfunctionNameList,etmp:string;
+   xunitFolder,xunitNameonly,etmp:string;
 
-   function xmemory:comp;
+   function xsafeUnitName(const n:string):string;
+   var
+      p:longint32;
+
+      procedure a(const x:char);
+      begin
+
+      result:=result+x;
+
+      end;
+
    begin
-   result:=add64(uhead.datalen,udata.datalen);
+
+   //defaults
+   result   :='';
+
+   //get
+   for p:=1 to low__len32(n) do
+   begin
+
+   case byte( n[p-1+stroffset] ) of
+   uuA..uuZ,llA..llZ,nn0..nn9,ssUnderscore:a( n[p-1+stroffset] );
+   else                                    a( '_' );
+   end;//case
+   
+   end;//p
+
    end;
 
    procedure hadd(x:string);
@@ -2090,14 +2146,20 @@ var
 
    xorgSize :=sup_data.len32;
 
-   //compress
-   if xcompress and (not low__compress(@sup_data)) then
+   //before
+   inc64( xbeforeSize ,sup_data.len32 );
+
+   //compress -> slow but better compression - 07may2026
+   if xcompress and (not zip__compress(@sup_data,true, not xmaxCompression )) then
       begin
 
       e     :=gecTaskfailed;
       goto skipend;
 
       end;
+
+   //after
+   inc64( xafterSize ,sup_data.len32 );
 
    //convert into array
    if not sup__makearray(xname,e) then goto skipend;
@@ -2109,10 +2171,21 @@ var
    udata.add(sup_data);
 
    //add to head                                                               //new: uncompressed size
+
+   //.start the "case" statement
+   if (xfunctionLoadCount=0) then
+      begin
+
+      hadd('//find');
+      hadd('case xindex of');
+
+      end;
+
+   //.add file reference "case" statement
    hadd(intstr32(xcount)+':xset('+xname+','+low__aorbstr('false','true',xcompress)+','+intstr32(xorgSize)+','+#39+low__remcharb(xpathfile,#39)+#39+');');
 
    //inc
-   inc(xcount);//overal number of files spread across all functions
+   inc(xcount);//overal number of files spread across all functions and units in this series - 07may2026
    inc(xfunctionLoadCount);//number of files in this function
 
    //successful
@@ -2126,57 +2199,36 @@ var
 
    end;
 
-   procedure xendFunction(const xLinkToNewFunctionSubName:string);
+   function xthisUnitNameonly:string;
    begin
 
-   if (xLinkToNewFunctionSubName<>'') then
-      begin
-
-      //pass control to the next function in the chain
-      hadd('else result:=storage__findfile'+xLinkToNewFunctionSubName+'(xindex,xdata,xdatalen,xorgsize,xcompressed,xpathname);');
-
-      end;
-
-   hadd('end;//case');
-   hadd('');
-   hadd('end;');
-   hadd('');
-   hadd('');
+   case (xunitNameCount>=2) of
+   true:result:=xunitNameonly + xnameSep + intstr32( xunitNameCount );
+   else result:=xunitNameonly;
+   end;//case
 
    end;
 
-   procedure xstartNewFunction;
-   var
-      xsubName:string;
-
+   function xnextUnitNameonly:string;
    begin
 
-   //reset this function's load to 0 files
-   xfunctionLoadCount:=0;
+   result:=xunitNameonly + xnameSep + intstr32( xunitNameCount + 1 );
 
-   //inc to next function subname (2..N)
-   inc(xfunctionNameCount);
+   end;
 
-   if (xfunctionNameCount>=2) then
-      begin
+   procedure xstartNewUnit;
+   begin
 
-      //new function's subname
-      xsubName        :=intstr32(xfunctionNameCount);
+   str__clear(@sup_data);
+   str__clear(@udata);
+   str__clear(@uhead);
 
-      //end previous function and link to this function
-      xendFunction( xsubName );
+   xfunctionLoadCount :=0;
 
-      end
-   else begin
-
-      xsubName      :='';
-
-      end;
-
-   //start the new function
+   //start function
    hadd('');
    hadd('');
-   hadd('function storage__findfile'+xsubName+'(const xindex:longint;var xdata:pointer;var xdatalen,xorgsize:longint;var xcompressed:boolean;var xpathname:string):boolean;');//04may2026
+   hadd('function storage__findfile(const xindex:longint;var xdata:pointer;var xdatalen,xorgsize:longint;var xcompressed:boolean;var xpathname:string):boolean;');//04may2026
    hadd('');
    hadd('   procedure xset(const fdata:array of byte;const fcompressed:boolean;const fsize:longint;const fpathname:string);');
    hadd('   begin');
@@ -2195,13 +2247,99 @@ var
    hadd('//defaults');
    hadd('result:=false;');
    hadd('');
-   hadd('//find');
-   hadd('case xindex of');
 
-   //add this function's name to the function name list for placement at top of unit with "rcode" for each line
-   xfunctionNameList  :=xfunctionNameList+
+   end;
 
-   'function storage__findfile'+xsubName+'(const xindex:longint;var xdata:pointer;var xdatalen,xorgsize:longint;var xcompressed:boolean;var xpathname:string):boolean;'+rcode;
+   function xendUnit(const xmoreFilesToCome:boolean;var e:string):boolean;
+   begin
+
+   //defaults
+   result   :=false;
+
+   try
+
+   //end the function
+   if xmoreFilesToCome then
+      begin
+
+      //pass control to the next unit in the chain
+      hadd('else result:='+xnextUnitNameOnly+'.storage__findfile(xindex,xdata,xdatalen,xorgsize,xcompressed,xpathname);');
+
+      end;
+
+   //.end the "case" statement
+   if (xfunctionLoadCount>=1) then
+      begin
+
+      hadd('end;//case');
+      hadd('');
+
+      end;
+
+   hadd('end;');
+   hadd('');
+   hadd('');
+
+   //end the unit
+   hadd('end.');
+   hadd('');
+
+   //set
+   sup__dataclear;
+
+   //.head
+   dadd('unit ' + xthisUnitNameonly +';');//07may2026
+   dadd('');
+   dadd('//---------------------------------------------------------------------------------------');
+   dadd('// This unit of packed files was built using '+app__info('name')+' v'+app__info('ver')+' by '+app__info('author.name') );
+   dadd('//---------------------------------------------------------------------------------------');
+   dadd('');
+   dadd('interface');
+
+   //..link to next unit in series
+   if xmoreFilesToCome then
+      begin
+
+      dadd('');
+      dadd( 'uses ' + xnextUnitNameonly + ';' );
+
+      end;
+
+   dadd('');
+   dadd('function storage__findfile(const xindex:longint;var xdata:pointer;var xdatalen,xorgsize:longint;var xcompressed:boolean;var xpathname:string):boolean;');
+   dadd('');
+   dadd('implementation');
+   dadd('');
+
+   if (xfunctionLoadCount>=1) then
+      begin
+
+      dadd('const');
+      dadd('');
+
+      end;
+      
+   //.body
+   str__add(@sup_data,@udata);
+   str__clear(@udata);
+
+   //.head (function at bottom)
+   str__add(@sup_data,@uhead);
+   str__clear(@uhead);
+
+   //save
+   case (xunitNameCount<=1) or (xfunctionLoadCount>=1) of//always write the first unit
+   true:result   :=io__tofile( xunitFolder + xthisUnitNameonly + '.pas',@sup_data, e );
+   else result:=true;
+   end;//case
+
+   //inc
+   inc( xunitNameCount );//1..N
+
+   except;end;
+
+   //clear
+   sup__dataclear;
 
    end;
 
@@ -2213,14 +2351,22 @@ e                     :='';
 uhead                 :=nil;
 udata                 :=nil;
 xcount                :=0;
-xfunctionNameList     :='';
-xfunctionNameCount    :=0;
+xbeforeSize           :=0;
+xafterSize            :=0;
+
 xfunctionLoadCount    :=0;
 
-app__gui.xstatusstart3(3,tbL100_L,true);
-app__gui.xstatustext[0]:='Folder'+#9;
-app__gui.xstatustext[1]:='File'+#9;
-app__gui.xstatustext[2]:='Memory'+#9;
+xunitNameCount        :=1;
+xunitFolder           :=io__asfolder  ( io__extractfilepath( dunitFilename ) );
+xunitNameonly         :=xsafeUnitName( io__remlastext(io__extractfilename(dunitFilename)) );
+
+app__gui.xstatusstart3(2.0,6,tbL100_L,true);
+app__gui.xstatustext[0]:='Folder'       +#9;
+app__gui.xstatustext[1]:='File'         +#9;
+app__gui.xstatustext[2]:='Item'         +#9;
+app__gui.xstatustext[3]:='Unit'         +#9;
+app__gui.xstatustext[4]:='Source Size'  +#9;
+app__gui.xstatustext[5]:='Packed Size'  +#9;
 app__gui.xstatus(0,'Packing files...');
 
 try
@@ -2240,7 +2386,28 @@ if not io__folderexists(xfolder) then
 //init
 flist:=tdynamicstring.create;
 
-//.filelist
+
+//clean up  --------------------------------------------------------------------
+
+//.remove any previous units for this series
+io__filelist1(flist,false,false,xunitFolder,
+
+ xunitNameonly + xnameSep + '*.pas;' +
+ xunitNameonly + xnameSep + '*.dcu;' +
+ xunitNameonly + xnameSep + '*.obj;' +
+
+ '','');
+
+for p:=0 to pred(flist.count) do
+begin
+
+io__remfile( xunitFolder + flist.value[p] );
+
+end;
+
+
+//filelist ---------------------------------------------------------------------
+
 if not io__filelist1(flist,false,xsubfolders,xfolder,xincludemask,xexcludemask) then
    begin
 
@@ -2253,18 +2420,23 @@ if not io__filelist1(flist,false,xsubfolders,xfolder,xincludemask,xexcludemask) 
 uhead       :=str__new8;
 udata       :=str__new8;
 
-//start root function
-xstartNewFunction;
+
+//start new unit ---------------------------------------------------------------
+
+xstartNewUnit;
 
 //add files to the function(s)
-for p:=0 to (flist.count-1) do
+for p:=0 to pred(flist.count) do
 begin
 
 //status
 app__gui.xstatuspert:=low__ipercentage((p+1),flist.count);
-app__gui.xstatustext[0]:='Folder'+#9+io__extractfilepath(xfolder+flist.value[p]);
-app__gui.xstatustext[1]:='File'+#9+io__extractfilename(xfolder+flist.value[p]);
-app__gui.xstatustext[2]:='Memory'+#9+low__mbauto(xmemory,true);
+app__gui.xstatustext[0]:='Folder'        +#9+io__extractfilepath(xfolder+flist.value[p]);
+app__gui.xstatustext[1]:='File'          +#9+io__extractfilename(xfolder+flist.value[p]);
+app__gui.xstatustext[2]:='Item'          +#9+k64(p+1)+' / '+k64(flist.count);
+app__gui.xstatustext[3]:='Unit'          +#9+xthisUnitNameonly+'.pas';
+app__gui.xstatustext[4]:='Source Size'   +#9+low__mbPLUS(xbeforeSize,true);
+app__gui.xstatustext[5]:='Packed Size'   +#9+low__mbPLUS(xafterSize,true);
 
 if app__gui.xstatustopped then
    begin
@@ -2274,11 +2446,13 @@ if app__gui.xstatustopped then
 
    end;
 
-//auto-start a new function
-if (xfunctionLoadcount>=xfunctionLoadLimit) then
+//auto-start new unit
+if (xfunctionLoadcount>=xfunctionLoadLimit) or (udata.len32>=xunitSizeLimit) then
    begin
 
-   xstartNewFunction;
+   if not xendUnit( ( p < pred(flist.count) ) ,e ) then goto skipend;
+
+   xstartNewUnit;
 
    end;
 
@@ -2287,46 +2461,17 @@ if not xpackfile(xfolder,flist.value[p]) then goto skipend;
 
 end;//p
 
-//end the function
-xendFunction( '' );
 
-//end the unit
-hadd('end.');
-hadd('');
+//end the unit -----------------------------------------------------------------
 
-//set
-sup__dataclear;
+if not xendUnit( false ,e ) then goto skipend;
 
-//.head
-dadd('');
-dadd('//---------------------------------------------------------------------------------------');
-dadd('// This unit of packed files was built using '+app__info('name')+' v'+app__info('ver')+' by '+app__info('author.name') );
-dadd('//---------------------------------------------------------------------------------------');
-dadd('');
-dadd('interface');
-dadd('');
-dadd( xfunctionNameList );//list of all function names - has a trailing rcode -> includes a trailing blank line
-
-dadd('implementation');
-dadd('');
-dadd('const');
-dadd('');
-
-//.body
-str__add(@sup_data,@udata);
-str__clear(@udata);
-
-//.head (function at bottom)
-str__add(@sup_data,@uhead);
-str__clear(@uhead);
 
 //sucessful
 result      :=true;
 skipend:
 
 except;e:=gecTaskfailed;end;
-
-try
 
 //stop status
 app__gui.xstatusstop;
@@ -2336,7 +2481,6 @@ str__free(@uhead);
 str__free(@udata);
 freeobj(@flist);
 
-except;end;
 end;
 
 function sup__cleanproject(xfolder:string;xsubfolders:boolean;var xcount:longint;var e:string):boolean;
@@ -3004,7 +3148,7 @@ pcount:=0;
 xunitcount:=0;
 
 //start status
-app__gui.xstatusstart3(2,tbL100_L,true);
+app__gui.xstatusstart3(2.0,2,tbL100_L,true);
 app__gui.xstatustext[0]:='Folder'+#9;
 app__gui.xstatustext[1]:='Unit'+#9;
 app__gui.xstatus(0,'Loading units...');
@@ -3253,7 +3397,7 @@ var
    end;
 begin
 case xall of
-true:se(d2laz__makeproject3(app__rootfolder,false,int1,e));
+true:se(d2laz__makeproject3(app__folderRoot(true),false,int1,e));
 else se(d2laz__makeproject2(io__remlastext(io__exename)+'.dpr',e));
 end;//case
 end;
@@ -6123,14 +6267,19 @@ else if m2(cs_packfiles_makearray) then
    end
 else if m2(cs_packfiles_makeunit) then
    begin
+
    if sup__openfolder('') then
       begin
-      if not sup__packfiles_makeunit(sup_openfolder,'*','',mv('CS') or mv('C'),mv('CS') or mv('S'),e) then goto skipend;
-      
-      if not sup__saveprompt2(fepas,true,e)                                                           then goto skipend;
+
+      //prompt of unit name and save unit(s) - 07may2026
+      if not sup__savepromptOnlyNoSave(fepas,e)                                                                    then goto skipend;
+      if not sup__packfiles_makeunit(sup_savefile,sup_openfolder,'*','',mv('CS') or mv('C'),mv('CS') or mv('S'),e) then goto skipend;
+
       //reduce memory
       sup__dataclear;
+
       end;
+
    end
 
 //base64 -----------------------------------------------------------------------

@@ -31,10 +31,10 @@ uses gosswin2, gossroot, gosswin, gossteps;
 //##
 //## ==========================================================================================================================================================================================================================
 //## Library.................. disk/folder/file support (gossio.pas)
-//## Version.................. 4.00.5159 (+337)
-//## Items.................... 7
-//## Last Updated ............ 07mar2026, 25feb2026, 17feb2026, 09nov2025, 05oct2025, 28sep2025, 18sep2025, 28aug2025, 17aug2025, 11aug2025, 12jun2025, 01jun2025, 28may2025, 01may2025, 11apr2025, 31mar2025, 21mar2025, 08mar2025, 20feb2025, 11jan2025, 18dec2024, 18nov2024, 15nov2024, 22aug2024, 20jul2024, 23jun2024, 30apr2024
-//## Lines of Code............ 6,200+
+//## Version.................. 4.00.5203 (+337)
+//## Items.................... 8
+//## Last Updated ............ 06may2026, 07mar2026, 25feb2026, 17feb2026, 09nov2025, 05oct2025, 28sep2025, 18sep2025, 28aug2025, 17aug2025, 11aug2025, 12jun2025, 01jun2025, 28may2025, 01may2025, 11apr2025, 31mar2025, 21mar2025, 08mar2025, 20feb2025, 11jan2025, 18dec2024, 18nov2024, 15nov2024, 22aug2024, 20jul2024, 23jun2024, 30apr2024
+//## Lines of Code............ 6,300+
 //## Origin .................. Human generated and maintained
 //##
 //## main.pas ................ App specific code
@@ -60,11 +60,12 @@ uses gosswin2, gossroot, gosswin, gossteps;
 //## |------------------------|-------------------|-----------|-------------|--------------------------------------------------------
 //## | filecache__*           | family of procs   | 1.00.157  | 28sep2025   | Cache open file handles for faster repeat file IO operations, 17aug2025, 29apr2024, 12apr2024: created
 //## | key__*                 | family of procs   | 1.00.022  | 26aug2025   | Key generation for security work
-//## | io__*                  | family of procs   | 1.00.3773 | 06mar2026   | Disk, folder and file procs + 64bit file support, 17feb2026, 09nov2025, 05oct2025, 28sep2025, 18sep2025, 28aug2025, 12jun2025, 11jun2025, 18may2025, 14may2025, 11apr2025, 20feb2025, 25jan2025, 11jan2025: fixed "io__fromfile64c()" for "!:\" files, 20dec2024, 16dec2024: io__copyfile upgraded, 18nov2024: tea3 format detection, 22aug2024: io__folderlist procs added, 19jul2024: io__filelist1/21() subfolder support added, 30apr2024: fixed io__ double ptr ref, 30apr2024: io__tofileex64() updated to flush buffer for correct nav__* filesize reporting, 17apr2024: procs renamed
+//## | io__*                  | family of procs   | 1.00.3797 | 05may2026   | Disk, folder and file procs + 64bit file support, 06mar2026, 17feb2026, 09nov2025, 05oct2025, 28sep2025, 18sep2025, 28aug2025, 12jun2025, 11jun2025, 18may2025, 14may2025, 11apr2025, 20feb2025, 25jan2025, 11jan2025: fixed "io__fromfile64c()" for "!:\" files, 20dec2024, 16dec2024: io__copyfile upgraded, 18nov2024: tea3 format detection, 22aug2024: io__folderlist procs added, 19jul2024: io__filelist1/21() subfolder support added, 30apr2024: fixed io__ double ptr ref, 30apr2024: io__tofileex64() updated to flush buffer for correct nav__* filesize reporting, 17apr2024: procs renamed
 //## | nav__*                 | family of procs   | 1.00.300  | 26feb2024   | Worker procs for file/folder/navigation lists
 //## | idisk__*               | family of procs   | 1.00.132  | 15mar2025   | Internal disk support "!:\" - 20jul2024: reintegrated into Gossamer
 //## | s12__*                 | family of procs   | 1.00.045  | 08mar2025   | Read/write 12bit io streams
 //## | tstorage               | tobjectex         | 1.00.085  | 21mar2025   | Storage manager for accessing and using files packed into a Pascal unit
+//## | link__*                | family of procs   | 1.00.020  | 06may2026   | Manage basic system links: startmenu, desktop, and startup
 //## ==========================================================================================================================================================================================================================
 //## Performance Note:
 //##
@@ -73,6 +74,16 @@ uses gosswin2, gossroot, gosswin, gossteps;
 //## causing ~2x more CPU to be consumed.  For optimal performance, these options should be disabled
 //## when compiling.
 //## ==========================================================================================================================================================================================================================
+
+
+const
+
+   //link actions --------------------------------------------------------------
+   la_exists          =0;
+   la_create          =1;
+   la_delete          =2;
+   la_max             =2;
+
 
 type
    //.tfilecache
@@ -245,8 +256,9 @@ function io__remlastext(const x:string):string;//remove last extension
 function io__readfileext(const x:string;fu:boolean):string;{Date: 24-DEC-2004, Superceeds "ExtractFileExt"}
 function io__readfileext_low(const x:string):string;//30jan2022
 function io__findext(s:string;var xoutlabel,xoutext,xoutmask:string):boolean;//09nov2025
+function io__findext2(s:string;var xoutlabel,xoutext,xoutmask:string;const xAllowUnknownFileTypes:boolean):boolean;//05may2026, 17feb2026, 09nov2025
 function io__forceext(const xfilename,xforceext:string):string;
-function io__forceext2(const xfilename,xforceext:string;xappend:boolean):string;
+function io__forceext2(const xfilename,xforceext:string;const xappend,xAllowUnknownFileTypes:boolean):string;
 function io__scandownto(const x:string;y,stopA,stopB:char;var a,b:string):boolean;
 function io__faISfolder(x:longint):boolean;//05JUN2013
 function io__mssortstr(const s:string):string;//12jun2025, 01jun2025, 29may2025
@@ -421,6 +433,12 @@ function s12__pullinit(s:pobject;var sinfo:ts12_info;sfrom,xeosCode:longint):boo
 function s12__pullval(var sinfo:ts12_info;var xval:longint):boolean;
 
 
+//link procs -------------------------------------------------------------------
+function link__startmenu(const xlinkAction:longint32):boolean;
+function link__desktop(const xlinkAction:longint32):boolean;
+function link__startup(const xlinkAction:longint32):boolean;
+
+
 implementation
 
 uses gossimg, gossfast {$ifdef gui},gossgui{$endif};
@@ -497,8 +515,8 @@ xname:=strlow(xname);
 if (strcopy1(xname,1,7)='gossio.') then strdel1(xname,1,7) else exit;
 
 //get
-if      (xname='ver')        then result:='4.00.5159'
-else if (xname='date')       then result:='07mar2026'
+if      (xname='ver')        then result:='4.00.5203'
+else if (xname='date')       then result:='06may2026'
 else if (xname='name')       then result:='IO'
 else
    begin
@@ -2298,10 +2316,10 @@ end;
 
 function io__forceext(const xfilename,xforceext:string):string;
 begin
-result:=io__forceext2(xfilename,xforceext,true);
+result:=io__forceext2(xfilename,xforceext,true,false);
 end;
 
-function io__forceext2(const xfilename,xforceext:string;xappend:boolean):string;
+function io__forceext2(const xfilename,xforceext:string;const xappend,xAllowUnknownFileTypes:boolean):string;
 var
    p,lp:longint;
    str1,d,xext,xoutlabel,xoutext,xoutmask:string;
@@ -2311,74 +2329,116 @@ var
    procedure xforce;
    label
       skipend;
+
    var
       lp,p:longint;
       dext,str1,d:string;
       c:char;
+
    begin
-   try
+
    //init
-   d:=xoutext+fesepX;//usually a plus sign "+"
-   dext:='';
-   lp:=1;
+   d        :=xoutext+fesepX;//usually a plus sign "+"
+   dext     :='';
+   lp       :=1;
+
    //get
-   for p:=1 to length(d) do
+
+   for p:=1 to low__len32(d) do
    begin
-   c:=d[p-1+stroffset];
+
+   c        :=d[p-1+stroffset];
+
    if (c=fesepX) then
       begin
+
       str1:=strcopy1(d,lp,p-lp);
+
       if (dext='') then dext:=str1;//take first instance as fallback
+
       if (str1=xext) or (str1=feany) then
          begin
+
          xforcedone:=true;
+
          goto skipend;//filename.ext matches one of the extensions in the list -> do nothing
+
          end;
+
       lp:=p+1;
+
       end;
+
    end;//p
+
    //force first ext we came across
    if (dext<>'') then
       begin
-      if xappend then result:=result+insstr('.',strcopy1(result,length(result),1)<>'.')+dext
-      else            result:=strcopy1(result,1,length(result)+low__insint(-1,xext<>'')-length(xext))+'.'+dext;
+
+      if xappend then result:=result+insstr('.',strcopy1(result,low__len32(result),1)<>'.')+dext
+      else            result:=strcopy1(result,1,low__len32(result)+low__insint(-1,xext<>'')-low__len32(xext))+'.'+dext;
+
       //successful
       xforcedone:=true;
-      end;
-   skipend:
-   except;end;
-   end;
-begin
-//defaults
-result:=xfilename;
 
-try
-xforcedone:=false;
+      end;
+
+   skipend:
+
+   end;
+
+begin
+
+//defaults
+result      :=xfilename;
+xforcedone  :=false;
+
 //check
 if (xforceext=feany) then exit;
+
+try
+
 //init
-xext:=strlow(io__lastext(xfilename));//allows "nil"
+xext        :=strlow(io__lastext(xfilename));//allows "nil"
+d           :=xforceext+fesep;
+lp          :=1;
+
 //get
-d:=xforceext+fesep;
-lp:=1;
-for p:=1 to length(d) do
+for p:=1 to low__len32(d) do
 begin
-c:=d[p-1+stroffset];
+
+c           :=d[p-1+stroffset];
+
 if (c=fesep) or (c=fesepX) then//";" or "+"
    begin
+
    str1:=strcopy1(d,lp,p-lp);
-   if io__findext(str1,xoutlabel,xoutext,xoutmask) then
+
+   if io__findext2(str1,xoutlabel,xoutext,xoutmask,xAllowUnknownFileTypes) then
       begin
+
       xforce;
       if xforcedone then break;//done
+
       end;
+
    lp:=p+1;
+
    end;
+
 end;//p
+
 except;end;
 end;
 
 function io__findext(s:string;var xoutlabel,xoutext,xoutmask:string):boolean;//17feb2026, 09nov2025
+begin
+
+result:=io__findext2(s,xoutlabel,xoutext,xoutmask,false);
+
+end;
+
+function io__findext2(s:string;var xoutlabel,xoutext,xoutmask:string;const xAllowUnknownFileTypes:boolean):boolean;//05may2026, 17feb2026, 09nov2025
 //Note: s is "txt" or "bat" or "bmp" or "tea" etc
 
    procedure xcap(const x:string);
@@ -2517,7 +2577,15 @@ else if (s=fenupkg)   then xcap('Chocolatey Package')//31mar2025
 else if (s=femap)     then xcap('Map File')//24may2025
 
 //.midi formats
-else if (s=femid) or (s=femidi) or (s=fermi)        then xcap('Midi Music');
+else if (s=femid) or (s=femidi) or (s=fermi)        then xcap('Midi Music')
+
+//unknown formats - 05may2026
+else if xAllowUnknownFileTypes then
+   begin
+
+   if (s<>'') then xcap('File of type');
+
+   end;
 
 end;
 
@@ -2891,7 +2959,7 @@ if (str1<>'') then
       end;
    end;//p
    //.trim trailing slash
-   if (str1<>'') and ((strbyte1(str1,length(str1))=ssbackslash) or (strbyte1(str1,length(str1))=ssslash)) then str1:=strcopy1(str1,1,length(str1)-1);
+   if (str1<>'') and ((strbyte1(str1,low__len32(str1))=ssbackslash) or (strbyte1(str1,low__len32(str1))=ssslash)) then str1:=strcopy1(str1,1,low__len32(str1)-1);
    //set
    if (str1<>'') then result:=str1;
    end;
@@ -6210,5 +6278,151 @@ else
    end;
 end;
 
+
+//link procs -------------------------------------------------------------------
+
+function link__startmenu(const xlinkAction:longint32):boolean;
+var
+   n,df:string;
+
+begin
+
+//defaults
+result      :=false;
+n           :=app__info('linkname');
+
+//check
+if (n='') then exit;
+
+//init
+df          :=io__winprograms + app__info('linkname');
+
+//get
+
+if (xlinkAction=la_exists) then
+   begin
+
+   result   :=io__fileexists( df );
+
+   end
+
+else if (xlinkAction=la_delete) then
+   begin
+
+   result   :=io__remfile( df );
+
+   end
+
+else if (xlinkAction=la_create) then
+   begin
+
+   result   :=io__fileexists( df );
+
+   if not result then
+      begin
+
+      io__createlink(df,io__exename,'','');
+
+      result:=io__fileexists( df );
+
+      end;
+
+   end;
+
+end;
+
+function link__desktop(const xlinkAction:longint32):boolean;
+var
+   n,df:string;
+
+begin
+
+//defaults
+result      :=false;
+n           :=app__info('linkname');
+
+//check
+if (n='') then exit;
+
+//init
+df          :=io__windesktop + app__info('linkname');
+
+//get
+if (xlinkAction=la_exists) then
+   begin
+
+   result   :=io__fileexists( df );
+
+   end
+
+else if (xlinkAction=la_delete) then
+   begin
+
+   result   :=io__remfile( df );
+
+   end
+
+else if (xlinkAction=la_create) then
+   begin
+
+   result   :=io__fileexists( df );
+
+   if not result then
+      begin
+
+      io__createlink(df,io__exename,'','');
+
+      result:=io__fileexists( df );
+
+      end;
+
+   end;
+
+end;
+
+function link__startup(const xlinkAction:longint32):boolean;
+var
+   df:string;
+
+begin
+
+//defaults
+result      :=false;
+
+//init
+df          :=io__winstartup + io__safefilename(io__exename,false) + '.lnk';
+
+//get
+if (xlinkAction=la_exists) then
+   begin
+
+   result   :=io__fileexists( df );
+
+   end
+
+else if (xlinkAction=la_delete) then
+   begin
+
+   result   :=io__remfile( df );
+
+   end
+
+else if (xlinkAction=la_create) then
+   begin
+
+   result   :=io__fileexists( df );
+
+   if not result then
+      begin
+
+      io__createlink(df,io__exename,'','');
+
+      result:=io__fileexists( df );
+
+      end;
+
+   end;
+
+end;
 
 end.

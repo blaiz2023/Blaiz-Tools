@@ -19,7 +19,8 @@ uses
   gosssnd,
   gosswin,
   gosszip,
-  gossjpg;
+  gossjpg,
+  gossgame;
   { you can add units after this }
 
 
